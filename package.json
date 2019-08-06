@@ -13,6 +13,7 @@
   "author": "Roman Korenev",
   "license": "ISC",
   "devDependencies": {
+    "@types/events": "^3.0.0",
     "@types/jest": "^24.0.15",
     "@typescript-eslint/eslint-plugin": "^1.11.0",
     "@typescript-eslint/parser": "^1.11.0",
@@ -28,5 +29,7 @@
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "events": "^3.0.0"
+  }
 }
