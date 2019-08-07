@@ -1,11 +1,12 @@
 /**
- * Generate arithmetic progression generator.
+ * Generate sequence of numbers
+ * TODO: can work with float numbers
  *
  * @param start range start (included)
  * @param stop range stop (included)
  * @param step delta between numbers
  */
-export function* range(start: number, stop?: number, step: number = 1): IterableIterator<number> {
+export function* genSequence(start: number, stop?: number, step: number = 1): IterableIterator<number> {
   // when only 1 parameter passed
   if (typeof stop === 'undefined') {
     stop = start;
