@@ -30,6 +30,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "events": "^3.0.0"
+    "events": "^3.0.0",
+    "lodash": "^4.17.15"
   }
 }
