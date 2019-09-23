@@ -20,4 +20,8 @@ function checkMax(v: unknown): v is RangeSliderOptions['max'] {
   return isNumber(v);
 }
 
-export { checkValue, checkMin, checkMax };
+function checkStep(v: unknown): v is RangeSliderOptions['step'] {
+  return isNumber(v);
+}
+
+export { checkValue, checkMin, checkMax, checkStep };

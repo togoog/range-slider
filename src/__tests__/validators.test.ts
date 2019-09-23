@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { checkValue, checkMin, checkMax } from '../validators';
+import { checkValue, checkMin, checkMax, checkStep } from '../validators';
 
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
@@ -121,5 +121,15 @@ describe('checkMax', () => {
 
   test('should return false for any non numeric value', () => {
     anyNonNumberIsBad(checkMax);
+  });
+});
+
+describe('checkStep', () => {
+  test('should return true for any number', () => {
+    anyNumberIsOk(checkStep);
+  });
+
+  test('should return false for any non numeric value', () => {
+    anyNonNumberIsBad(checkStep);
   });
 });
