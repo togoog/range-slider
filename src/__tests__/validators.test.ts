@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { checkValue, checkMin, checkMax, checkStep } from '../validators';
+import { checkValue, checkMin, checkMax, checkStep, checkOrientation } from '../validators';
 
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
@@ -131,5 +131,20 @@ describe('checkStep', () => {
 
   test('should return false for any non numeric value', () => {
     anyNonNumberIsBad(checkStep);
+  });
+});
+
+describe('checkOrientation', () => {
+  test('should return true for "horizontal" & "vertical" strings', () => {
+    expect(checkOrientation('horizontal')).toBe(true);
+    expect(checkOrientation('vertical')).toBe(true);
+  });
+
+  test('should return false for any other string', () => {
+    fc.assert(
+      fc.property(fc.string(), v => {
+        expect(checkOrientation(v)).toBe(false);
+      })
+    );
   });
 });

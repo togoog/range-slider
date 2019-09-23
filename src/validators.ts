@@ -24,4 +24,8 @@ function checkStep(v: unknown): v is RangeSliderOptions['step'] {
   return isNumber(v);
 }
 
-export { checkValue, checkMin, checkMax, checkStep };
+function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
+  return v === 'horizontal' || v === 'vertical';
+}
+
+export { checkValue, checkMin, checkMax, checkStep, checkOrientation };
