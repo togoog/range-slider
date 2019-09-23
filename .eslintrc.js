@@ -1,5 +1,9 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
+  env: {
+    browser: true,
+    jest: true,
+  },
   extends: [
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
@@ -9,5 +13,9 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  rules: {},
+  rules: {
+    semi: ['error', 'always'],
+    complexity: ['error', 5],
+    '@typescript-eslint/explicit-function-return-type': 0,
+  },
 };
