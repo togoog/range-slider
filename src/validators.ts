@@ -12,4 +12,8 @@ function checkValue(v: unknown): v is RangeSliderOptions['value'] {
   ])(v);
 }
 
-export { checkValue };
+function checkMin(v: unknown): v is RangeSliderOptions['min'] {
+  return isNumber(v);
+}
+
+export { checkValue, checkMin };
