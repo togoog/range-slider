@@ -6,10 +6,7 @@ import { pipe } from 'fp-ts/lib/pipeable';
  * @param entries array of key value pairs
  */
 function objectFromEntries<T>(entries: [string, T][]) {
-  return Object.assign(
-    {},
-    ...Array.from(entries, ([k, v]: [string, T]) => ({ [k]: v })),
-  );
+  return Object.assign({}, ...Array.from(entries, ([k, v]) => ({ [k]: v })));
 }
 
 //
@@ -56,8 +53,11 @@ function getAttributes(el: Element): option.Option<RangeSliderAttributes> {
   entries.push(['intervals', el.getAttribute('data-intervals')]);
   entries.push(['tooltips', el.getAttribute('data-tooltips')]);
 
-  const result = objectFromEntries(entries.filter(entry => entry[1] !== null));
-
+  const notEmptyEntries: [keyof RangeSliderOptions, string][] = entries.filter(
+    (entry): entry is [keyof RangeSliderOptions, string] =>
+      entry[1] !== null && entry[1] !== undefined,
+  );
+  const result = objectFromEntries(notEmptyEntries);
   return option.some(result);
 }
 

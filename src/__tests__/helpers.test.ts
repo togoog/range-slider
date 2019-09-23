@@ -1,5 +1,21 @@
 import { isSome, isNone, fold, some } from 'fp-ts/lib/Option';
-import { $, getAttributes } from '../helpers';
+import { $, getAttributes, objectFromEntries } from '../helpers';
+
+describe('objectFromEntries', () => {
+  test('should create object from entries', () => {
+    const entries: [string, number][] = [['foo', 1], ['bar', 2], ['baz', 3]];
+    expect(objectFromEntries(entries)).toEqual({
+      foo: 1,
+      bar: 2,
+      baz: 3,
+    });
+  });
+
+  test('should create empty object from empty entries array', () => {
+    const entries: [string, number][] = [];
+    expect(objectFromEntries(entries)).toEqual({});
+  });
+});
 
 describe('$', () => {
   test('Should find existing elements', () => {
@@ -52,7 +68,7 @@ describe('getAttributes', () => {
   test('Should return empty object when no attributes set on element', () => {
     document.body.innerHTML = '<input type="range" id="range-slider" />';
     const el = document.getElementById('range-slider');
-    const attributes = el && getAttributes(el);
+    const attributes = getAttributes(el as Element);
     expect(attributes).toEqual(some({}));
   });
 
