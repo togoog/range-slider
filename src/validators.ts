@@ -1,5 +1,5 @@
-import { all, allPass, anyPass } from 'ramda';
-import { isArray, isNumber, isNotEmpty } from 'ramda-adjunct';
+import { all, allPass, anyPass, test } from 'ramda';
+import { isArray, isNumber, isString, isNotEmpty } from 'ramda-adjunct';
 
 function checkValue(v: unknown): v is RangeSliderOptions['value'] {
   return anyPass([
@@ -28,4 +28,22 @@ function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
   return v === 'horizontal' || v === 'vertical';
 }
 
-export { checkValue, checkMin, checkMax, checkStep, checkOrientation };
+/**
+ * Check string against locale pattern: aa-AA
+ * @param v value to check
+ */
+function checkLocale(v: unknown): v is RangeSliderOptions['locale'] {
+  return allPass([
+    isString,
+    test(/\s*[a-z]{2}-[A-Z]{2}\s*/g)
+  ])(v);
+}
+
+export {
+  checkValue,
+  checkMin,
+  checkMax,
+  checkStep,
+  checkOrientation,
+  checkLocale
+};

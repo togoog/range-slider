@@ -1,5 +1,12 @@
 import * as fc from 'fast-check';
-import { checkValue, checkMin, checkMax, checkStep, checkOrientation } from '../validators';
+import {
+  checkValue,
+  checkMin,
+  checkMax,
+  checkStep,
+  checkOrientation,
+  checkLocale
+} from '../validators';
 
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
@@ -144,6 +151,22 @@ describe('checkOrientation', () => {
     fc.assert(
       fc.property(fc.string(), v => {
         expect(checkOrientation(v)).toBe(false);
+      })
+    );
+  });
+});
+
+describe('checkLocale', () => {
+  test('should return true for strings that match locale pattern (aa-AA)', () => {
+    expect(checkLocale('ru-RU')).toBe(true);
+    expect(checkLocale('en-US')).toBe(true);
+    expect(checkLocale('  de-DE ')).toBe(true);
+  });
+
+  test('should return false for any string that do not match the locale pattern (aa-AA)', () => {
+    fc.assert(
+      fc.property(fc.string(), v => {
+        expect(checkLocale(v)).toBe(false);
       })
     );
   });
