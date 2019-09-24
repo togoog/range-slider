@@ -1,4 +1,11 @@
-import { all, allPass, anyPass, test } from 'ramda';
+import {
+  pipe,
+  all,
+  allPass,
+  anyPass,
+  test,
+  trim
+} from 'ramda';
 import {
   isArray,
   isNumber,
@@ -34,7 +41,10 @@ function checkStep(v: unknown): v is RangeSliderOptions['step'] {
 function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
   return allPass([
     isString,
-    test(/\s*(horizontal|vertical)\s*/g)
+    pipe(
+      trim,
+      test(/^(horizontal|vertical)$/g)
+    )
   ])(v);
 }
 
@@ -45,14 +55,20 @@ function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
 function checkLocale(v: unknown): v is RangeSliderOptions['locale'] {
   return allPass([
     isString,
-    test(/\s*[a-z]{2}-[A-Z]{2}\s*/g)
+    pipe(
+      trim,
+      test(/^[a-z]{2}-[A-Z]{2}$/g)
+    )
   ])(v);
 }
 
 function checkDirection(v: unknown): v is RangeSliderOptions['direction'] {
   return allPass([
     isString,
-    test(/\s*(ltr|rtl)\s*/g)
+    pipe(
+      trim,
+      test(/^(ltr|rtl)$/g)
+    )
   ])(v);
 }
 
@@ -74,6 +90,23 @@ function checkIsPolyfill(v: unknown): v is RangeSliderOptions['isPolyfill'] {
   return isBoolean(v);
 }
 
+/**
+ * cssPrefix should be string;
+ * start with letter;
+ * has length >= 1;
+ * contain letters, numbers, -, _;
+ * @param v value to check
+ */
+function checkCssPrefix(v: unknown): v is RangeSliderOptions['cssPrefix'] {
+  return allPass([
+    isString,
+    pipe(
+      trim,
+      test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g)
+    )
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -84,5 +117,6 @@ export {
   checkDirection,
   checkPadding,
   checkIsDisabled,
-  checkIsPolyfill
+  checkIsPolyfill,
+  checkCssPrefix
 };

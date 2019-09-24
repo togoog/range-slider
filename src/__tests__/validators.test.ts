@@ -9,7 +9,8 @@ import {
   checkDirection,
   checkPadding,
   checkIsDisabled,
-  checkIsPolyfill
+  checkIsPolyfill,
+  checkCssPrefix
 } from '../validators';
 
 //
@@ -123,7 +124,7 @@ function anyNonNumericArrayIsBad(fn: Function): void {
 //
 // ─── TESTS ──────────────────────────────────────────────────────────────────────
 //
-  
+
 describe('checkValue', () => {
   test('should return true for any number', () => {
     anyNumberIsOk(checkValue);
@@ -291,5 +292,34 @@ describe('checkIsPolyfill', () => {
 
   test('should return false for any non boolean value', () => {
     anyNonBooleanIsBad(checkIsPolyfill);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkCssPrefix', () => {
+  test('should return true for any string that matches css prefix pattern: [a-zA-Z][a-zA-Z0-9-_]*', () => {
+    expect(checkCssPrefix('f')).toBe(true);
+    expect(checkCssPrefix('F')).toBe(true);
+    expect(checkCssPrefix('Foo')).toBe(true);
+    expect(checkCssPrefix('foo')).toBe(true);
+    expect(checkCssPrefix('  foo  ')).toBe(true);
+    expect(checkCssPrefix('FooBar')).toBe(true);
+    expect(checkCssPrefix('foo-')).toBe(true);
+    expect(checkCssPrefix('foo_')).toBe(true);
+    expect(checkCssPrefix('foo123')).toBe(true);
+    expect(checkCssPrefix('foo123-')).toBe(true);
+    expect(checkCssPrefix('foo123_')).toBe(true);
+  });
+
+  test('should return false for any string that does not match css prefix pattern', () => {
+    expect(checkCssPrefix('1')).toBe(false);
+    expect(checkCssPrefix('1-')).toBe(false);
+    expect(checkCssPrefix('1foo')).toBe(false);
+    expect(checkCssPrefix('123Foo')).toBe(false);
+    expect(checkCssPrefix('-foo')).toBe(false);
+    expect(checkCssPrefix('_foo')).toBe(false);
+    expect(checkCssPrefix('foo!')).toBe(false);
+    expect(checkCssPrefix('#foo')).toBe(false);
   });
 });
