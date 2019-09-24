@@ -1,5 +1,12 @@
 import { all, allPass, anyPass, test } from 'ramda';
-import { isArray, isNumber, isString, isPair, isNotEmpty } from 'ramda-adjunct';
+import {
+  isArray,
+  isNumber,
+  isString,
+  isBoolean,
+  isPair,
+  isNotEmpty
+} from 'ramda-adjunct';
 
 function checkValue(v: unknown): v is RangeSliderOptions['value'] {
   return anyPass([
@@ -59,6 +66,10 @@ function checkPadding(v: unknown): v is RangeSliderOptions['padding'] {
   ])(v);
 }
 
+function checkIsDisabled(v: unknown): v is RangeSliderOptions['isDisabled'] {
+  return isBoolean(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -68,4 +79,5 @@ export {
   checkLocale,
   checkDirection,
   checkPadding,
+  checkIsDisabled
 };

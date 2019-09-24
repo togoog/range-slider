@@ -7,7 +7,8 @@ import {
   checkOrientation,
   checkLocale,
   checkDirection,
-  checkPadding
+  checkPadding,
+  checkIsDisabled
 } from '../validators';
 
 //
@@ -33,6 +34,33 @@ function anyNonNumberIsBad(fn: Function): void {
   // for booleans
   expect(fn(true)).toBe(false);
   expect(fn(false)).toBe(false);
+
+  // for null & undefined
+  expect(fn(null)).toBe(false);
+  expect(fn(undefined)).toBe(false);
+
+  // for objects
+  fc.assert(
+    fc.property(fc.object(), v => {
+      expect(fn(v)).toBe(false);
+    })
+  );
+}
+
+function anyNonBooleanIsBad(fn: Function): void {
+  // for strings
+  fc.assert(
+    fc.property(fc.unicode(), v => {
+      expect(fn(v)).toBe(false);
+    })
+  );
+
+  // for numbers
+  fc.assert(
+    fc.property(fc.integer(), v => {
+      expect(fn(v)).toBe(false);
+    })
+  );
 
   // for null & undefined
   expect(fn(null)).toBe(false);
@@ -94,7 +122,7 @@ function anyNonNumericArrayIsBad(fn: Function): void {
 //
 // ─── TESTS ──────────────────────────────────────────────────────────────────────
 //
-
+  
 describe('checkValue', () => {
   test('should return true for any number', () => {
     anyNumberIsOk(checkValue);
@@ -113,6 +141,8 @@ describe('checkValue', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('checkMin', () => {
   test('should return true for any number', () => {
     anyNumberIsOk(checkMin);
@@ -122,6 +152,8 @@ describe('checkMin', () => {
     anyNonNumberIsBad(checkMin);
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('checkMax', () => {
   test('should return true for any number', () => {
@@ -133,6 +165,8 @@ describe('checkMax', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('checkStep', () => {
   test('should return true for any number', () => {
     anyNumberIsOk(checkStep);
@@ -142,6 +176,8 @@ describe('checkStep', () => {
     anyNonNumberIsBad(checkStep);
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('checkOrientation', () => {
   test('should return true for "horizontal" & "vertical" strings', () => {
@@ -159,6 +195,8 @@ describe('checkOrientation', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('checkLocale', () => {
   test('should return true for strings that match locale pattern (aa-AA)', () => {
     expect(checkLocale('ru-RU')).toBe(true);
@@ -175,6 +213,8 @@ describe('checkLocale', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('checkDirection', () => {
   test('should return true for "ltr" & "rtl" strings', () => {
     expect(checkDirection('ltr')).toBe(true);
@@ -190,6 +230,8 @@ describe('checkDirection', () => {
     );
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('checkPadding', () => {
   test('should return true for any number', () => {
@@ -222,5 +264,18 @@ describe('checkPadding', () => {
         expect(checkPadding(v)).toBe(false);
       })
     );
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkIsDisabled', () => {
+  test('should return true for any boolean', () => {
+    expect(checkIsDisabled(true)).toBe(true);
+    expect(checkIsDisabled(false)).toBe(true);
+  });
+
+  test('should return false for any non boolean value', () => {
+    anyNonBooleanIsBad(checkIsDisabled);
   });
 });
