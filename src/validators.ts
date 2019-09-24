@@ -25,7 +25,10 @@ function checkStep(v: unknown): v is RangeSliderOptions['step'] {
 }
 
 function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
-  return v === 'horizontal' || v === 'vertical';
+  return allPass([
+    isString,
+    test(/\s*(horizontal|vertical)\s*/g)
+  ])(v);
 }
 
 /**
@@ -39,11 +42,19 @@ function checkLocale(v: unknown): v is RangeSliderOptions['locale'] {
   ])(v);
 }
 
+function checkDirection(v: unknown): v is RangeSliderOptions['direction'] {
+  return allPass([
+    isString,
+    test(/\s*(ltr|rtl)\s*/g)
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
   checkMax,
   checkStep,
   checkOrientation,
-  checkLocale
+  checkLocale,
+  checkDirection
 };

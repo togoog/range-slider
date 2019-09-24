@@ -5,7 +5,8 @@ import {
   checkMax,
   checkStep,
   checkOrientation,
-  checkLocale
+  checkLocale,
+  checkDirection
 } from '../validators';
 
 //
@@ -145,6 +146,7 @@ describe('checkOrientation', () => {
   test('should return true for "horizontal" & "vertical" strings', () => {
     expect(checkOrientation('horizontal')).toBe(true);
     expect(checkOrientation('vertical')).toBe(true);
+    expect(checkOrientation('  vertical  ')).toBe(true);
   });
 
   test('should return false for any other string', () => {
@@ -167,6 +169,22 @@ describe('checkLocale', () => {
     fc.assert(
       fc.property(fc.string(), v => {
         expect(checkLocale(v)).toBe(false);
+      })
+    );
+  });
+});
+
+describe('checkDirection', () => {
+  test('should return true for "ltr" & "rtl" strings', () => {
+    expect(checkDirection('ltr')).toBe(true);
+    expect(checkDirection('rtl')).toBe(true);
+    expect(checkDirection('  ltr ')).toBe(true);
+  });
+
+  test('should return false for any other strings', () => {
+    fc.assert(
+      fc.property(fc.string().filter(v => v !== 'ltr' && v !== 'rtl'), v => {
+        expect(checkDirection(v)).toBe(false);
       })
     );
   });
