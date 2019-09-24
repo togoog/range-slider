@@ -6,7 +6,8 @@ import {
   checkStep,
   checkOrientation,
   checkLocale,
-  checkDirection
+  checkDirection,
+  checkPadding
 } from '../validators';
 
 //
@@ -185,6 +186,40 @@ describe('checkDirection', () => {
     fc.assert(
       fc.property(fc.string().filter(v => v !== 'ltr' && v !== 'rtl'), v => {
         expect(checkDirection(v)).toBe(false);
+      })
+    );
+  });
+});
+
+describe('checkPadding', () => {
+  test('should return true for any number', () => {
+    anyNumberIsOk(checkPadding);
+  });
+
+  test('should return true for any tuple of 2 numbers', () => {
+    fc.assert(
+      fc.property(fc.tuple(fc.integer(), fc.integer()), v => {
+        expect(checkPadding(v)).toBe(true);
+      })
+    );
+  });
+
+  test('should return false for any non numeric value', () => {
+    anyNonNumberIsBad(checkPadding);
+  });
+
+  test('should return false for any tuple of 2 values with non numeric value(s)', () => {
+    // [number, string] => false
+    fc.assert(
+      fc.property(fc.tuple(fc.integer(), fc.string()), v => {
+        expect(checkPadding(v)).toBe(false);
+      })
+    );
+
+    // [object, boolean] => false
+    fc.assert(
+      fc.property(fc.tuple(fc.object(), fc.boolean()), v => {
+        expect(checkPadding(v)).toBe(false);
       })
     );
   });

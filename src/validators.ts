@@ -1,5 +1,5 @@
 import { all, allPass, anyPass, test } from 'ramda';
-import { isArray, isNumber, isString, isNotEmpty } from 'ramda-adjunct';
+import { isArray, isNumber, isString, isPair, isNotEmpty } from 'ramda-adjunct';
 
 function checkValue(v: unknown): v is RangeSliderOptions['value'] {
   return anyPass([
@@ -49,6 +49,16 @@ function checkDirection(v: unknown): v is RangeSliderOptions['direction'] {
   ])(v);
 }
 
+function checkPadding(v: unknown): v is RangeSliderOptions['padding'] {
+  return anyPass([
+    isNumber,
+    allPass([
+      isPair,
+      all(isNumber)
+    ])
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -56,5 +66,6 @@ export {
   checkStep,
   checkOrientation,
   checkLocale,
-  checkDirection
+  checkDirection,
+  checkPadding,
 };
