@@ -70,6 +70,10 @@ function checkIsDisabled(v: unknown): v is RangeSliderOptions['isDisabled'] {
   return isBoolean(v);
 }
 
+function checkIsPolyfill(v: unknown): v is RangeSliderOptions['isPolyfill'] {
+  return isBoolean(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -79,5 +83,6 @@ export {
   checkLocale,
   checkDirection,
   checkPadding,
-  checkIsDisabled
+  checkIsDisabled,
+  checkIsPolyfill
 };

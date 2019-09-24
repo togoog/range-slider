@@ -8,7 +8,8 @@ import {
   checkLocale,
   checkDirection,
   checkPadding,
-  checkIsDisabled
+  checkIsDisabled,
+  checkIsPolyfill
 } from '../validators';
 
 //
@@ -277,5 +278,18 @@ describe('checkIsDisabled', () => {
 
   test('should return false for any non boolean value', () => {
     anyNonBooleanIsBad(checkIsDisabled);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkIsPolyfill', () => {
+  test('should return true for any boolean', () => {
+    expect(checkIsPolyfill(true)).toBe(true);
+    expect(checkIsPolyfill(false)).toBe(true);
+  });
+
+  test('should return false for any non boolean value', () => {
+    anyNonBooleanIsBad(checkIsPolyfill);
   });
 });
