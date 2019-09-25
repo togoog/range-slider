@@ -5,6 +5,7 @@ import {
   anyPass,
   test,
   values,
+  propIs
 } from 'ramda';
 import {
   isArray,
@@ -14,6 +15,7 @@ import {
   isBoolean,
   isPair,
   isNotEmpty,
+  isNull
 } from 'ramda-adjunct';
 
 function checkValue(v: unknown): v is RangeSliderOptions['value'] {
@@ -111,6 +113,30 @@ function checkCssClasses(v: unknown): v is RangeSliderOptions['cssClasses'] {
   ])(v);
 }
 
+function isHandleOptions(v: unknown): v is HandleOptions {
+  return allPass([
+    isObject,
+    propIs(Number, 'value'),
+    propIs(Boolean, 'isDraggable'),
+    propIs(Boolean, 'isDisabled'),
+    propIs(Boolean, 'respectConstrains'),
+    propIs(Boolean, 'snapToGrid'),
+  ])(v);
+}
+
+function checkHandles(v: unknown): v is RangeSliderOptions['handles'] {
+  return allPass([
+    isArray,
+    isNotEmpty,
+    all(
+      anyPass([
+        isNull,
+        isHandleOptions
+      ])
+    )
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -124,4 +150,5 @@ export {
   checkIsPolyfill,
   checkCssPrefix,
   checkCssClasses,
+  checkHandles,
 };

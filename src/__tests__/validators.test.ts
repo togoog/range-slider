@@ -12,6 +12,7 @@ import {
   checkIsPolyfill,
   checkCssPrefix,
   checkCssClasses,
+  checkHandles,
 } from '../validators';
 
 //
@@ -355,5 +356,42 @@ describe('checkCssClasses', () => {
     expect(checkCssClasses({ container: 'Foo-Bar_' })).toBe(true);
     expect(checkCssClasses({ container: 'foo&bar' })).toBe(false);
     expect(checkCssClasses({ container: 'foo=bar+' })).toBe(false);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkHandles', () => {
+  test('should be array of null or HandleOptions values', () => {
+    expect(checkHandles([])).toBe(false);
+    expect(checkHandles([null])).toBe(true);
+    expect(checkHandles([null, null])).toBe(true);
+    expect(checkHandles([null, {
+      value: 10,
+      isDraggable: true,
+      isDisabled: false,
+      respectConstrains: false,
+      snapToGrid: false
+    }])).toBe(true);
+
+    expect(checkHandles([null, {
+      value: 'foo',
+      isDraggable: true,
+      isDisabled: false,
+      respectConstrains: false,
+      snapToGrid: false
+    }])).toBe(false);
+
+    expect(checkHandles([null, {
+      value: 100,
+    }])).toBe(false);
+
+    expect(checkHandles([null, {
+      value: 100,
+      isDraggable: true,
+      isDisabled: false,
+      respectConstrains: null,
+      snapToGrid: false
+    }])).toBe(false);
   });
 });
