@@ -175,6 +175,30 @@ function checkTooltips(v: unknown): v is RangeSliderOptions['tooltips'] {
   ])(v);
 }
 
+function isIntervalOptions(v: unknown): v is IntervalOptions {
+  return allPass([
+    isObject,
+    propIs(Boolean, 'isVisible'),
+    propIs(Boolean, 'isDraggable'),
+    propIs(Boolean, 'isDisabled'),
+    propIs(Number, 'minLength'),
+    propIs(Number, 'maxLength'),
+  ])(v);
+}
+
+function checkIntervals(v: unknown): v is RangeSliderOptions['intervals'] {
+  return allPass([
+    isArray,
+    isNotEmpty,
+    all(
+      anyPass([
+        isBoolean,
+        isIntervalOptions
+      ])
+    )
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -190,4 +214,5 @@ export {
   checkCssClasses,
   checkHandles,
   checkTooltips,
+  checkIntervals
 };

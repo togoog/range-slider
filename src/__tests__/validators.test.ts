@@ -14,6 +14,7 @@ import {
   checkCssClasses,
   checkHandles,
   checkTooltips,
+  checkIntervals,
 } from '../validators';
 
 //
@@ -422,6 +423,43 @@ describe('checkTooltips', () => {
     expect(checkTooltips([true, {
       isVisible: 'foo',
       formatter: (v: string) => v,
+    }])).toBe(false);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkIntervals', () => {
+  test('should be array of boolean or IntervalOptions values', () => {
+    expect(checkIntervals([])).toBe(false);
+    expect(checkIntervals([true])).toBe(true);
+    expect(checkIntervals([true, false])).toBe(true);
+    expect(checkIntervals([true, {
+      isVisible: false,
+      isDraggable: true,
+      isDisabled: false,
+      minLength: 1,
+      maxLength: 100
+    }])).toBe(true);
+
+    expect(checkIntervals([null, {
+      isVisible: false,
+    }])).toBe(false);
+
+    expect(checkIntervals([true, {
+      isVisible: 'foo',
+      isDraggable: true,
+      isDisabled: false,
+      minLength: 1,
+      maxLength: 100
+    }])).toBe(false);
+
+    expect(checkIntervals([true, {
+      isVisible: true,
+      isDraggable: true,
+      isDisabled: false,
+      minLength: 'foo',
+      maxLength: 100
     }])).toBe(false);
   });
 });
