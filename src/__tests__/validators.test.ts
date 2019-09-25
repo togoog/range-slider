@@ -13,6 +13,7 @@ import {
   checkCssPrefix,
   checkCssClasses,
   checkHandles,
+  checkTooltips,
 } from '../validators';
 
 //
@@ -392,6 +393,35 @@ describe('checkHandles', () => {
       isDisabled: false,
       respectConstrains: null,
       snapToGrid: false
+    }])).toBe(false);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkTooltips', () => {
+  test('should be array of boolean or HandleOptions values', () => {
+    expect(checkTooltips([])).toBe(false);
+    expect(checkTooltips([true])).toBe(true);
+    expect(checkTooltips([true, false])).toBe(true);
+    expect(checkTooltips([true, {
+      isVisible: false,
+      formatter: (v: string) => v,
+    }])).toBe(true);
+
+    expect(checkTooltips([null, {
+      isVisible: false,
+      formatter: (v: string) => v,
+    }])).toBe(false);
+
+    expect(checkTooltips([true, {
+      isVisible: true,
+      formatter: 'foo',
+    }])).toBe(false);
+
+    expect(checkTooltips([true, {
+      isVisible: 'foo',
+      formatter: (v: string) => v,
     }])).toBe(false);
   });
 });

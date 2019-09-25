@@ -4,12 +4,14 @@ import {
   allPass,
   anyPass,
   test,
+  prop,
   values,
   propIs
 } from 'ramda';
 import {
   isArray,
   isObject,
+  isFunction,
   isNumber,
   isString,
   isBoolean,
@@ -137,6 +139,42 @@ function checkHandles(v: unknown): v is RangeSliderOptions['handles'] {
   ])(v);
 }
 
+function isFormatter(v: unknown): v is Formatter {
+  return anyPass([
+    isFunction,
+    allPass([
+      isObject,
+      propIs(Number, 'decimals'),
+      propIs(String, 'prefix'),
+      propIs(String, 'suffix')
+    ])
+  ])(v);
+}
+
+function isTooltipOptions(v: unknown): v is TooltipOptions {
+  return allPass([
+    isObject,
+    propIs(Boolean, 'isVisible'),
+    pipe(
+      prop('formatter'),
+      isFormatter
+    )
+  ])(v);
+}
+
+function checkTooltips(v: unknown): v is RangeSliderOptions['tooltips'] {
+  return allPass([
+    isArray,
+    isNotEmpty,
+    all(
+      anyPass([
+        isBoolean,
+        isTooltipOptions
+      ])
+    )
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -151,4 +189,5 @@ export {
   checkCssPrefix,
   checkCssClasses,
   checkHandles,
+  checkTooltips,
 };
