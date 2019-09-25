@@ -10,7 +10,8 @@ import {
   checkPadding,
   checkIsDisabled,
   checkIsPolyfill,
-  checkCssPrefix
+  checkCssPrefix,
+  checkCssClasses,
 } from '../validators';
 
 //
@@ -321,5 +322,38 @@ describe('checkCssPrefix', () => {
     expect(checkCssPrefix('_foo')).toBe(false);
     expect(checkCssPrefix('foo!')).toBe(false);
     expect(checkCssPrefix('#foo')).toBe(false);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkCssClasses', () => {
+  test('css class should be string', () => {
+    expect(checkCssClasses({ container: 'foo' })).toBe(true);
+    expect(checkCssClasses({ container: 'Foo' })).toBe(true);
+    expect(checkCssClasses({ container: '  Foo  ' })).toBe(false);
+    expect(checkCssClasses({ container: 123 })).toBe(false);
+    expect(checkCssClasses({ container: true })).toBe(false);
+    expect(checkCssClasses({ container: false })).toBe(false);
+    expect(checkCssClasses({ container: ['foo'] })).toBe(false);
+  });
+
+  test('css class should start with a letter', () => {
+    expect(checkCssClasses({ container: 'foo' })).toBe(true);
+    expect(checkCssClasses({ container: 'Foo' })).toBe(true);
+    expect(checkCssClasses({ container: '123foo' })).toBe(false);
+    expect(checkCssClasses({ container: '123' })).toBe(false);
+    expect(checkCssClasses({ container: '-foo' })).toBe(false);
+    expect(checkCssClasses({ container: '_foo' })).toBe(false);
+    expect(checkCssClasses({ container: '#foo' })).toBe(false);
+  });
+
+  test('css class may contain letters, numbers, -, _', () => {
+    expect(checkCssClasses({container: 'foo-bar'})).toBe(true);
+    expect(checkCssClasses({container: 'foo-123'})).toBe(true);
+    expect(checkCssClasses({container: 'foo-bar-'})).toBe(true);
+    expect(checkCssClasses({container: 'Foo-Bar_'})).toBe(true);
+    expect(checkCssClasses({container: 'foo&bar'})).toBe(false);
+    expect(checkCssClasses({container: 'foo=bar+'})).toBe(false);
   });
 });

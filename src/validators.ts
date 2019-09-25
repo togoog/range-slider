@@ -4,15 +4,17 @@ import {
   allPass,
   anyPass,
   test,
-  trim
+  trim,
+  values,
 } from 'ramda';
 import {
   isArray,
+  isObject,
   isNumber,
   isString,
   isBoolean,
   isPair,
-  isNotEmpty
+  isNotEmpty,
 } from 'ramda-adjunct';
 
 function checkValue(v: unknown): v is RangeSliderOptions['value'] {
@@ -107,6 +109,21 @@ function checkCssPrefix(v: unknown): v is RangeSliderOptions['cssPrefix'] {
   ])(v);
 }
 
+function checkCssClasses(v: unknown): v is RangeSliderOptions['cssClasses'] {
+  return allPass([
+    isObject,
+    pipe(
+      values,
+      all(
+        allPass([
+          isString,
+          test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g),
+        ])
+      )
+    )
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -118,5 +135,6 @@ export {
   checkPadding,
   checkIsDisabled,
   checkIsPolyfill,
-  checkCssPrefix
+  checkCssPrefix,
+  checkCssClasses,
 };
