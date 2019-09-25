@@ -199,6 +199,15 @@ function checkIntervals(v: unknown): v is RangeSliderOptions['intervals'] {
   ])(v);
 }
 
+function checkGrid(v: unknown): v is RangeSliderOptions['grid'] {
+  return allPass([
+    isObject,
+    propIs(Boolean, 'isVisible'),
+    propIs(Function, 'formatter'),
+    propIs(Function, 'generator'),
+  ])(v);
+}
+
 export {
   checkValue,
   checkMin,
@@ -214,5 +223,6 @@ export {
   checkCssClasses,
   checkHandles,
   checkTooltips,
-  checkIntervals
+  checkIntervals,
+  checkGrid,
 };

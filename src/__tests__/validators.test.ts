@@ -15,6 +15,7 @@ import {
   checkHandles,
   checkTooltips,
   checkIntervals,
+  checkGrid,
 } from '../validators';
 
 //
@@ -461,5 +462,35 @@ describe('checkIntervals', () => {
       minLength: 'foo',
       maxLength: 100
     }])).toBe(false);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkGrid', () => {
+  test('should be valid GridOptions', () => {
+    expect(checkGrid({
+      isVisible: false,
+      formatter: (v: string) => v,
+      generator: () => [1, 2, 3]
+    })).toBe(true);
+
+    expect(checkGrid({
+      isVisible: 'foo',
+      formatter: (v: string) => v,
+      generator: () => [1, 2, 3]
+    })).toBe(false);
+
+    expect(checkGrid({
+      isVisible: false,
+      formatter: 'foo',
+      generator: () => [1, 2, 3]
+    })).toBe(false);
+
+    expect(checkGrid({
+      isVisible: false,
+      formatter: (v: string) => v,
+      generator: 'foo'
+    })).toBe(false);
   });
 });
