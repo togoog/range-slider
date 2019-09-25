@@ -186,7 +186,7 @@ describe('checkOrientation', () => {
   test('should return true for "horizontal" & "vertical" strings', () => {
     expect(checkOrientation('horizontal')).toBe(true);
     expect(checkOrientation('vertical')).toBe(true);
-    expect(checkOrientation('  vertical  ')).toBe(true);
+    expect(checkOrientation('  vertical  ')).toBe(false);
   });
 
   test('should return false for any other string', () => {
@@ -204,7 +204,7 @@ describe('checkLocale', () => {
   test('should return true for strings that match locale pattern (aa-AA)', () => {
     expect(checkLocale('ru-RU')).toBe(true);
     expect(checkLocale('en-US')).toBe(true);
-    expect(checkLocale('  de-DE ')).toBe(true);
+    expect(checkLocale('  de-DE ')).toBe(false);
   });
 
   test('should return false for any string that do not match the locale pattern (aa-AA)', () => {
@@ -222,7 +222,7 @@ describe('checkDirection', () => {
   test('should return true for "ltr" & "rtl" strings', () => {
     expect(checkDirection('ltr')).toBe(true);
     expect(checkDirection('rtl')).toBe(true);
-    expect(checkDirection('  ltr ')).toBe(true);
+    expect(checkDirection('  ltr ')).toBe(false);
   });
 
   test('should return false for any other strings', () => {
@@ -304,7 +304,6 @@ describe('checkCssPrefix', () => {
     expect(checkCssPrefix('F')).toBe(true);
     expect(checkCssPrefix('Foo')).toBe(true);
     expect(checkCssPrefix('foo')).toBe(true);
-    expect(checkCssPrefix('  foo  ')).toBe(true);
     expect(checkCssPrefix('FooBar')).toBe(true);
     expect(checkCssPrefix('foo-')).toBe(true);
     expect(checkCssPrefix('foo_')).toBe(true);
@@ -314,6 +313,7 @@ describe('checkCssPrefix', () => {
   });
 
   test('should return false for any string that does not match css prefix pattern', () => {
+    expect(checkCssPrefix('  foo  ')).toBe(false);
     expect(checkCssPrefix('1')).toBe(false);
     expect(checkCssPrefix('1-')).toBe(false);
     expect(checkCssPrefix('1foo')).toBe(false);
@@ -349,11 +349,11 @@ describe('checkCssClasses', () => {
   });
 
   test('css class may contain letters, numbers, -, _', () => {
-    expect(checkCssClasses({container: 'foo-bar'})).toBe(true);
-    expect(checkCssClasses({container: 'foo-123'})).toBe(true);
-    expect(checkCssClasses({container: 'foo-bar-'})).toBe(true);
-    expect(checkCssClasses({container: 'Foo-Bar_'})).toBe(true);
-    expect(checkCssClasses({container: 'foo&bar'})).toBe(false);
-    expect(checkCssClasses({container: 'foo=bar+'})).toBe(false);
+    expect(checkCssClasses({ container: 'foo-bar' })).toBe(true);
+    expect(checkCssClasses({ container: 'foo-123' })).toBe(true);
+    expect(checkCssClasses({ container: 'foo-bar-' })).toBe(true);
+    expect(checkCssClasses({ container: 'Foo-Bar_' })).toBe(true);
+    expect(checkCssClasses({ container: 'foo&bar' })).toBe(false);
+    expect(checkCssClasses({ container: 'foo=bar+' })).toBe(false);
   });
 });

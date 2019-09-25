@@ -4,7 +4,6 @@ import {
   allPass,
   anyPass,
   test,
-  trim,
   values,
 } from 'ramda';
 import {
@@ -43,10 +42,7 @@ function checkStep(v: unknown): v is RangeSliderOptions['step'] {
 function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
   return allPass([
     isString,
-    pipe(
-      trim,
-      test(/^(horizontal|vertical)$/g)
-    )
+    test(/^(horizontal|vertical)$/g)
   ])(v);
 }
 
@@ -57,20 +53,14 @@ function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
 function checkLocale(v: unknown): v is RangeSliderOptions['locale'] {
   return allPass([
     isString,
-    pipe(
-      trim,
-      test(/^[a-z]{2}-[A-Z]{2}$/g)
-    )
+    test(/^[a-z]{2}-[A-Z]{2}$/g)
   ])(v);
 }
 
 function checkDirection(v: unknown): v is RangeSliderOptions['direction'] {
   return allPass([
     isString,
-    pipe(
-      trim,
-      test(/^(ltr|rtl)$/g)
-    )
+    test(/^(ltr|rtl)$/g)
   ])(v);
 }
 
@@ -102,10 +92,7 @@ function checkIsPolyfill(v: unknown): v is RangeSliderOptions['isPolyfill'] {
 function checkCssPrefix(v: unknown): v is RangeSliderOptions['cssPrefix'] {
   return allPass([
     isString,
-    pipe(
-      trim,
-      test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g)
-    )
+    test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g)
   ])(v);
 }
 
