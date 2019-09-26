@@ -6,7 +6,7 @@ import {
   test,
   prop,
   values,
-  propIs
+  propIs,
 } from 'ramda';
 import {
   isArray,
@@ -17,8 +17,58 @@ import {
   isBoolean,
   isPair,
   isNotEmpty,
-  isNull
+  isNull,
 } from 'ramda-adjunct';
+import { Either, Left, Right, } from 'purify-ts/Either';
+
+//
+// ─── VALIDATORS ─────────────────────────────────────────────────────────────────
+//
+
+function isHandleOptions(v: unknown): v is HandleOptions {
+  return allPass([
+    isObject,
+    propIs(Number, 'value'),
+    propIs(Boolean, 'isDraggable'),
+    propIs(Boolean, 'isDisabled'),
+    propIs(Boolean, 'respectConstrains'),
+    propIs(Boolean, 'snapToGrid'),
+  ])(v);
+}
+
+function isFormatter(v: unknown): v is Formatter {
+  return anyPass([
+    isFunction,
+    allPass([
+      isObject,
+      propIs(Number, 'decimals'),
+      propIs(String, 'prefix'),
+      propIs(String, 'suffix'),
+    ]),
+  ])(v);
+}
+
+function isTooltipOptions(v: unknown): v is TooltipOptions {
+  return allPass([
+    isObject,
+    propIs(Boolean, 'isVisible'),
+    pipe(
+      prop('formatter'),
+      isFormatter
+    ),
+  ])(v);
+}
+
+function isIntervalOptions(v: unknown): v is IntervalOptions {
+  return allPass([
+    isObject,
+    propIs(Boolean, 'isVisible'),
+    propIs(Boolean, 'isDraggable'),
+    propIs(Boolean, 'isDisabled'),
+    propIs(Number, 'minLength'),
+    propIs(Number, 'maxLength'),
+  ])(v);
+}
 
 function checkValue(v: unknown): v is RangeSliderOptions['value'] {
   return anyPass([
@@ -26,8 +76,8 @@ function checkValue(v: unknown): v is RangeSliderOptions['value'] {
     allPass([
       isArray,
       isNotEmpty,
-      all(isNumber)
-    ])
+      all(isNumber),
+    ]),
   ])(v);
 }
 
@@ -46,7 +96,7 @@ function checkStep(v: unknown): v is RangeSliderOptions['step'] {
 function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
   return allPass([
     isString,
-    test(/^(horizontal|vertical)$/g)
+    test(/^(horizontal|vertical)$/g),
   ])(v);
 }
 
@@ -57,14 +107,14 @@ function checkOrientation(v: unknown): v is RangeSliderOptions['orientation'] {
 function checkLocale(v: unknown): v is RangeSliderOptions['locale'] {
   return allPass([
     isString,
-    test(/^[a-z]{2}-[A-Z]{2}$/g)
+    test(/^[a-z]{2}-[A-Z]{2}$/g),
   ])(v);
 }
 
 function checkDirection(v: unknown): v is RangeSliderOptions['direction'] {
   return allPass([
     isString,
-    test(/^(ltr|rtl)$/g)
+    test(/^(ltr|rtl)$/g),
   ])(v);
 }
 
@@ -73,8 +123,8 @@ function checkPadding(v: unknown): v is RangeSliderOptions['padding'] {
     isNumber,
     allPass([
       isPair,
-      all(isNumber)
-    ])
+      all(isNumber),
+    ]),
   ])(v);
 }
 
@@ -96,10 +146,17 @@ function checkIsPolyfill(v: unknown): v is RangeSliderOptions['isPolyfill'] {
 function checkCssPrefix(v: unknown): v is RangeSliderOptions['cssPrefix'] {
   return allPass([
     isString,
-    test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g)
+    test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g),
   ])(v);
 }
 
+/**
+ * cssClass should be string;
+ * start with letter;
+ * has length >= 1;
+ * contain letters, numbers, -, _;
+ * @param v value to check
+ */
 function checkCssClasses(v: unknown): v is RangeSliderOptions['cssClasses'] {
   return allPass([
     isObject,
@@ -111,18 +168,7 @@ function checkCssClasses(v: unknown): v is RangeSliderOptions['cssClasses'] {
           test(/^[a-zA-Z]+[a-zA-Z0-9\-_]*$/g),
         ])
       )
-    )
-  ])(v);
-}
-
-function isHandleOptions(v: unknown): v is HandleOptions {
-  return allPass([
-    isObject,
-    propIs(Number, 'value'),
-    propIs(Boolean, 'isDraggable'),
-    propIs(Boolean, 'isDisabled'),
-    propIs(Boolean, 'respectConstrains'),
-    propIs(Boolean, 'snapToGrid'),
+    ),
   ])(v);
 }
 
@@ -133,32 +179,9 @@ function checkHandles(v: unknown): v is RangeSliderOptions['handles'] {
     all(
       anyPass([
         isNull,
-        isHandleOptions
+        isHandleOptions,
       ])
-    )
-  ])(v);
-}
-
-function isFormatter(v: unknown): v is Formatter {
-  return anyPass([
-    isFunction,
-    allPass([
-      isObject,
-      propIs(Number, 'decimals'),
-      propIs(String, 'prefix'),
-      propIs(String, 'suffix')
-    ])
-  ])(v);
-}
-
-function isTooltipOptions(v: unknown): v is TooltipOptions {
-  return allPass([
-    isObject,
-    propIs(Boolean, 'isVisible'),
-    pipe(
-      prop('formatter'),
-      isFormatter
-    )
+    ),
   ])(v);
 }
 
@@ -169,20 +192,9 @@ function checkTooltips(v: unknown): v is RangeSliderOptions['tooltips'] {
     all(
       anyPass([
         isBoolean,
-        isTooltipOptions
+        isTooltipOptions,
       ])
-    )
-  ])(v);
-}
-
-function isIntervalOptions(v: unknown): v is IntervalOptions {
-  return allPass([
-    isObject,
-    propIs(Boolean, 'isVisible'),
-    propIs(Boolean, 'isDraggable'),
-    propIs(Boolean, 'isDisabled'),
-    propIs(Number, 'minLength'),
-    propIs(Number, 'maxLength'),
+    ),
   ])(v);
 }
 
@@ -193,9 +205,9 @@ function checkIntervals(v: unknown): v is RangeSliderOptions['intervals'] {
     all(
       anyPass([
         isBoolean,
-        isIntervalOptions
+        isIntervalOptions,
       ])
-    )
+    ),
   ])(v);
 }
 
@@ -206,6 +218,9 @@ function checkGrid(v: unknown): v is RangeSliderOptions['grid'] {
     propIs(Function, 'formatter'),
     propIs(Function, 'generator'),
   ])(v);
+}
+
+function validateRangeSliderOptions(v: unknown): Either<Error[], RangeSliderOptions> {
 }
 
 export {
@@ -225,4 +240,5 @@ export {
   checkTooltips,
   checkIntervals,
   checkGrid,
+  validateRangeSliderOptions,
 };
