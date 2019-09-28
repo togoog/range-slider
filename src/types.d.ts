@@ -1,75 +1,20 @@
-type FormatterOptions = {
-  decimals: number;
-  prefix: string;
-  suffix: string;
-};
-
-type Formatter = Function | FormatterOptions;
-
-type GridOptions = {
-  isVisible: boolean;
-  formatter: Formatter;
-  generator: Function;
-};
-
-type HandleOptions = {
-  value: number;
-  isDraggable: boolean;
-  isDisabled: boolean;
-  respectConstrains: boolean;
-  snapToGrid: boolean;
-};
-
-type IntervalOptions = {
-  isVisible: boolean;
-  isDraggable: boolean;
-  isDisabled: boolean;
-  minLength: number;
-  maxLength: number;
-};
-
-type TooltipOptions = {
-  isVisible: boolean;
-  formatter: Formatter;
-};
-
 type RangeSliderOptions = {
-  value: number | number[];
+  value: number | [number, number];
   min: number;
   max: number;
   step: number;
   orientation: 'horizontal' | 'vertical';
-  locale: string;
-  direction: 'ltr' | 'rtl';
-  padding: number | [number, number];
-  isDisabled: boolean;
-  isPolyfill: boolean;
-  cssPrefix: string;
-  cssClasses: {
-    container: string;
-    isHorizontal: string;
-    isVertical: string;
-    isDraggable: string;
-    isDragged: string;
-    isActive: string;
-    isDisabled: string;
-  };
-  handles: (null | HandleOptions)[];
-  tooltips: (boolean | TooltipOptions)[];
-  intervals: (boolean | IntervalOptions)[];
-  grid: GridOptions;
+  tooltips: boolean | [boolean, boolean];
 };
 
-type RangeSliderAttributes = {
-  [key in keyof Partial<RangeSliderOptions>]: string;
-};
+type OptionsKey = keyof RangeSliderOptions;
 
-interface RangeSlider {
-  get(): number | Array<number | [number, number]>;
-  set(key: string, value: unknown): void;
-  toString(): string;
-  reset(): void;
-  destroy(): void;
+interface RangeSliderPlugin {
+  get<T extends OptionsKey>(key: T): RangeSliderOptions[T];
+  set<T extends OptionsKey>(
+    key: T,
+    value: RangeSliderOptions[T],
+  ): RangeSliderPlugin;
 }
 
 type Events = {
