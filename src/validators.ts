@@ -1,4 +1,4 @@
-import { all, allPass, partial } from 'ramda';
+import { all, allPass, partial, not } from 'ramda';
 import { isNotObject, isPair } from 'ramda-adjunct';
 import { Either, Left, Right } from 'purify-ts/Either';
 
@@ -111,55 +111,37 @@ function isPairOfBooleans(v: unknown): v is [boolean, boolean] {
 //
 
 function checkValue(v: unknown): Either<Error, RangeSliderOptions['value']> {
-  if (isNumber(v) || isPairOfNumbers(v)) {
-    return Right(v);
-  }
-
-  return Left(errRSONotValidValue(v));
+  return isNumber(v) || isPairOfNumbers(v)
+    ? Right(v)
+    : Left(errRSONotValidValue(v));
 }
 
 function checkMin(v: unknown): Either<Error, RangeSliderOptions['min']> {
-  if (isNumber(v)) {
-    return Right(v);
-  }
-
-  return Left(errRSONotValidMin(v));
+  return isNumber(v) ? Right(v) : Left(errRSONotValidMin(v));
 }
 
 function checkMax(v: unknown): Either<Error, RangeSliderOptions['max']> {
-  if (isNumber(v)) {
-    return Right(v);
-  }
-
-  return Left(errRSONotValidMax(v));
+  return isNumber(v) ? Right(v) : Left(errRSONotValidMax(v));
 }
 
 function checkStep(v: unknown): Either<Error, RangeSliderOptions['step']> {
-  if (isNumber(v)) {
-    return Right(v);
-  }
-
-  return Left(errRSONotValidStep(v));
+  return isNumber(v) ? Right(v) : Left(errRSONotValidStep(v));
 }
 
 function checkOrientation(
   v: unknown,
 ): Either<Error, RangeSliderOptions['orientation']> {
-  if (v === 'horizontal' || v === 'vertical') {
-    return Right(v);
-  }
-
-  return Left(errRSONotValidOrientation(v));
+  return v === 'horizontal' || v === 'vertical'
+    ? Right(v)
+    : Left(errRSONotValidOrientation(v));
 }
 
 function checkTooltips(
   v: unknown,
 ): Either<Error, RangeSliderOptions['tooltips']> {
-  if (isBoolean(v) || isPairOfBooleans(v)) {
-    return Right(v);
-  }
-
-  return Left(errRSONotValidTooltips(v));
+  return isBoolean(v) || isPairOfBooleans(v)
+    ? Right(v)
+    : Left(errRSONotValidTooltips(v));
 }
 
 function checkRangeSliderOptions(
@@ -182,11 +164,7 @@ function checkRangeSliderOptions(
 
   const errors = Either.lefts(validationResults);
 
-  if (errors) {
-    return Left(errors);
-  }
-
-  return Right(options);
+  return not(errors) ? Right(options) : Left(errors);
 }
 
 export {
