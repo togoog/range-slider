@@ -33,7 +33,6 @@ describe('$', () => {
     expect(getElements).not.toThrow();
     expect(getElements().isNothing()).toBe(true);
   });
-});
 
   test('Should return none if selector is empty string', () => {
     document.body.innerHTML = `
