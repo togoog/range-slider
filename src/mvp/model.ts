@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import { all, not, mergeAll } from 'ramda';
-import { err, inRangeInclusive } from '../helpers';
+import { mergeAll } from 'ramda';
+import { isFalse } from 'ramda-adjunct';
+import { err } from '../errors';
 
 //
 // ─── ERRORS ─────────────────────────────────────────────────────────────────────
@@ -25,14 +26,19 @@ function errMinIsGreaterThanMax(): Error {
 //
 
 function checkIfValueInRange({ min, max, value }: ModelData): Maybe<Error> {
-  const isInRange = all(inRangeInclusive(min, max), value);
-  return not(isInRange) ? Just(errValueNotInRange()) : Nothing;
+  // prettier-ignore
+  const isNotInRange = value
+    .map(v => v >= min && v <= max)
+    .filter(isFalse)
+    .length > 0;
+
+  return isNotInRange ? Just(errValueNotInRange()) : Nothing;
 }
 
 function checkIfStepInRange({ min, max, step }: ModelData): Maybe<Error> {
   const threshold = max - min;
-  const isInRange = step >= 0 && step <= threshold;
-  return not(isInRange) ? Just(errStepNotInRange()) : Nothing;
+  const isNotInRange = step < 0 || step > threshold;
+  return isNotInRange ? Just(errStepNotInRange()) : Nothing;
 }
 
 function checkIfMinIsLessThanOrEqualToMax({
