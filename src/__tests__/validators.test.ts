@@ -1,13 +1,13 @@
 import * as fc from 'fast-check';
 import {
   //errors
-  errRSONotValidValue,
-  errRSONotValidMin,
-  errRSONotValidMax,
-  errRSONotValidStep,
-  errRSONotValidOrientation,
-  errRSONotValidTooltips,
-  errRSOIncorrectShape,
+  errNotValidValue,
+  errNotValidMin,
+  errNotValidMax,
+  errNotValidStep,
+  errNotValidOrientation,
+  errNotValidTooltips,
+  errIncorrectShape,
   // validators
   checkValue,
   checkMin,
@@ -17,49 +17,50 @@ import {
   checkTooltips,
   checkRangeSliderOptions,
 } from '../validators';
-import { Right, Left } from 'purify-ts/Either';
+import { Just, Nothing } from 'purify-ts/Maybe';
+import { Left, Right } from 'purify-ts/Either';
 
 describe('checkValue', () => {
   test('numbers are valid', () => {
-    expect(checkValue(0)).toEqual(Right(0));
-    expect(checkValue(-10)).toEqual(Right(-10));
-    expect(checkValue(10)).toEqual(Right(10));
-    expect(checkValue(3.1415)).toEqual(Right(3.1415));
+    expect(checkValue(0)).toEqual(Nothing);
+    expect(checkValue(-10)).toEqual(Nothing);
+    expect(checkValue(10)).toEqual(Nothing);
+    expect(checkValue(3.1415)).toEqual(Nothing);
   });
 
   test('pair of numbers is valid', () => {
-    expect(checkValue([0, 0])).toEqual(Right([0, 0]));
-    expect(checkValue([-10, -50])).toEqual(Right([-10, -50]));
-    expect(checkValue([10, 50])).toEqual(Right([10, 50]));
-    expect(checkValue([3.1415, 100])).toEqual(Right([3.1415, 100]));
+    expect(checkValue([0, 0])).toEqual(Nothing);
+    expect(checkValue([-10, -50])).toEqual(Nothing);
+    expect(checkValue([10, 50])).toEqual(Nothing);
+    expect(checkValue([3.1415, 100])).toEqual(Nothing);
   });
 
   test('non numeric value is not valid', () => {
-    expect(checkValue('foo')).toEqual(Left(errRSONotValidValue('foo')));
-    expect(checkValue(true)).toEqual(Left(errRSONotValidValue(true)));
-    expect(checkValue(false)).toEqual(Left(errRSONotValidValue(false)));
-    expect(checkValue(null)).toEqual(Left(errRSONotValidValue(null)));
-    expect(checkValue(undefined)).toEqual(Left(errRSONotValidValue(undefined)));
-    expect(checkValue(NaN)).toEqual(Left(errRSONotValidValue(NaN)));
+    expect(checkValue('foo')).toEqual(Just(errNotValidValue('foo')));
+    expect(checkValue(true)).toEqual(Just(errNotValidValue(true)));
+    expect(checkValue(false)).toEqual(Just(errNotValidValue(false)));
+    expect(checkValue(null)).toEqual(Just(errNotValidValue(null)));
+    expect(checkValue(undefined)).toEqual(Just(errNotValidValue(undefined)));
+    expect(checkValue(NaN)).toEqual(Just(errNotValidValue(NaN)));
     expect(checkValue({ foo: 123 })).toEqual(
-      Left(errRSONotValidValue({ foo: 123 })),
+      Just(errNotValidValue({ foo: 123 })),
     );
   });
 
   test('non numeric pair is not valid', () => {
     expect(checkValue(['foo', 'bar'])).toEqual(
-      Left(errRSONotValidValue(['foo', 'bar'])),
+      Just(errNotValidValue(['foo', 'bar'])),
     );
     expect(checkValue([null, undefined])).toEqual(
-      Left(errRSONotValidValue([null, undefined])),
+      Just(errNotValidValue([null, undefined])),
     );
     expect(checkValue([true, false])).toEqual(
-      Left(errRSONotValidValue([true, false])),
+      Just(errNotValidValue([true, false])),
     );
     expect(checkValue([123, 'bar'])).toEqual(
-      Left(errRSONotValidValue([123, 'bar'])),
+      Just(errNotValidValue([123, 'bar'])),
     );
-    expect(checkValue([NaN, 0])).toEqual(Left(errRSONotValidValue([NaN, 0])));
+    expect(checkValue([NaN, 0])).toEqual(Just(errNotValidValue([NaN, 0])));
   });
 });
 
@@ -67,22 +68,20 @@ describe('checkValue', () => {
 
 describe('checkMin', () => {
   test('numbers are valid', () => {
-    expect(checkMin(0)).toEqual(Right(0));
-    expect(checkMin(-10)).toEqual(Right(-10));
-    expect(checkMin(10)).toEqual(Right(10));
-    expect(checkMin(3.1415)).toEqual(Right(3.1415));
+    expect(checkMin(0)).toEqual(Nothing);
+    expect(checkMin(-10)).toEqual(Nothing);
+    expect(checkMin(10)).toEqual(Nothing);
+    expect(checkMin(3.1415)).toEqual(Nothing);
   });
 
   test('non numeric values are not valid', () => {
-    expect(checkMin('foo')).toEqual(Left(errRSONotValidMin('foo')));
-    expect(checkMin(true)).toEqual(Left(errRSONotValidMin(true)));
-    expect(checkMin(false)).toEqual(Left(errRSONotValidMin(false)));
-    expect(checkMin(null)).toEqual(Left(errRSONotValidMin(null)));
-    expect(checkMin(undefined)).toEqual(Left(errRSONotValidMin(undefined)));
-    expect(checkMin(NaN)).toEqual(Left(errRSONotValidMin(NaN)));
-    expect(checkMin({ foo: 123 })).toEqual(
-      Left(errRSONotValidMin({ foo: 123 })),
-    );
+    expect(checkMin('foo')).toEqual(Just(errNotValidMin('foo')));
+    expect(checkMin(true)).toEqual(Just(errNotValidMin(true)));
+    expect(checkMin(false)).toEqual(Just(errNotValidMin(false)));
+    expect(checkMin(null)).toEqual(Just(errNotValidMin(null)));
+    expect(checkMin(undefined)).toEqual(Just(errNotValidMin(undefined)));
+    expect(checkMin(NaN)).toEqual(Just(errNotValidMin(NaN)));
+    expect(checkMin({ foo: 123 })).toEqual(Just(errNotValidMin({ foo: 123 })));
   });
 });
 
@@ -90,22 +89,20 @@ describe('checkMin', () => {
 
 describe('checkMax', () => {
   test('numbers are valid', () => {
-    expect(checkMax(0)).toEqual(Right(0));
-    expect(checkMax(-10)).toEqual(Right(-10));
-    expect(checkMax(10)).toEqual(Right(10));
-    expect(checkMax(3.1415)).toEqual(Right(3.1415));
+    expect(checkMax(0)).toEqual(Nothing);
+    expect(checkMax(-10)).toEqual(Nothing);
+    expect(checkMax(10)).toEqual(Nothing);
+    expect(checkMax(3.1415)).toEqual(Nothing);
   });
 
   test('non numeric values are not valid', () => {
-    expect(checkMax('foo')).toEqual(Left(errRSONotValidMax('foo')));
-    expect(checkMax(true)).toEqual(Left(errRSONotValidMax(true)));
-    expect(checkMax(false)).toEqual(Left(errRSONotValidMax(false)));
-    expect(checkMax(null)).toEqual(Left(errRSONotValidMax(null)));
-    expect(checkMax(undefined)).toEqual(Left(errRSONotValidMax(undefined)));
-    expect(checkMax(NaN)).toEqual(Left(errRSONotValidMax(NaN)));
-    expect(checkMax({ foo: 123 })).toEqual(
-      Left(errRSONotValidMax({ foo: 123 })),
-    );
+    expect(checkMax('foo')).toEqual(Just(errNotValidMax('foo')));
+    expect(checkMax(true)).toEqual(Just(errNotValidMax(true)));
+    expect(checkMax(false)).toEqual(Just(errNotValidMax(false)));
+    expect(checkMax(null)).toEqual(Just(errNotValidMax(null)));
+    expect(checkMax(undefined)).toEqual(Just(errNotValidMax(undefined)));
+    expect(checkMax(NaN)).toEqual(Just(errNotValidMax(NaN)));
+    expect(checkMax({ foo: 123 })).toEqual(Just(errNotValidMax({ foo: 123 })));
   });
 });
 
@@ -113,21 +110,21 @@ describe('checkMax', () => {
 
 describe('checkStep', () => {
   test('numbers are valid', () => {
-    expect(checkStep(0)).toEqual(Right(0));
-    expect(checkStep(-10)).toEqual(Right(-10));
-    expect(checkStep(10)).toEqual(Right(10));
-    expect(checkStep(3.1415)).toEqual(Right(3.1415));
+    expect(checkStep(0)).toEqual(Nothing);
+    expect(checkStep(-10)).toEqual(Nothing);
+    expect(checkStep(10)).toEqual(Nothing);
+    expect(checkStep(3.1415)).toEqual(Nothing);
   });
 
   test('non numeric values are not valid', () => {
-    expect(checkStep('foo')).toEqual(Left(errRSONotValidStep('foo')));
-    expect(checkStep(true)).toEqual(Left(errRSONotValidStep(true)));
-    expect(checkStep(false)).toEqual(Left(errRSONotValidStep(false)));
-    expect(checkStep(null)).toEqual(Left(errRSONotValidStep(null)));
-    expect(checkStep(undefined)).toEqual(Left(errRSONotValidStep(undefined)));
-    expect(checkStep(NaN)).toEqual(Left(errRSONotValidStep(NaN)));
+    expect(checkStep('foo')).toEqual(Just(errNotValidStep('foo')));
+    expect(checkStep(true)).toEqual(Just(errNotValidStep(true)));
+    expect(checkStep(false)).toEqual(Just(errNotValidStep(false)));
+    expect(checkStep(null)).toEqual(Just(errNotValidStep(null)));
+    expect(checkStep(undefined)).toEqual(Just(errNotValidStep(undefined)));
+    expect(checkStep(NaN)).toEqual(Just(errNotValidStep(NaN)));
     expect(checkStep({ foo: 123 })).toEqual(
-      Left(errRSONotValidStep({ foo: 123 })),
+      Just(errNotValidStep({ foo: 123 })),
     );
   });
 });
@@ -136,21 +133,19 @@ describe('checkStep', () => {
 
 describe('checkOrientation', () => {
   test('only "horizontal" & "vertical" values are valid', () => {
-    expect(checkOrientation('horizontal')).toEqual(Right('horizontal'));
-    expect(checkOrientation('vertical')).toEqual(Right('vertical'));
+    expect(checkOrientation('horizontal')).toEqual(Nothing);
+    expect(checkOrientation('vertical')).toEqual(Nothing);
     expect(checkOrientation('  vertical  ')).toEqual(
-      Left(errRSONotValidOrientation('  vertical  ')),
+      Just(errNotValidOrientation('  vertical  ')),
     );
     expect(checkOrientation('foo')).toEqual(
-      Left(errRSONotValidOrientation('foo')),
+      Just(errNotValidOrientation('foo')),
     );
-    expect(checkOrientation(123)).toEqual(Left(errRSONotValidOrientation(123)));
-    expect(checkOrientation(NaN)).toEqual(Left(errRSONotValidOrientation(NaN)));
-    expect(checkOrientation(null)).toEqual(
-      Left(errRSONotValidOrientation(null)),
-    );
+    expect(checkOrientation(123)).toEqual(Just(errNotValidOrientation(123)));
+    expect(checkOrientation(NaN)).toEqual(Just(errNotValidOrientation(NaN)));
+    expect(checkOrientation(null)).toEqual(Just(errNotValidOrientation(null)));
     expect(checkOrientation(undefined)).toEqual(
-      Left(errRSONotValidOrientation(undefined)),
+      Just(errNotValidOrientation(undefined)),
     );
   });
 });
@@ -159,41 +154,41 @@ describe('checkOrientation', () => {
 
 describe('checkTooltips', () => {
   test('booleans are valid', () => {
-    expect(checkTooltips(true)).toEqual(Right(true));
-    expect(checkTooltips(false)).toEqual(Right(false));
+    expect(checkTooltips(true)).toEqual(Nothing);
+    expect(checkTooltips(false)).toEqual(Nothing);
   });
 
   test('pair of booleans are valid', () => {
-    expect(checkTooltips([true, true])).toEqual(Right([true, true]));
-    expect(checkTooltips([true, false])).toEqual(Right([true, false]));
-    expect(checkTooltips([false, true])).toEqual(Right([false, true]));
-    expect(checkTooltips([false, false])).toEqual(Right([false, false]));
+    expect(checkTooltips([true, true])).toEqual(Nothing);
+    expect(checkTooltips([true, false])).toEqual(Nothing);
+    expect(checkTooltips([false, true])).toEqual(Nothing);
+    expect(checkTooltips([false, false])).toEqual(Nothing);
   });
 
   test('non boolean values are not valid', () => {
-    expect(checkTooltips('foo')).toEqual(Left(errRSONotValidTooltips('foo')));
-    expect(checkTooltips(null)).toEqual(Left(errRSONotValidTooltips(null)));
+    expect(checkTooltips('foo')).toEqual(Just(errNotValidTooltips('foo')));
+    expect(checkTooltips(null)).toEqual(Just(errNotValidTooltips(null)));
     expect(checkTooltips(undefined)).toEqual(
-      Left(errRSONotValidTooltips(undefined)),
+      Just(errNotValidTooltips(undefined)),
     );
-    expect(checkTooltips(123)).toEqual(Left(errRSONotValidTooltips(123)));
+    expect(checkTooltips(123)).toEqual(Just(errNotValidTooltips(123)));
     expect(checkTooltips({ foo: true })).toEqual(
-      Left(errRSONotValidTooltips({ foo: true })),
+      Just(errNotValidTooltips({ foo: true })),
     );
   });
 
   test('any pair of non boolean values is not valid', () => {
     expect(checkTooltips(['abc', true])).toEqual(
-      Left(errRSONotValidTooltips(['abc', true])),
+      Just(errNotValidTooltips(['abc', true])),
     );
     expect(checkTooltips([true, 123])).toEqual(
-      Left(errRSONotValidTooltips([true, 123])),
+      Just(errNotValidTooltips([true, 123])),
     );
     expect(checkTooltips(['foo', null])).toEqual(
-      Left(errRSONotValidTooltips(['foo', null])),
+      Just(errNotValidTooltips(['foo', null])),
     );
     expect(checkTooltips([undefined, []])).toEqual(
-      Left(errRSONotValidTooltips([undefined, []])),
+      Just(errNotValidTooltips([undefined, []])),
     );
   });
 });
@@ -203,13 +198,13 @@ describe('checkTooltips', () => {
 describe('checkRangeSliderOptions', () => {
   test('should return Left(Error) for primitive values', () => {
     expect(checkRangeSliderOptions('foo')).toEqual(
-      Left([errRSOIncorrectShape('foo')]),
+      Left([errIncorrectShape('foo')]),
     );
     expect(checkRangeSliderOptions(null)).toEqual(
-      Left([errRSOIncorrectShape(null)]),
+      Left([errIncorrectShape(null)]),
     );
     expect(checkRangeSliderOptions(undefined)).toEqual(
-      Left([errRSOIncorrectShape(undefined)]),
+      Left([errIncorrectShape(undefined)]),
     );
   });
 
@@ -240,7 +235,7 @@ describe('checkRangeSliderOptions', () => {
     };
 
     expect(checkRangeSliderOptions(options)).toEqual(
-      Left([errRSONotValidValue('foo')]),
+      Left([errNotValidValue('foo')]),
     );
   });
 
@@ -255,7 +250,7 @@ describe('checkRangeSliderOptions', () => {
     };
 
     expect(checkRangeSliderOptions(options)).toEqual(
-      Left([errRSONotValidValue('foo'), errRSONotValidMin('bar')]),
+      Left([errNotValidValue('foo'), errNotValidMin('bar')]),
     );
   });
 
@@ -271,9 +266,9 @@ describe('checkRangeSliderOptions', () => {
 
     expect(checkRangeSliderOptions(options)).toEqual(
       Left([
-        errRSONotValidValue('foo'),
-        errRSONotValidMin('bar'),
-        errRSONotValidMax('zoo'),
+        errNotValidValue('foo'),
+        errNotValidMin('bar'),
+        errNotValidMax('zoo'),
       ]),
     );
   });
@@ -290,10 +285,10 @@ describe('checkRangeSliderOptions', () => {
 
     expect(checkRangeSliderOptions(options)).toEqual(
       Left([
-        errRSONotValidValue('foo'),
-        errRSONotValidMin('bar'),
-        errRSONotValidMax('zoo'),
-        errRSONotValidStep('no-way'),
+        errNotValidValue('foo'),
+        errNotValidMin('bar'),
+        errNotValidMax('zoo'),
+        errNotValidStep('no-way'),
       ]),
     );
   });
@@ -311,11 +306,11 @@ describe('checkRangeSliderOptions', () => {
 
     expect(checkRangeSliderOptions(options)).toEqual(
       Left([
-        errRSONotValidValue('foo'),
-        errRSONotValidMin('bar'),
-        errRSONotValidMax('zoo'),
-        errRSONotValidStep('no-way'),
-        errRSONotValidOrientation('lesbian'),
+        errNotValidValue('foo'),
+        errNotValidMin('bar'),
+        errNotValidMax('zoo'),
+        errNotValidStep('no-way'),
+        errNotValidOrientation('lesbian'),
       ]),
     );
   });
@@ -333,12 +328,12 @@ describe('checkRangeSliderOptions', () => {
 
     expect(checkRangeSliderOptions(options)).toEqual(
       Left([
-        errRSONotValidValue('foo'),
-        errRSONotValidMin('bar'),
-        errRSONotValidMax('zoo'),
-        errRSONotValidStep('no-way'),
-        errRSONotValidOrientation('lesbian'),
-        errRSONotValidTooltips(null),
+        errNotValidValue('foo'),
+        errNotValidMin('bar'),
+        errNotValidMax('zoo'),
+        errNotValidStep('no-way'),
+        errNotValidOrientation('lesbian'),
+        errNotValidTooltips(null),
       ]),
     );
   });

@@ -1,87 +1,39 @@
-import { all, allPass, partial, not } from 'ramda';
+import { all, allPass, anyPass, partial } from 'ramda';
 import { isNotObject, isPair } from 'ramda-adjunct';
+import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
+import {
+  errNotANumber,
+  errNotANumberOrPairOfNumbers,
+  errNotOneOf,
+  errNotABooleanOrPairOfBooleans,
+  errIncorrectObjectShape,
+} from './errors';
 
 //
 // ─── ERRORS ─────────────────────────────────────────────────────────────────────
 //
 
-function err(s: string): Error {
-  return new Error(s);
-}
-
-function errNotANumber(varName = '', v: unknown): Error {
-  const msg = `
-    ${varName} should be a number, 
-    but ${typeof v} given instead
-  `.trim();
-
-  return err(msg);
-}
-
-function errNotANumberOrPairOfNumbers(varName = '', v: unknown): Error {
-  const msg = `
-    ${varName} should be a number or pair of numbers, 
-    but ${typeof v} given instead
-  `.trim();
-
-  return err(msg);
-}
-
-function errNotOneOf(
-  varName = '',
-  possibleValues: unknown[],
-  v: unknown,
-): Error {
-  const msg = `
-      ${varName} should be one of: ${possibleValues.join(', ')}, 
-      but ${v} given instead
-    `.trim();
-
-  return err(msg);
-}
-
-function errNotABooleanOrPairOfBooleans(varName = '', v: unknown) {
-  const msg = `
-    ${varName} should be a boolean or pair of booleans,
-    but ${v} given instead
-  `.trim();
-
-  return err(msg);
-}
-
-function errIncorrectObjectShape(varName = '', keys: string[], v: unknown) {
-  const msg = `
-    ${varName} should be an object with keys:
-    ${keys.join(', ')}
-  `.trim();
-
-  return err(msg);
-}
-
-// RSO - RangeSliderOptions
-const errRSONotValidValue = partial(errNotANumberOrPairOfNumbers, [
+const errNotValidValue = partial(errNotANumberOrPairOfNumbers, [
   'RangeSliderOptions["value"]',
 ]);
 
-const errRSONotValidMin = partial(errNotANumber, ['RangeSliderOptions["min"]']);
+const errNotValidMin = partial(errNotANumber, ['RangeSliderOptions["min"]']);
 
-const errRSONotValidMax = partial(errNotANumber, ['RangeSliderOptions["max"]']);
+const errNotValidMax = partial(errNotANumber, ['RangeSliderOptions["max"]']);
 
-const errRSONotValidStep = partial(errNotANumber, [
-  'RangeSliderOptions["step"]',
-]);
+const errNotValidStep = partial(errNotANumber, ['RangeSliderOptions["step"]']);
 
-const errRSONotValidOrientation = partial(errNotOneOf, [
+const errNotValidOrientation = partial(errNotOneOf, [
   'RangeSliderOptions["orientation"]',
   ['horizontal', 'vertical'],
 ]);
 
-const errRSONotValidTooltips = partial(errNotABooleanOrPairOfBooleans, [
+const errNotValidTooltips = partial(errNotABooleanOrPairOfBooleans, [
   'RangeSliderOptions["tooltips"]',
 ]);
 
-const errRSOIncorrectShape = partial(errIncorrectObjectShape, [
+const errIncorrectShape = partial(errIncorrectObjectShape, [
   'RangeSliderOptions',
   ['value', 'min', 'max', 'step', 'orientation', 'tooltips'],
 ]);
@@ -110,51 +62,47 @@ function isPairOfBooleans(v: unknown): v is [boolean, boolean] {
 // ─── VALIDATORS ─────────────────────────────────────────────────────────────────
 //
 
-function checkValue(v: unknown): Either<Error, RangeSliderOptions['value']> {
-  return isNumber(v) || isPairOfNumbers(v)
-    ? Right(v)
-    : Left(errRSONotValidValue(v));
+function checkValue(v: unknown): Maybe<Error> {
+  return anyPass([isNumber, isPairOfNumbers])(v)
+    ? Nothing
+    : Just(errNotValidValue(v));
 }
 
-function checkMin(v: unknown): Either<Error, RangeSliderOptions['min']> {
-  return isNumber(v) ? Right(v) : Left(errRSONotValidMin(v));
+function checkMin(v: unknown): Maybe<Error> {
+  return isNumber(v) ? Nothing : Just(errNotValidMin(v));
 }
 
-function checkMax(v: unknown): Either<Error, RangeSliderOptions['max']> {
-  return isNumber(v) ? Right(v) : Left(errRSONotValidMax(v));
+function checkMax(v: unknown): Maybe<Error> {
+  return isNumber(v) ? Nothing : Just(errNotValidMax(v));
 }
 
-function checkStep(v: unknown): Either<Error, RangeSliderOptions['step']> {
-  return isNumber(v) ? Right(v) : Left(errRSONotValidStep(v));
+function checkStep(v: unknown): Maybe<Error> {
+  return isNumber(v) ? Nothing : Just(errNotValidStep(v));
 }
 
-function checkOrientation(
-  v: unknown,
-): Either<Error, RangeSliderOptions['orientation']> {
+function checkOrientation(v: unknown): Maybe<Error> {
   return v === 'horizontal' || v === 'vertical'
-    ? Right(v)
-    : Left(errRSONotValidOrientation(v));
+    ? Nothing
+    : Just(errNotValidOrientation(v));
 }
 
-function checkTooltips(
-  v: unknown,
-): Either<Error, RangeSliderOptions['tooltips']> {
+function checkTooltips(v: unknown): Maybe<Error> {
   return isBoolean(v) || isPairOfBooleans(v)
-    ? Right(v)
-    : Left(errRSONotValidTooltips(v));
+    ? Nothing
+    : Just(errNotValidTooltips(v));
 }
 
 function checkRangeSliderOptions(
   v: unknown,
 ): Either<Error[], RangeSliderOptions> {
   if (isNotObject(v)) {
-    return Left([errRSOIncorrectShape(v)]);
+    return Left([errIncorrectShape(v)]);
   }
 
   // pretend that v is RangeSliderOptions (for typings to work)
   const options = v as RangeSliderOptions;
 
-  const validationResults: Either<Error, unknown>[] = [];
+  const validationResults: Maybe<Error>[] = [];
   validationResults.push(checkValue(options.value));
   validationResults.push(checkMin(options.min));
   validationResults.push(checkMax(options.max));
@@ -162,20 +110,20 @@ function checkRangeSliderOptions(
   validationResults.push(checkOrientation(options.orientation));
   validationResults.push(checkTooltips(options.tooltips));
 
-  const errors = Either.lefts(validationResults);
+  const errors = Maybe.catMaybes(validationResults);
 
-  return not(errors) ? Right(options) : Left(errors);
+  return errors.length > 0 ? Left(errors) : Right(options);
 }
 
 export {
   // errors
-  errRSONotValidValue,
-  errRSONotValidMin,
-  errRSONotValidMax,
-  errRSONotValidStep,
-  errRSONotValidOrientation,
-  errRSONotValidTooltips,
-  errRSOIncorrectShape,
+  errNotValidValue,
+  errNotValidMin,
+  errNotValidMax,
+  errNotValidStep,
+  errNotValidOrientation,
+  errNotValidTooltips,
+  errIncorrectShape,
   // validators
   checkValue,
   checkMin,
