@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import { mergeAll } from 'ramda';
+import { mergeAll, applySpec, identity } from 'ramda';
 import { isFalse } from 'ramda-adjunct';
 import { err } from '../errors';
 
@@ -11,7 +11,6 @@ import { err } from '../errors';
 
 const EVENT_UPDATE = 'update';
 const EVENT_INTEGRITY_ERRORS = 'integrityErrors';
-const EVENT_INVALID_PROPOSAL = 'invalidProposal';
 
 //
 // ─── ERRORS ─────────────────────────────────────────────────────────────────────
@@ -85,13 +84,21 @@ class Model extends EventEmitter implements RangeSliderModel {
 
   constructor(data: Partial<ModelData> = defaultData) {
     super();
+
     const mergedData = mergeAll([defaultData, data]) as ModelData;
-    const dataOrErrors = Model.checkDataIntegrity(mergedData);
-    if (dataOrErrors.isLeft()) {
-      this.data = defaultData;
-    } else {
-      this.data = mergedData;
-    }
+    this.data = Model.checkDataIntegrity(mergedData).caseOf({
+      Left: () => defaultData,
+      Right: identity,
+    });
+  }
+
+  get<K extends ModelDataKey>(key: K): ModelData[K] {
+    return this.data[key];
+  }
+
+  set<K extends ModelDataKey>(key: K, value: ModelData[K]): RangeSliderModel {
+    this.propose({ [key]: () => value });
+    return this;
   }
 
   static checkDataIntegrity(data: ModelData): Either<Error[], ModelData> {
@@ -110,18 +117,20 @@ class Model extends EventEmitter implements RangeSliderModel {
    * Ask model to change state
    * @param data chunk of ModelData
    */
-  propose(proposal: Partial<ModelProposal>): void {
-    // const mergedData = mergeAll([defaultData, data]) as ModelData;
-    // Model.checkDataIntegrity(mergedData).caseOf({
-    //   Left: errors => {
-    //     this.emit(EVENT_INTEGRITY_ERRORS, errors);
-    //     return defaultData;
-    //   },
-    //   Right: data => {
-    //     this.update(data);
-    //     return data;
-    //   },
-    // });
+  propose(proposal: Partial<ModelProposal>): ModelData {
+    const newData = applySpec(proposal)(this.data) as Partial<ModelData>;
+    const mergedData = mergeAll([this.data, newData]) as ModelData;
+
+    return Model.checkDataIntegrity(mergedData).caseOf({
+      Left: errors => {
+        this.emit(EVENT_INTEGRITY_ERRORS, errors);
+        return this.data;
+      },
+      Right: data => {
+        this.update(data);
+        return data;
+      },
+    });
   }
 
   private update(newData: ModelData): void {
@@ -140,5 +149,4 @@ export {
   // events
   EVENT_UPDATE,
   EVENT_INTEGRITY_ERRORS,
-  EVENT_INVALID_PROPOSAL,
 };

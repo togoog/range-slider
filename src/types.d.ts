@@ -10,18 +10,22 @@ type RangeSliderOptions = {
 type OptionsKey = keyof RangeSliderOptions;
 
 type RangeSliderPlugin = {
-  get<T extends OptionsKey>(key: T): RangeSliderOptions[T];
-  set<T extends OptionsKey>(
-    key: T,
-    value: RangeSliderOptions[T],
+  get<K extends OptionsKey>(key: K): RangeSliderOptions[K];
+  set<K extends OptionsKey>(
+    key: K,
+    value: RangeSliderOptions[K],
   ): RangeSliderPlugin;
 };
 
 type RangeSliderModel = {
+  get<K extends ModelDataKey>(key: K): ModelData[K];
+  set<K extends ModelDataKey>(key: K, value: ModelData[K]): RangeSliderModel;
   propose(data: Partial<ModelProposal>): void;
 };
 
 type ModelData = RangeSliderOptions;
+
+type ModelDataKey = keyof ModelData;
 
 type ModelProposal = {
   [key in keyof ModelData]: (data: ModelData) => ModelData[key];
