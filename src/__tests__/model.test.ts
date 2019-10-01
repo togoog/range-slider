@@ -1,9 +1,10 @@
 import { Right } from 'purify-ts/Either';
 import {
-  checkDataIntegrity,
+  Model,
   errValueNotInRange,
   errStepNotInRange,
   errMinIsGreaterThanMax,
+  errTooltipsDoNotMatchWithValues,
 } from '../mvp/model';
 
 describe('Model.checkDataIntegrity', () => {
@@ -16,7 +17,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
     };
-    expect(checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([
         expect.objectContaining(errMinIsGreaterThanMax()),
       ]),
@@ -32,7 +33,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
     };
-    expect(checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
   });
@@ -46,7 +47,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
     };
-    expect(checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
   });
@@ -60,8 +61,25 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
     };
-    expect(checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
+    );
+  });
+
+  test(`should contain error TooltipsDoNotMatchWithValues 
+    if tooltips.length != 1 && tooltips.length != value.length`, () => {
+    const data: ModelData = {
+      value: [30, 60],
+      min: 0,
+      max: 100,
+      step: 5,
+      orientation: 'horizontal',
+      tooltips: [true, true, false],
+    };
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(errTooltipsDoNotMatchWithValues()),
+      ]),
     );
   });
 
@@ -74,6 +92,11 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true, true],
     };
-    expect(checkDataIntegrity(data)).toEqual(Right(data));
+    expect(Model.checkDataIntegrity(data)).toEqual(Right(data));
   });
 });
+
+// describe('Model.propose', () => {
+//   test('');;
+// });
+// ;
