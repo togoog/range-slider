@@ -1,5 +1,7 @@
-export { GridOptions, Grid } from './grid/grid';
-export { HandleOptions, Handle } from './handle/handle';
-export { IntervalOptions, Interval } from './interval/interval';
-export { TooltipOptions, Tooltip } from './tooltip/tooltip';
-export { Track } from './track/track';
+export { trackView, className as trackClassName } from './track/track';
+export { handleView, className as handleClassName } from './handle/handle';
+export {
+  intervalView,
+  className as intervalClassName,
+} from './interval/interval';
+export { tooltipView, className as tooltipClassName } from './tooltip/tooltip';

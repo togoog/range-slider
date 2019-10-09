@@ -1,3 +1,29 @@
-export const defaultOptions: IntervalOptions = {
-  isVisible: false,
-};
+import { handleView } from '..';
+
+const className = 'range-slider__interval';
+
+function intervalView({ beginning, from, to, handles }: IntervalState): string {
+  // prettier-ignore
+  const handlesHTML = handles
+    .map(handle => handleView(handle))
+    .join('');
+
+  // prettier-ignore
+  const dimension = 
+    beginning === 'left' || beginning === 'right' 
+    ? 'width' 
+    : 'height';
+
+  const style = `
+    ${beginning}: ${from}%; 
+    ${dimension}: ${to - from}%
+  `;
+
+  return `
+    <div class="${className}" style="${style}">
+      ${handlesHTML}
+    </div>
+  `;
+}
+
+export { intervalView, className };

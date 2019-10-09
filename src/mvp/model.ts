@@ -117,8 +117,8 @@ class Model extends EventEmitter implements RangeSliderModel {
    * Ask model to change state
    * @param data chunk of ModelData
    */
-  propose(proposal: Partial<ModelProposal>): ModelData {
-    const newData = applySpec(proposal)(this.data) as Partial<ModelData>;
+  propose(changeData: Partial<ModelProposal>): ModelData {
+    const newData = applySpec(changeData)(this.data) as Partial<ModelData>;
     const mergedData = mergeAll([this.data, newData]) as ModelData;
 
     return Model.checkDataIntegrity(mergedData).caseOf({
