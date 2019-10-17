@@ -14,6 +14,7 @@ export type Options = {
   step: number;
   orientation: 'horizontal' | 'vertical';
   tooltips: boolean | boolean[];
+  intervals: boolean | boolean[];
 };
 
 export type OptionsKey = keyof Options;
@@ -43,6 +44,7 @@ export type Data = {
   step: number;
   orientation: 'horizontal' | 'vertical';
   tooltips: boolean[];
+  intervals: boolean[];
 };
 
 export type DataKey = keyof Data;

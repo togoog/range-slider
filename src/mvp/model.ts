@@ -11,19 +11,23 @@ import { err } from '../errors';
 //
 
 function errValueNotInRange(): Error {
-  return err(`(min <= value <= max)`);
+  return err(`(spots < min || spots > max)`);
 }
 
 function errStepNotInRange(): Error {
-  return err(`(0 <= step <= max - min)`);
+  return err(`(step < 0 || step > max - min)`);
 }
 
 function errMinMax(): Error {
-  return err(`(min <= max)`);
+  return err(`(min > max)`);
 }
 
 function errTooltipsCount(): Error {
-  return err(`(tooltips.length == 1 || tooltips.length == value.length)`);
+  return err(`(tooltips.length !== spots.length)`);
+}
+
+function errIntervalsCount(): Error {
+  return err(`(intervals.length !== spots.length + 1)`);
 }
 
 //
@@ -54,6 +58,12 @@ function checkTooltipsCount({ spots, tooltips }: Data): Maybe<Error> {
   return tooltips.length === spots.length ? Nothing : Just(errTooltipsCount());
 }
 
+function checkIntervalsCount({ spots, intervals }: Data): Maybe<Error> {
+  return intervals.length === spots.length + 1
+    ? Nothing
+    : Just(errIntervalsCount());
+}
+
 // ────────────────────────────────────────────────────────────────────────────────
 
 const defaultData: Data = {
@@ -63,6 +73,7 @@ const defaultData: Data = {
   step: 1,
   orientation: 'horizontal',
   tooltips: [true],
+  intervals: [true, false],
 };
 
 class Model extends EventEmitter implements Model {
@@ -100,6 +111,7 @@ class Model extends EventEmitter implements Model {
     validationResults.push(checkIfValueInRange(data));
     validationResults.push(checkIfStepInRange(data));
     validationResults.push(checkTooltipsCount(data));
+    validationResults.push(checkIntervalsCount(data));
 
     const errors: Error[] = Maybe.catMaybes(validationResults);
 
@@ -110,8 +122,8 @@ class Model extends EventEmitter implements Model {
    * Ask model to change state
    * @param data chunk of ModelData
    */
-  propose(changeData: Partial<Proposal>): void {
-    const newData = applySpec(changeData)(this.data) as Partial<Data>;
+  propose(proposal: Partial<Proposal>): void {
+    const newData = applySpec(proposal)(this.data) as Partial<Data>;
     const mergedData = mergeAll([this.data, newData]) as Data;
 
     // prettier-ignore
@@ -136,4 +148,5 @@ export {
   errStepNotInRange,
   errMinMax,
   errTooltipsCount,
+  errIntervalsCount,
 };

@@ -8,10 +8,11 @@ import {
   errStepNotInRange,
   errMinMax,
   errTooltipsCount,
+  errIntervalsCount,
 } from '../mvp/model';
 
 describe('Model.checkDataIntegrity', () => {
-  test('should contain error MinIsGreaterThanMax if min > max', () => {
+  test('should contain errMinMax', () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }],
       min: 100,
@@ -19,41 +20,42 @@ describe('Model.checkDataIntegrity', () => {
       step: 500,
       orientation: 'horizontal',
       tooltips: [true],
+      intervals: [true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errMinMax())]),
     );
   });
 
-  test('should contain error ValueNotInRange if value < min', () => {
-    const data: Data = {
+  test('should contain errValueNotInRange', () => {
+    let data: Data = {
       spots: [{ id: 'value_0', value: -30 }],
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
       tooltips: [true],
+      intervals: [true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
-  });
 
-  test('should contain error ValueNotInRange if value > max', () => {
-    const data: Data = {
+    data = {
       spots: [{ id: 'value_0', value: 300 }],
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
       tooltips: [true],
+      intervals: [true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
   });
 
-  test('should contain StepNotInRange if step > max - min', () => {
+  test('should contain errStepNotInRange', () => {
     let data: Data = {
       spots: [{ id: 'value_0', value: 30 }],
       min: 0,
@@ -61,6 +63,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 200,
       orientation: 'horizontal',
       tooltips: [true],
+      intervals: [true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
@@ -73,14 +76,14 @@ describe('Model.checkDataIntegrity', () => {
       step: -5,
       orientation: 'horizontal',
       tooltips: [true],
+      intervals: [true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
     );
   });
 
-  test(`should contain error TooltipsDoNotMatchWithValues 
-    if tooltips.length != 1 && tooltips.length != value.length`, () => {
+  test(`should contain errTooltipsCount`, () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
       min: 0,
@@ -88,13 +91,29 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true, true, false],
+      intervals: [false, true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errTooltipsCount())]),
     );
   });
 
-  test('should return Right(data) if data integrity is valid', () => {
+  test(`should contain errIntervalsCount`, () => {
+    const data: Data = {
+      spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
+      min: 0,
+      max: 100,
+      step: 5,
+      orientation: 'horizontal',
+      tooltips: [true, true, false],
+      intervals: [false, true, false, true],
+    };
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+      expect.arrayContaining([expect.objectContaining(errIntervalsCount())]),
+    );
+  });
+
+  test('should return Right(data)', () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
       min: 0,
@@ -102,6 +121,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true, true],
+      intervals: [false, true, false],
     };
     expect(Model.checkDataIntegrity(data)).toEqual(Right(data));
   });
@@ -115,9 +135,10 @@ describe('Model.propose', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    intervals: [false, true, false],
   };
 
-  test('should change value if value transformer is present', () => {
+  test('should change spots', () => {
     const proposal: Partial<Proposal> = {
       spots: (data: Data) =>
         data.spots.map(
@@ -139,7 +160,7 @@ describe('Model.propose', () => {
     ]);
   });
 
-  test('should change min if min transformer is present', () => {
+  test('should change min', () => {
     const proposal: Partial<Proposal> = {
       min: (data: Data) => add(data.min, 1),
     };
@@ -149,7 +170,7 @@ describe('Model.propose', () => {
     expect(model.get('min')).toEqual(1);
   });
 
-  test('should change max if max transformer is present', () => {
+  test('should change max', () => {
     const proposal: Partial<Proposal> = {
       max: (data: Data) => subtract(data.max, 1),
     };
@@ -159,7 +180,7 @@ describe('Model.propose', () => {
     expect(model.get('max')).toEqual(99);
   });
 
-  test('should change step if step transformer is present', () => {
+  test('should change step', () => {
     const proposal: Partial<Proposal> = {
       step: (data: Data) => add(data.step, 5),
     };
@@ -169,7 +190,7 @@ describe('Model.propose', () => {
     expect(model.get('step')).toEqual(10);
   });
 
-  test('should change orientation if orientation transformer is present', () => {
+  test('should change orientation', () => {
     const proposal: Partial<Proposal> = {
       orientation: (data: Data) =>
         data.orientation == 'horizontal' ? 'vertical' : 'horizontal',
@@ -180,7 +201,7 @@ describe('Model.propose', () => {
     expect(model.get('orientation')).toEqual('vertical');
   });
 
-  test('should change tooltips if tooltips transformer is present', () => {
+  test('should change tooltips', () => {
     const proposal: Partial<Proposal> = {
       tooltips: (data: Data) => data.tooltips.map(not),
     };
@@ -190,7 +211,7 @@ describe('Model.propose', () => {
     expect(model.get('tooltips')).toEqual([false, false]);
   });
 
-  test('should emit update event with new ModelData object', () => {
+  test('should emit update event', () => {
     const proposal: Partial<Proposal> = {
       spots: (data: Data) =>
         data.spots.map(
@@ -213,11 +234,11 @@ describe('Model.propose', () => {
       step: 10,
       orientation: 'horizontal',
       tooltips: [true, true],
+      intervals: [false, true, false],
     });
   });
 
-  test(`should emit integrityError event with array of Error objects 
-    if proposal brakes data integrity`, () => {
+  test('should emit integrityError event', () => {
     const proposal: Partial<Proposal> = {
       spots: (data: Data) =>
         data.spots.map(
@@ -247,9 +268,10 @@ describe('Model.get', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    intervals: [false, true, false],
   };
 
-  test('should return value from ModelData by key', () => {
+  test('should return ModelData value by key', () => {
     const model = new Model(currentData);
     expect(model.get('spots')).toEqual([
       { id: 'value_0', value: 20 },
@@ -271,9 +293,10 @@ describe('Model.set', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    intervals: [false, true, false],
   };
 
-  test('should change ModelData by key', () => {
+  test('should change ModelData value by key', () => {
     const model = new Model(currentData);
     const newSpots = [
       { id: 'value_0', value: 35 },
@@ -295,10 +318,11 @@ describe('Model.set', () => {
       step: 20,
       orientation: 'horizontal',
       tooltips: [true, true],
+      intervals: [false, true, false],
     });
   });
 
-  test('should emit integrityError event if data change brakes integrity', () => {
+  test('should emit integrityError event', () => {
     const model = new Model(currentData);
     const errorListener = jest.fn();
     model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
