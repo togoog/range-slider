@@ -6,11 +6,11 @@ import { lengthEq } from 'ramda-adjunct';
  * Query dom elements
  * @param selector css selector
  */
-function $(selector: string): Maybe<Element[]> {
+function $(selector: string): Maybe<HTMLElement[]> {
   // prettier-ignore
   return Maybe
     .encase(() => document.querySelectorAll(selector))
-    .chain<Element[]>(
+    .chain<HTMLElement[]>(
       ifElse(
         lengthEq(0),
         always(Nothing),
