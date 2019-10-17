@@ -1,16 +1,13 @@
-type RangeSliderPlugin = {
-  get<K extends OptionsKey>(key: K): RangeSliderOptions[K];
-  set<K extends OptionsKey>(
-    key: K,
-    value: RangeSliderOptions[K],
-  ): RangeSliderPlugin;
+export type Plugin = {
+  get<K extends OptionsKey>(key: K): Options[K];
+  set<K extends OptionsKey>(key: K, value: Options[K]): Plugin;
 };
 
 //
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
 
-type RangeSliderOptions = {
+export type Options = {
   value: number[];
   min: number;
   max: number;
@@ -19,71 +16,57 @@ type RangeSliderOptions = {
   tooltips: boolean[];
 };
 
-type OptionsKey = keyof RangeSliderOptions;
+export type OptionsKey = keyof Options;
 
 //
 // ─── MODEL ──────────────────────────────────────────────────────────────────────
 //
 
-type RangeSliderModel = {
-  get<K extends ModelDataKey>(key: K): ModelData[K];
-  set<K extends ModelDataKey>(key: K, value: ModelData[K]): RangeSliderModel;
-  propose(change: Partial<ModelProposal>): void;
+export type Model = {
+  get<K extends DataKey>(key: K): Data[K];
+  set<K extends DataKey>(key: K, value: Data[K]): Model;
+  propose(change: Partial<Proposal>): void;
 };
 
-type ModelData = RangeSliderOptions;
+export type Data = Options;
 
-type ModelDataKey = keyof ModelData;
+export type DataKey = keyof Data;
 
-type ModelProposal = {
-  [key in keyof ModelData]: (data: ModelData) => ModelData[key];
+export type Proposal = {
+  [key in keyof Data]: (data: Data) => Data[key];
 };
 
 //
 // ─── STATE ──────────────────────────────────────────────────────────────────────
 //
 
-type HandleState = {
+export type Handle = {
   isVisible: boolean;
-  tooltip?: TooltipState;
+  tooltip?: Tooltip;
 };
 
-type TooltipState = {
+export type Tooltip = {
   content: string;
 };
 
-type IntervalState = {
+export type Interval = {
   // depends on orientation
   beginning: 'left' | 'right' | 'top' | 'bottom';
   // relative (%) position from the beginning of track for interval starting point
   from: number;
   // relative (%) position from the beginning of track for interval ending point
   to: number;
-  handles: [HandleState, HandleState];
+  handles: [Handle, Handle];
 };
 
-type RangeSliderState = {
-  interval: IntervalState;
+export type State = {
+  interval: Interval;
 };
 
 //
 // ─── VIEW ───────────────────────────────────────────────────────────────────────
 //
 
-interface RangeSliderView {
-  render(state: RangeSliderState): void;
-}
-
-//
-// ─── ACTIONS ────────────────────────────────────────────────────────────────────
-//
-
-type RangeSliderActions = TrackActions & HandleActions & TooltipActions;
-
-type TrackActions = {
-  // onTrackClick:
+export type View = {
+  render(state: State): void;
 };
-
-type HandleActions = {};
-
-type TooltipActions = {};

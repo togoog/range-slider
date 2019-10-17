@@ -1,5 +1,6 @@
 import { clone } from 'ramda';
 import { View, className as rsClassName } from '../mvp/view';
+import { State } from '../types';
 import {
   trackClassName,
   handleClassName,
@@ -8,7 +9,7 @@ import {
 } from '../components';
 
 describe('View.render', () => {
-  const state: RangeSliderState = {
+  const state: State = {
     interval: {
       beginning: 'left',
       from: 20,
@@ -29,12 +30,11 @@ describe('View.render', () => {
       ],
     },
   };
-  const actions: RangeSliderActions = {};
 
   test('should render track', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     let $interval = document.getElementsByClassName(trackClassName);
     expect($interval).toHaveLength(0);
     view.render(state);
@@ -45,7 +45,7 @@ describe('View.render', () => {
   test('should render interval', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     let $interval = document.getElementsByClassName(intervalClassName);
     expect($interval).toHaveLength(0);
     view.render(state);
@@ -56,7 +56,7 @@ describe('View.render', () => {
   test('should render handles', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     expect(document.getElementsByClassName(rsClassName).length).toBe(0);
     expect(document.getElementsByClassName(handleClassName).length).toBe(0);
     view.render(state);
@@ -67,7 +67,7 @@ describe('View.render', () => {
   test('should render tooltips', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     let $tooltips = document.getElementsByClassName(tooltipClassName);
     expect($tooltips.length).toBe(0);
     view.render(state);
@@ -80,7 +80,7 @@ describe('View.render', () => {
   test('should position interval relative to beginning of track (horizontal)', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     view.render(state);
     const $interval = document.getElementsByClassName(intervalClassName)[0];
     const style = ($interval as HTMLElement).style;
@@ -93,7 +93,7 @@ describe('View.render', () => {
   test('should position interval relative to beginning of track (vertical)', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     const stateVertical = clone(state);
     stateVertical.interval.beginning = 'bottom';
     view.render(stateVertical);
@@ -108,7 +108,7 @@ describe('View.render', () => {
   test('handle should be hidden if handle.isVisible is false', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     const stateHandleHidden = clone(state);
     stateHandleHidden.interval.handles[0].isVisible = false;
     view.render(stateHandleHidden);
@@ -121,7 +121,7 @@ describe('View.render', () => {
   test('should display only 1 handle for single value', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement, actions);
+    const view = new View($el as HTMLElement);
     const stateSingleValue = clone(state);
     stateSingleValue.interval.from = 40;
     stateSingleValue.interval.to = 40;

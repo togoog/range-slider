@@ -1,6 +1,8 @@
+import { Tooltip } from '../../types';
+
 const className = 'range-slider__tooltip';
 
-function tooltipView({ content }: TooltipState): string {
+function tooltipView({ content }: Tooltip): string {
   return `
     <div class="${className}">
       ${content}

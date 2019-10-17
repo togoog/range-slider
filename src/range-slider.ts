@@ -1,3 +1,5 @@
+import { Plugin, Options, OptionsKey } from './types';
+
 //
 // ─── EVENTS ─────────────────────────────────────────────────────────────────────
 //
@@ -31,7 +33,7 @@ const EVENT_SLIDE_END = 'slideEnd';
 
 // ────────────────────────────────────────────────────────────────────────────────
 
-const defaultOptions: RangeSliderOptions = {
+const defaultOptions: Options = {
   value: [50],
   min: 0,
   max: 100,
@@ -40,17 +42,14 @@ const defaultOptions: RangeSliderOptions = {
   tooltips: [true],
 };
 
-class RangeSlider implements RangeSliderPlugin {
-  constructor(
-    private el: string,
-    private options: RangeSliderOptions = defaultOptions,
-  ) {}
+class RangeSlider implements Plugin {
+  constructor(private el: string, private options: Options = defaultOptions) {}
 
-  get<T extends OptionsKey>(key: T): RangeSliderOptions[T] {
+  get<T extends OptionsKey>(key: T): Options[T] {
     return this.options[key];
   }
 
-  set<T extends OptionsKey>(key: T, value: RangeSliderOptions[T]): RangeSlider {
+  set<T extends OptionsKey>(key: T, value: Options[T]): RangeSlider {
     this.options[key] = value;
     return this;
   }

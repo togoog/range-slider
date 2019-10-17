@@ -1,11 +1,12 @@
+import { State } from '../types';
 import { intervalView, trackView } from '../components';
 
 const className = 'range-slider';
 
-class View implements RangeSliderView {
-  constructor(private el: HTMLElement, private actions: RangeSliderActions) {}
+class View implements View {
+  constructor(private el: HTMLElement) {}
 
-  render({ interval }: RangeSliderState): void {
+  render({ interval }: State): void {
     this.el.outerHTML = `
       <div class="${className}">
         ${trackView()}

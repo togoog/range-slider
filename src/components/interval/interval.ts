@@ -1,8 +1,9 @@
+import { Interval } from '../../types';
 import { handleView } from '..';
 
 const className = 'range-slider__interval';
 
-function intervalView({ beginning, from, to, handles }: IntervalState): string {
+function intervalView({ beginning, from, to, handles }: Interval): string {
   // prettier-ignore
   const handlesHTML = handles
     .map(handle => handleView(handle))

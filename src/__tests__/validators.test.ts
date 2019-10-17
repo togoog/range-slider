@@ -1,3 +1,4 @@
+import { Options } from '../types';
 import * as fc from 'fast-check';
 import {
   //errors
@@ -225,7 +226,7 @@ describe('checkRangeSliderOptions', () => {
   });
 
   test('should return Left([Error]) if value is not valid', () => {
-    const options: { [key in keyof RangeSliderOptions]: unknown } = {
+    const options: { [key in keyof Options]: unknown } = {
       value: 'foo',
       min: 0,
       max: 100,
@@ -240,7 +241,7 @@ describe('checkRangeSliderOptions', () => {
   });
 
   test('should return Left([Error, Error]) if value, min are not valid', () => {
-    const options: { [key in keyof RangeSliderOptions]: unknown } = {
+    const options: { [key in keyof Options]: unknown } = {
       value: 'foo',
       min: 'bar',
       max: 100,
@@ -255,7 +256,7 @@ describe('checkRangeSliderOptions', () => {
   });
 
   test('should return Left([Error, Error, Error]) if value, min, max are not valid', () => {
-    const options: { [key in keyof RangeSliderOptions]: unknown } = {
+    const options: { [key in keyof Options]: unknown } = {
       value: 'foo',
       min: 'bar',
       max: 'zoo',
@@ -274,7 +275,7 @@ describe('checkRangeSliderOptions', () => {
   });
 
   test('should return Left([Error, Error, Error, Error]) if value, min, max, step are not valid', () => {
-    const options: { [key in keyof RangeSliderOptions]: unknown } = {
+    const options: { [key in keyof Options]: unknown } = {
       value: 'foo',
       min: 'bar',
       max: 'zoo',
@@ -295,7 +296,7 @@ describe('checkRangeSliderOptions', () => {
 
   test(`should return Left([Error, Error, Error, Error, Error]) 
     if value, min, max, step, orientation are not valid`, () => {
-    const options: { [key in keyof RangeSliderOptions]: unknown } = {
+    const options: { [key in keyof Options]: unknown } = {
       value: 'foo',
       min: 'bar',
       max: 'zoo',
@@ -317,7 +318,7 @@ describe('checkRangeSliderOptions', () => {
 
   test(`should return Left([Error, Error, Error, Error, Error, Error]) 
     if value, min, max, step, orientation, tooltips are not valid`, () => {
-    const options: { [key in keyof RangeSliderOptions]: unknown } = {
+    const options: { [key in keyof Options]: unknown } = {
       value: 'foo',
       min: 'bar',
       max: 'zoo',

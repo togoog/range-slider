@@ -1,3 +1,4 @@
+import { Data, DataKey, Proposal } from '../types';
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
@@ -36,7 +37,7 @@ function errTooltipsDoNotMatchWithValues(): Error {
 // ─── INTEGRITY VALIDATORS ───────────────────────────────────────────────────────
 //
 
-function checkIfValueInRange({ min, max, value }: ModelData): Maybe<Error> {
+function checkIfValueInRange({ min, max, value }: Data): Maybe<Error> {
   // prettier-ignore
   const isNotInRange = value
     .map(v => v >= min && v <= max)
@@ -46,23 +47,17 @@ function checkIfValueInRange({ min, max, value }: ModelData): Maybe<Error> {
   return isNotInRange ? Just(errValueNotInRange()) : Nothing;
 }
 
-function checkIfStepInRange({ min, max, step }: ModelData): Maybe<Error> {
+function checkIfStepInRange({ min, max, step }: Data): Maybe<Error> {
   const threshold = max - min;
   const isNotInRange = step < 0 || step > threshold;
   return isNotInRange ? Just(errStepNotInRange()) : Nothing;
 }
 
-function checkIfMinIsLessThanOrEqualToMax({
-  min,
-  max,
-}: ModelData): Maybe<Error> {
+function checkIfMinIsLessThanOrEqualToMax({ min, max }: Data): Maybe<Error> {
   return min > max ? Just(errMinIsGreaterThanMax()) : Nothing;
 }
 
-function checkIfTooltipsMatchValues({
-  value,
-  tooltips,
-}: ModelData): Maybe<Error> {
+function checkIfTooltipsMatchValues({ value, tooltips }: Data): Maybe<Error> {
   return tooltips.length !== 1 && tooltips.length !== value.length
     ? Just(errTooltipsDoNotMatchWithValues())
     : Nothing;
@@ -70,7 +65,7 @@ function checkIfTooltipsMatchValues({
 
 // ────────────────────────────────────────────────────────────────────────────────
 
-const defaultData: ModelData = {
+const defaultData: Data = {
   value: [50],
   min: 0,
   max: 100,
@@ -79,29 +74,29 @@ const defaultData: ModelData = {
   tooltips: [true],
 };
 
-class Model extends EventEmitter implements RangeSliderModel {
-  private data: ModelData;
+class Model extends EventEmitter implements Model {
+  private data: Data;
 
-  constructor(data: Partial<ModelData> = defaultData) {
+  constructor(data: Partial<Data> = defaultData) {
     super();
 
-    const mergedData = mergeAll([defaultData, data]) as ModelData;
+    const mergedData = mergeAll([defaultData, data]) as Data;
     this.data = Model.checkDataIntegrity(mergedData).caseOf({
       Left: () => defaultData,
       Right: identity,
     });
   }
 
-  get<K extends ModelDataKey>(key: K): ModelData[K] {
+  get<K extends DataKey>(key: K): Data[K] {
     return this.data[key];
   }
 
-  set<K extends ModelDataKey>(key: K, value: ModelData[K]): RangeSliderModel {
+  set<K extends DataKey>(key: K, value: Data[K]): Model {
     this.propose({ [key]: () => value });
     return this;
   }
 
-  static checkDataIntegrity(data: ModelData): Either<Error[], ModelData> {
+  static checkDataIntegrity(data: Data): Either<Error[], Data> {
     const validationResults: Maybe<Error>[] = [];
     validationResults.push(checkIfMinIsLessThanOrEqualToMax(data));
     validationResults.push(checkIfValueInRange(data));
@@ -117,9 +112,9 @@ class Model extends EventEmitter implements RangeSliderModel {
    * Ask model to change state
    * @param data chunk of ModelData
    */
-  propose(changeData: Partial<ModelProposal>): ModelData {
-    const newData = applySpec(changeData)(this.data) as Partial<ModelData>;
-    const mergedData = mergeAll([this.data, newData]) as ModelData;
+  propose(changeData: Partial<Proposal>): Data {
+    const newData = applySpec(changeData)(this.data) as Partial<Data>;
+    const mergedData = mergeAll([this.data, newData]) as Data;
 
     return Model.checkDataIntegrity(mergedData).caseOf({
       Left: errors => {
@@ -133,7 +128,7 @@ class Model extends EventEmitter implements RangeSliderModel {
     });
   }
 
-  private update(newData: ModelData): void {
+  private update(newData: Data): void {
     this.data = newData;
     this.emit(EVENT_UPDATE, newData);
   }

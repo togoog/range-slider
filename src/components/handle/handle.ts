@@ -1,8 +1,9 @@
+import { Handle } from '../../types';
 import { tooltipView } from '..';
 
 const className = 'range-slider__handle';
 
-function handleView({ isVisible, tooltip }: HandleState): string {
+function handleView({ isVisible, tooltip }: Handle): string {
   const style = `display: ${isVisible ? 'block' : 'none'}`;
 
   return `

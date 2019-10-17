@@ -1,3 +1,4 @@
+import { Data, Proposal } from '../types';
 import { Right } from 'purify-ts/Either';
 import { not, multiply, add, subtract } from 'ramda';
 import {
@@ -14,7 +15,7 @@ import {
 
 describe('Model.checkDataIntegrity', () => {
   test('should contain error MinIsGreaterThanMax if min > max', () => {
-    const data: ModelData = {
+    const data: Data = {
       value: [30],
       min: 100,
       max: 0,
@@ -30,7 +31,7 @@ describe('Model.checkDataIntegrity', () => {
   });
 
   test('should contain error ValueNotInRange if value < min', () => {
-    const data: ModelData = {
+    const data: Data = {
       value: [-30],
       min: 0,
       max: 100,
@@ -44,7 +45,7 @@ describe('Model.checkDataIntegrity', () => {
   });
 
   test('should contain error ValueNotInRange if value > max', () => {
-    const data: ModelData = {
+    const data: Data = {
       value: [300],
       min: 0,
       max: 100,
@@ -58,7 +59,7 @@ describe('Model.checkDataIntegrity', () => {
   });
 
   test('should contain StepNotInRange if step > max - min', () => {
-    const data: ModelData = {
+    const data: Data = {
       value: [30],
       min: 0,
       max: 100,
@@ -73,7 +74,7 @@ describe('Model.checkDataIntegrity', () => {
 
   test(`should contain error TooltipsDoNotMatchWithValues 
     if tooltips.length != 1 && tooltips.length != value.length`, () => {
-    const data: ModelData = {
+    const data: Data = {
       value: [30, 60],
       min: 0,
       max: 100,
@@ -89,7 +90,7 @@ describe('Model.checkDataIntegrity', () => {
   });
 
   test('should return Right(data) if data integrity is valid', () => {
-    const data: ModelData = {
+    const data: Data = {
       value: [30, 60],
       min: 0,
       max: 100,
@@ -102,7 +103,7 @@ describe('Model.checkDataIntegrity', () => {
 });
 
 describe('Model.propose', () => {
-  const currentData: ModelData = {
+  const currentData: Data = {
     value: [20, 40],
     min: 0,
     max: 100,
@@ -112,8 +113,8 @@ describe('Model.propose', () => {
   };
 
   test('should change value if value transformer is present', () => {
-    const proposal: Partial<ModelProposal> = {
-      value: (data: ModelData) => data.value.map(multiply(2)),
+    const proposal: Partial<Proposal> = {
+      value: (data: Data) => data.value.map(multiply(2)),
     };
     const model = new Model(currentData);
     expect(model.get('value')).toEqual([20, 40]);
@@ -122,8 +123,8 @@ describe('Model.propose', () => {
   });
 
   test('should change min if min transformer is present', () => {
-    const proposal: Partial<ModelProposal> = {
-      min: (data: ModelData) => add(data.min, 1),
+    const proposal: Partial<Proposal> = {
+      min: (data: Data) => add(data.min, 1),
     };
     const model = new Model(currentData);
     expect(model.get('min')).toEqual(0);
@@ -132,8 +133,8 @@ describe('Model.propose', () => {
   });
 
   test('should change max if max transformer is present', () => {
-    const proposal: Partial<ModelProposal> = {
-      max: (data: ModelData) => subtract(data.max, 1),
+    const proposal: Partial<Proposal> = {
+      max: (data: Data) => subtract(data.max, 1),
     };
     const model = new Model(currentData);
     expect(model.get('max')).toEqual(100);
@@ -142,8 +143,8 @@ describe('Model.propose', () => {
   });
 
   test('should change step if step transformer is present', () => {
-    const proposal: Partial<ModelProposal> = {
-      step: (data: ModelData) => add(data.step, 5),
+    const proposal: Partial<Proposal> = {
+      step: (data: Data) => add(data.step, 5),
     };
     const model = new Model(currentData);
     expect(model.get('step')).toEqual(5);
@@ -152,8 +153,8 @@ describe('Model.propose', () => {
   });
 
   test('should change orientation if orientation transformer is present', () => {
-    const proposal: Partial<ModelProposal> = {
-      orientation: (data: ModelData) =>
+    const proposal: Partial<Proposal> = {
+      orientation: (data: Data) =>
         data.orientation == 'horizontal' ? 'vertical' : 'horizontal',
     };
     const model = new Model(currentData);
@@ -163,8 +164,8 @@ describe('Model.propose', () => {
   });
 
   test('should change tooltips if tooltips transformer is present', () => {
-    const proposal: Partial<ModelProposal> = {
-      tooltips: (data: ModelData) => data.tooltips.map(not),
+    const proposal: Partial<Proposal> = {
+      tooltips: (data: Data) => data.tooltips.map(not),
     };
     const model = new Model(currentData);
     expect(model.get('tooltips')).toEqual([true, true]);
@@ -173,10 +174,10 @@ describe('Model.propose', () => {
   });
 
   test('should emit update event with new ModelData object', () => {
-    const proposal: Partial<ModelProposal> = {
-      value: (data: ModelData) => data.value.map(add(1)),
-      min: (data: ModelData) => subtract(data.min, 10),
-      step: (data: ModelData) => multiply(data.step, 2),
+    const proposal: Partial<Proposal> = {
+      value: (data: Data) => data.value.map(add(1)),
+      min: (data: Data) => subtract(data.min, 10),
+      step: (data: Data) => multiply(data.step, 2),
     };
     const model = new Model(currentData);
     const updateListener = jest.fn();
@@ -194,8 +195,8 @@ describe('Model.propose', () => {
 
   test(`should emit integrityError event with array of Error objects 
     if proposal brakes data integrity`, () => {
-    const proposal: Partial<ModelProposal> = {
-      value: (data: ModelData) => data.value.map(multiply(3)),
+    const proposal: Partial<Proposal> = {
+      value: (data: Data) => data.value.map(multiply(3)),
       tooltips: data => [...data.tooltips, true],
     };
     const model = new Model(currentData);
@@ -210,7 +211,7 @@ describe('Model.propose', () => {
 });
 
 describe('Model.get', () => {
-  const currentData: ModelData = {
+  const currentData: Data = {
     value: [20, 40],
     min: 0,
     max: 100,
@@ -231,7 +232,7 @@ describe('Model.get', () => {
 });
 
 describe('Model.set', () => {
-  const currentData: ModelData = {
+  const currentData: Data = {
     value: [20, 40],
     min: 0,
     max: 100,

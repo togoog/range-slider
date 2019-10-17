@@ -1,3 +1,4 @@
+import { Options } from './types';
 import { all, allPass, anyPass, partial } from 'ramda';
 import { isNotObject, isPair } from 'ramda-adjunct';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
@@ -92,15 +93,13 @@ function checkTooltips(v: unknown): Maybe<Error> {
     : Just(errNotValidTooltips(v));
 }
 
-function checkRangeSliderOptions(
-  v: unknown,
-): Either<Error[], RangeSliderOptions> {
+function checkRangeSliderOptions(v: unknown): Either<Error[], Options> {
   if (isNotObject(v)) {
     return Left([errIncorrectShape(v)]);
   }
 
   // pretend that v is RangeSliderOptions (for typings to work)
-  const options = v as RangeSliderOptions;
+  const options = v as Options;
 
   const validationResults: Maybe<Error>[] = [];
   validationResults.push(checkValue(options.value));
