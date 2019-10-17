@@ -2,16 +2,9 @@ import { Data, DataKey, Proposal } from '../types';
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import { mergeAll, applySpec, identity } from 'ramda';
-import { isFalse } from 'ramda-adjunct';
+import { mergeAll, applySpec, all } from 'ramda';
+import { inRange } from 'ramda-adjunct';
 import { err } from '../errors';
-
-//
-// ─── MODEL EVENTS ───────────────────────────────────────────────────────────────
-//
-
-const EVENT_UPDATE = 'update';
-const EVENT_INTEGRITY_ERRORS = 'integrityErrors';
 
 //
 // ─── ERRORS ─────────────────────────────────────────────────────────────────────
@@ -25,11 +18,11 @@ function errStepNotInRange(): Error {
   return err(`(0 <= step <= max - min)`);
 }
 
-function errMinIsGreaterThanMax(): Error {
+function errMinMax(): Error {
   return err(`(min <= max)`);
 }
 
-function errTooltipsDoNotMatchWithValues(): Error {
+function errTooltipsCount(): Error {
   return err(`(tooltips.length == 1 || tooltips.length == value.length)`);
 }
 
@@ -38,29 +31,27 @@ function errTooltipsDoNotMatchWithValues(): Error {
 //
 
 function checkIfValueInRange({ min, max, value }: Data): Maybe<Error> {
-  // prettier-ignore
-  const isNotInRange = value
-    .map(v => v >= min && v <= max)
-    .filter(isFalse)
-    .length > 0;
+  if (min > max) {
+    [min, max] = [max, min];
+  }
 
-  return isNotInRange ? Just(errValueNotInRange()) : Nothing;
+  const valueInRange = all(inRange(min, max), value);
+
+  return valueInRange ? Nothing : Just(errValueNotInRange());
 }
 
 function checkIfStepInRange({ min, max, step }: Data): Maybe<Error> {
-  const threshold = max - min;
-  const isNotInRange = step < 0 || step > threshold;
-  return isNotInRange ? Just(errStepNotInRange()) : Nothing;
+  const stepInRange = inRange(0, Math.abs(max - min), step);
+
+  return stepInRange ? Nothing : Just(errStepNotInRange());
 }
 
-function checkIfMinIsLessThanOrEqualToMax({ min, max }: Data): Maybe<Error> {
-  return min > max ? Just(errMinIsGreaterThanMax()) : Nothing;
+function checkMinMax({ min, max }: Data): Maybe<Error> {
+  return max > min ? Nothing : Just(errMinMax());
 }
 
-function checkIfTooltipsMatchValues({ value, tooltips }: Data): Maybe<Error> {
-  return tooltips.length !== 1 && tooltips.length !== value.length
-    ? Just(errTooltipsDoNotMatchWithValues())
-    : Nothing;
+function checkTooltipsCount({ value, tooltips }: Data): Maybe<Error> {
+  return tooltips.length === value.length ? Nothing : Just(errTooltipsCount());
 }
 
 // ────────────────────────────────────────────────────────────────────────────────
@@ -75,16 +66,23 @@ const defaultData: Data = {
 };
 
 class Model extends EventEmitter implements Model {
-  private data: Data;
+  private data!: Data;
+
+  static EVENT_UPDATE = 'Model/update';
+  static EVENT_INTEGRITY_ERRORS = 'Model/integrityErrors';
 
   constructor(data: Partial<Data> = defaultData) {
     super();
 
     const mergedData = mergeAll([defaultData, data]) as Data;
-    this.data = Model.checkDataIntegrity(mergedData).caseOf({
-      Left: () => defaultData,
-      Right: identity,
-    });
+
+    // prettier-ignore
+    Model
+      .checkDataIntegrity(mergedData)
+      .caseOf({
+        Left: () => this.data = defaultData,
+        Right: (data: Data) => this.data = data
+      });
   }
 
   get<K extends DataKey>(key: K): Data[K] {
@@ -98,10 +96,10 @@ class Model extends EventEmitter implements Model {
 
   static checkDataIntegrity(data: Data): Either<Error[], Data> {
     const validationResults: Maybe<Error>[] = [];
-    validationResults.push(checkIfMinIsLessThanOrEqualToMax(data));
+    validationResults.push(checkMinMax(data));
     validationResults.push(checkIfValueInRange(data));
     validationResults.push(checkIfStepInRange(data));
-    validationResults.push(checkIfTooltipsMatchValues(data));
+    validationResults.push(checkTooltipsCount(data));
 
     const errors: Error[] = Maybe.catMaybes(validationResults);
 
@@ -112,25 +110,22 @@ class Model extends EventEmitter implements Model {
    * Ask model to change state
    * @param data chunk of ModelData
    */
-  propose(changeData: Partial<Proposal>): Data {
+  propose(changeData: Partial<Proposal>): void {
     const newData = applySpec(changeData)(this.data) as Partial<Data>;
     const mergedData = mergeAll([this.data, newData]) as Data;
 
-    return Model.checkDataIntegrity(mergedData).caseOf({
-      Left: errors => {
-        this.emit(EVENT_INTEGRITY_ERRORS, errors);
-        return this.data;
-      },
-      Right: data => {
-        this.update(data);
-        return data;
-      },
-    });
-  }
-
-  private update(newData: Data): void {
-    this.data = newData;
-    this.emit(EVENT_UPDATE, newData);
+    // prettier-ignore
+    return Model
+      .checkDataIntegrity(mergedData)
+      .caseOf({
+        Left: errors => {
+          this.emit(Model.EVENT_INTEGRITY_ERRORS, errors);
+        },
+        Right: data => {
+          this.data = data;
+          this.emit(Model.EVENT_UPDATE, data);
+        },
+      });
   }
 }
 
@@ -139,9 +134,6 @@ export {
   // errors
   errValueNotInRange,
   errStepNotInRange,
-  errMinIsGreaterThanMax,
-  errTooltipsDoNotMatchWithValues,
-  // events
-  EVENT_UPDATE,
-  EVENT_INTEGRITY_ERRORS,
+  errMinMax,
+  errTooltipsCount,
 };

@@ -3,14 +3,11 @@ import { Right } from 'purify-ts/Either';
 import { not, multiply, add, subtract } from 'ramda';
 import {
   Model,
-  // events
-  EVENT_UPDATE,
-  EVENT_INTEGRITY_ERRORS,
   // errors
   errValueNotInRange,
   errStepNotInRange,
-  errMinIsGreaterThanMax,
-  errTooltipsDoNotMatchWithValues,
+  errMinMax,
+  errTooltipsCount,
 } from '../mvp/model';
 
 describe('Model.checkDataIntegrity', () => {
@@ -24,9 +21,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining(errMinIsGreaterThanMax()),
-      ]),
+      expect.arrayContaining([expect.objectContaining(errMinMax())]),
     );
   });
 
@@ -59,11 +54,23 @@ describe('Model.checkDataIntegrity', () => {
   });
 
   test('should contain StepNotInRange if step > max - min', () => {
-    const data: Data = {
+    let data: Data = {
       value: [30],
       min: 0,
       max: 100,
-      step: 500,
+      step: 200,
+      orientation: 'horizontal',
+      tooltips: [true],
+    };
+    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+      expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
+    );
+
+    data = {
+      value: [30],
+      min: 0,
+      max: 100,
+      step: -5,
       orientation: 'horizontal',
       tooltips: [true],
     };
@@ -83,9 +90,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true, true, false],
     };
     expect(Model.checkDataIntegrity(data).extract()).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining(errTooltipsDoNotMatchWithValues()),
-      ]),
+      expect.arrayContaining([expect.objectContaining(errTooltipsCount())]),
     );
   });
 
@@ -181,7 +186,7 @@ describe('Model.propose', () => {
     };
     const model = new Model(currentData);
     const updateListener = jest.fn();
-    model.on(EVENT_UPDATE, updateListener);
+    model.on(Model.EVENT_UPDATE, updateListener);
     model.propose(proposal);
     expect(updateListener).toHaveBeenCalledWith({
       value: [21, 41],
@@ -201,11 +206,11 @@ describe('Model.propose', () => {
     };
     const model = new Model(currentData);
     const errorListener = jest.fn();
-    model.on(EVENT_INTEGRITY_ERRORS, errorListener);
+    model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
     model.propose(proposal);
     expect(errorListener).toHaveBeenCalledWith([
       errValueNotInRange(),
-      errTooltipsDoNotMatchWithValues(),
+      errTooltipsCount(),
     ]);
   });
 });
@@ -250,7 +255,7 @@ describe('Model.set', () => {
   test('should emit update event', () => {
     const model = new Model(currentData);
     const updateListener = jest.fn();
-    model.on(EVENT_UPDATE, updateListener);
+    model.on(Model.EVENT_UPDATE, updateListener);
     model.set('step', 20);
     expect(updateListener).toBeCalledWith({
       value: [20, 40],
@@ -265,7 +270,7 @@ describe('Model.set', () => {
   test('should emit integrityError event if data change brakes integrity', () => {
     const model = new Model(currentData);
     const errorListener = jest.fn();
-    model.on(EVENT_INTEGRITY_ERRORS, errorListener);
+    model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
     model.set('step', 200);
     expect(errorListener).toBeCalledWith([errStepNotInRange()]);
   });
