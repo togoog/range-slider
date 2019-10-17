@@ -8,12 +8,12 @@ export type Plugin = {
 //
 
 export type Options = {
-  value: number[];
+  value: number | number[];
   min: number;
   max: number;
   step: number;
   orientation: 'horizontal' | 'vertical';
-  tooltips: boolean[];
+  tooltips: boolean | boolean[];
 };
 
 export type OptionsKey = keyof Options;
@@ -28,7 +28,22 @@ export type Model = {
   propose(change: Partial<Proposal>): void;
 };
 
-export type Data = Options;
+export type ValueId = string;
+
+export type Spot = {
+  id: ValueId;
+  // actual value user wants
+  value: number;
+};
+
+export type Data = {
+  spots: Spot[];
+  min: number;
+  max: number;
+  step: number;
+  orientation: 'horizontal' | 'vertical';
+  tooltips: boolean[];
+};
 
 export type DataKey = keyof Data;
 

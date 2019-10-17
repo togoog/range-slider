@@ -2,7 +2,7 @@ import { Data, DataKey, Proposal } from '../types';
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import { mergeAll, applySpec, all } from 'ramda';
+import { mergeAll, applySpec, all, pluck } from 'ramda';
 import { inRange } from 'ramda-adjunct';
 import { err } from '../errors';
 
@@ -30,12 +30,12 @@ function errTooltipsCount(): Error {
 // ─── INTEGRITY VALIDATORS ───────────────────────────────────────────────────────
 //
 
-function checkIfValueInRange({ min, max, value }: Data): Maybe<Error> {
+function checkIfValueInRange({ min, max, spots }: Data): Maybe<Error> {
   if (min > max) {
     [min, max] = [max, min];
   }
 
-  const valueInRange = all(inRange(min, max), value);
+  const valueInRange = all(inRange(min, max), pluck('value', spots));
 
   return valueInRange ? Nothing : Just(errValueNotInRange());
 }
@@ -50,14 +50,14 @@ function checkMinMax({ min, max }: Data): Maybe<Error> {
   return max > min ? Nothing : Just(errMinMax());
 }
 
-function checkTooltipsCount({ value, tooltips }: Data): Maybe<Error> {
-  return tooltips.length === value.length ? Nothing : Just(errTooltipsCount());
+function checkTooltipsCount({ spots, tooltips }: Data): Maybe<Error> {
+  return tooltips.length === spots.length ? Nothing : Just(errTooltipsCount());
 }
 
 // ────────────────────────────────────────────────────────────────────────────────
 
 const defaultData: Data = {
-  value: [50],
+  spots: [{ id: 'value_0', value: 50 }],
   min: 0,
   max: 100,
   step: 1,

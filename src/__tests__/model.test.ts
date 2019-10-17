@@ -1,6 +1,6 @@
-import { Data, Proposal } from '../types';
+import { Data, Proposal, Spot } from '../types';
 import { Right } from 'purify-ts/Either';
-import { not, multiply, add, subtract } from 'ramda';
+import { not, multiply, add, subtract, evolve, identity } from 'ramda';
 import {
   Model,
   // errors
@@ -13,7 +13,7 @@ import {
 describe('Model.checkDataIntegrity', () => {
   test('should contain error MinIsGreaterThanMax if min > max', () => {
     const data: Data = {
-      value: [30],
+      spots: [{ id: 'value_0', value: 30 }],
       min: 100,
       max: 0,
       step: 500,
@@ -27,7 +27,7 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain error ValueNotInRange if value < min', () => {
     const data: Data = {
-      value: [-30],
+      spots: [{ id: 'value_0', value: -30 }],
       min: 0,
       max: 100,
       step: 5,
@@ -41,7 +41,7 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain error ValueNotInRange if value > max', () => {
     const data: Data = {
-      value: [300],
+      spots: [{ id: 'value_0', value: 300 }],
       min: 0,
       max: 100,
       step: 5,
@@ -55,7 +55,7 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain StepNotInRange if step > max - min', () => {
     let data: Data = {
-      value: [30],
+      spots: [{ id: 'value_0', value: 30 }],
       min: 0,
       max: 100,
       step: 200,
@@ -67,7 +67,7 @@ describe('Model.checkDataIntegrity', () => {
     );
 
     data = {
-      value: [30],
+      spots: [{ id: 'value_0', value: 30 }],
       min: 0,
       max: 100,
       step: -5,
@@ -82,7 +82,7 @@ describe('Model.checkDataIntegrity', () => {
   test(`should contain error TooltipsDoNotMatchWithValues 
     if tooltips.length != 1 && tooltips.length != value.length`, () => {
     const data: Data = {
-      value: [30, 60],
+      spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
       min: 0,
       max: 100,
       step: 5,
@@ -96,7 +96,7 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should return Right(data) if data integrity is valid', () => {
     const data: Data = {
-      value: [30, 60],
+      spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
       min: 0,
       max: 100,
       step: 5,
@@ -109,7 +109,7 @@ describe('Model.checkDataIntegrity', () => {
 
 describe('Model.propose', () => {
   const currentData: Data = {
-    value: [20, 40],
+    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
     min: 0,
     max: 100,
     step: 5,
@@ -119,12 +119,24 @@ describe('Model.propose', () => {
 
   test('should change value if value transformer is present', () => {
     const proposal: Partial<Proposal> = {
-      value: (data: Data) => data.value.map(multiply(2)),
+      spots: (data: Data) =>
+        data.spots.map(
+          evolve({
+            id: identity,
+            value: multiply(2),
+          }),
+        ) as Spot[],
     };
     const model = new Model(currentData);
-    expect(model.get('value')).toEqual([20, 40]);
+    expect(model.get('spots')).toEqual([
+      { id: 'value_0', value: 20 },
+      { id: 'value_1', value: 40 },
+    ]);
     model.propose(proposal);
-    expect(model.get('value')).toEqual([40, 80]);
+    expect(model.get('spots')).toEqual([
+      { id: 'value_0', value: 40 },
+      { id: 'value_1', value: 80 },
+    ]);
   });
 
   test('should change min if min transformer is present', () => {
@@ -180,7 +192,13 @@ describe('Model.propose', () => {
 
   test('should emit update event with new ModelData object', () => {
     const proposal: Partial<Proposal> = {
-      value: (data: Data) => data.value.map(add(1)),
+      spots: (data: Data) =>
+        data.spots.map(
+          evolve({
+            id: identity,
+            value: add(1),
+          }),
+        ) as Spot[],
       min: (data: Data) => subtract(data.min, 10),
       step: (data: Data) => multiply(data.step, 2),
     };
@@ -189,7 +207,7 @@ describe('Model.propose', () => {
     model.on(Model.EVENT_UPDATE, updateListener);
     model.propose(proposal);
     expect(updateListener).toHaveBeenCalledWith({
-      value: [21, 41],
+      spots: [{ id: 'value_0', value: 21 }, { id: 'value_1', value: 41 }],
       min: -10,
       max: 100,
       step: 10,
@@ -201,7 +219,13 @@ describe('Model.propose', () => {
   test(`should emit integrityError event with array of Error objects 
     if proposal brakes data integrity`, () => {
     const proposal: Partial<Proposal> = {
-      value: (data: Data) => data.value.map(multiply(3)),
+      spots: (data: Data) =>
+        data.spots.map(
+          evolve({
+            id: identity,
+            value: multiply(3),
+          }),
+        ) as Spot[],
       tooltips: data => [...data.tooltips, true],
     };
     const model = new Model(currentData);
@@ -217,7 +241,7 @@ describe('Model.propose', () => {
 
 describe('Model.get', () => {
   const currentData: Data = {
-    value: [20, 40],
+    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
     min: 0,
     max: 100,
     step: 5,
@@ -227,7 +251,10 @@ describe('Model.get', () => {
 
   test('should return value from ModelData by key', () => {
     const model = new Model(currentData);
-    expect(model.get('value')).toEqual([20, 40]);
+    expect(model.get('spots')).toEqual([
+      { id: 'value_0', value: 20 },
+      { id: 'value_1', value: 40 },
+    ]);
     expect(model.get('min')).toEqual(0);
     expect(model.get('max')).toEqual(100);
     expect(model.get('step')).toEqual(5);
@@ -238,7 +265,7 @@ describe('Model.get', () => {
 
 describe('Model.set', () => {
   const currentData: Data = {
-    value: [20, 40],
+    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
     min: 0,
     max: 100,
     step: 5,
@@ -248,8 +275,12 @@ describe('Model.set', () => {
 
   test('should change ModelData by key', () => {
     const model = new Model(currentData);
-    model.set('value', [35, 45]);
-    expect(model.get('value')).toEqual([35, 45]);
+    const newSpots = [
+      { id: 'value_0', value: 35 },
+      { id: 'value_1', value: 45 },
+    ];
+    model.set('spots', newSpots);
+    expect(model.get('spots')).toEqual(newSpots);
   });
 
   test('should emit update event', () => {
@@ -258,7 +289,7 @@ describe('Model.set', () => {
     model.on(Model.EVENT_UPDATE, updateListener);
     model.set('step', 20);
     expect(updateListener).toBeCalledWith({
-      value: [20, 40],
+      spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
       min: 0,
       max: 100,
       step: 20,
