@@ -1,29 +1,26 @@
-import { Interval } from '../../types';
-import { handleView } from '..';
+import { html, TemplateResult } from 'lit-html';
+import { Interval, Origin } from '../../types';
 
 const className = 'range-slider__interval';
 
-function intervalView({ beginning, from, to, handles }: Interval): string {
-  // prettier-ignore
-  const handlesHTML = handles
-    .map(handle => handleView(handle))
-    .join('');
-
+function intervalView(
+  origin: Origin,
+  { from, to, isVisible }: Interval,
+): TemplateResult {
   // prettier-ignore
   const dimension = 
-    beginning === 'left' || beginning === 'right' 
+    ['left', 'right'].includes(origin)
     ? 'width' 
     : 'height';
 
   const style = `
-    ${beginning}: ${from}%; 
-    ${dimension}: ${to - from}%
+    ${origin}: ${from.value}%; 
+    ${dimension}: ${to.value - from.value}%;
+    display: ${isVisible ? 'block' : 'none'};
   `;
 
-  return `
-    <div class="${className}" style="${style}">
-      ${handlesHTML}
-    </div>
+  return html`
+    <div class="${className}" style="${style}"></div>
   `;
 }
 

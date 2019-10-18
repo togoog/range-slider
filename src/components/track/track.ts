@@ -1,7 +1,11 @@
+import { html, TemplateResult } from 'lit-html';
+
 const className = 'range-slider__track';
 
-function trackView(): string {
-  return `<div class="${className}"></div>`;
+function trackView(): TemplateResult {
+  return html`
+    <div class=${className}></div>
+  `;
 }
 
 export { trackView, className };

@@ -1,15 +1,15 @@
-import { Handle } from '../../types';
-import { tooltipView } from '..';
+import { html, TemplateResult } from 'lit-html';
+import { Handle, Origin } from '../../types';
 
 const className = 'range-slider__handle';
 
-function handleView({ isVisible, tooltip }: Handle): string {
-  const style = `display: ${isVisible ? 'block' : 'none'}`;
+function handleView(origin: Origin, { position }: Handle): TemplateResult {
+  const style = `
+    ${origin}: ${position.value};
+  `;
 
-  return `
-    <div class="${className}" style="${style}">
-      ${tooltip && tooltipView(tooltip)}
-    </div>
+  return html`
+    <div class=${className} style=${style}></div>
   `;
 }
 

@@ -32,6 +32,7 @@ export type Model = {
 export type ValueId = string;
 
 export type Spot = {
+  // SpotId === PositionId
   id: ValueId;
   // actual value user wants
   value: number;
@@ -57,27 +58,36 @@ export type Proposal = {
 // ─── STATE ──────────────────────────────────────────────────────────────────────
 //
 
+export type Position = {
+  // PositionId === SpotId
+  id: ValueId;
+  // relative position of value in from the beginning of range-slider (in %)
+  value: number;
+};
+
+export type Origin = 'left' | 'right' | 'top' | 'bottom';
+
 export type Handle = {
-  isVisible: boolean;
-  tooltip?: Tooltip;
+  position: Position;
 };
 
 export type Tooltip = {
+  position: Position;
   content: string;
+  isVisible: boolean;
 };
 
 export type Interval = {
-  // depends on orientation
-  beginning: 'left' | 'right' | 'top' | 'bottom';
-  // relative (%) position from the beginning of track for interval starting point
-  from: number;
-  // relative (%) position from the beginning of track for interval ending point
-  to: number;
-  handles: [Handle, Handle];
+  from: Position;
+  to: Position;
+  isVisible: boolean;
 };
 
 export type State = {
-  interval: Interval;
+  origin: Origin;
+  handles: Handle[];
+  tooltips: Tooltip[];
+  intervals: Interval[];
 };
 
 //

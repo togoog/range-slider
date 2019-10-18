@@ -1,5 +1,5 @@
 import { clone } from 'ramda';
-import { View, className as rsClassName } from '../mvp/view';
+import { View } from '../mvp/view';
 import { State } from '../types';
 import {
   trackClassName,
@@ -10,25 +10,34 @@ import {
 
 describe('View.render', () => {
   const state: State = {
-    interval: {
-      beginning: 'left',
-      from: 20,
-      to: 40,
-      handles: [
-        {
-          isVisible: true,
-          tooltip: {
-            content: '20',
-          },
-        },
-        {
-          isVisible: true,
-          tooltip: {
-            content: '40',
-          },
-        },
-      ],
-    },
+    origin: 'left',
+    intervals: [
+      {
+        isVisible: true,
+        from: { id: 'value_0', value: 20 },
+        to: { id: 'value_1', value: 40 },
+      },
+    ],
+    handles: [
+      {
+        position: { id: 'value_0', value: 20 },
+      },
+      {
+        position: { id: 'value_1', value: 40 },
+      },
+    ],
+    tooltips: [
+      {
+        content: '250',
+        isVisible: true,
+        position: { id: 'value_0', value: 20 },
+      },
+      {
+        content: '450',
+        isVisible: true,
+        position: { id: 'value_1', value: 40 },
+      },
+    ],
   };
 
   test('should render track', () => {
@@ -57,10 +66,10 @@ describe('View.render', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
-    expect(document.getElementsByClassName(rsClassName).length).toBe(0);
+    expect(document.getElementsByClassName(View.cssClass).length).toBe(0);
     expect(document.getElementsByClassName(handleClassName).length).toBe(0);
     view.render(state);
-    expect(document.getElementsByClassName(rsClassName).length).toBe(1);
+    expect(document.getElementsByClassName(View.cssClass).length).toBe(1);
     expect(document.getElementsByClassName(handleClassName).length).toBe(2);
   });
 
@@ -73,8 +82,8 @@ describe('View.render', () => {
     view.render(state);
     $tooltips = document.getElementsByClassName(tooltipClassName);
     expect($tooltips.length).toBe(2);
-    expect($tooltips[0].innerHTML).toMatch('20');
-    expect($tooltips[1].innerHTML).toMatch('40');
+    expect($tooltips[0].innerHTML).toMatch('250');
+    expect($tooltips[1].innerHTML).toMatch('450');
   });
 
   test('should position interval relative to beginning of track (horizontal)', () => {
@@ -95,7 +104,7 @@ describe('View.render', () => {
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     const stateVertical = clone(state);
-    stateVertical.interval.beginning = 'bottom';
+    stateVertical.origin = 'bottom';
     view.render(stateVertical);
     const $interval = document.getElementsByClassName(intervalClassName)[0];
     const style = ($interval as HTMLElement).style;
@@ -103,40 +112,5 @@ describe('View.render', () => {
     const height = style.getPropertyValue('height');
     expect(bottom).toBe('20%');
     expect(height).toBe('20%');
-  });
-
-  test('handle should be hidden if handle.isVisible is false', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
-    const stateHandleHidden = clone(state);
-    stateHandleHidden.interval.handles[0].isVisible = false;
-    view.render(stateHandleHidden);
-    const $handles = document.getElementsByClassName(handleClassName);
-    const $firstHandle = $handles[0] as HTMLElement;
-    expect($handles.length).toBe(2);
-    expect($firstHandle.style.display).toBe('none');
-  });
-
-  test('should display only 1 handle for single value', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
-    const stateSingleValue = clone(state);
-    stateSingleValue.interval.from = 40;
-    stateSingleValue.interval.to = 40;
-    stateSingleValue.interval.handles[0].isVisible = false;
-    view.render(stateSingleValue);
-    const $handles = document.getElementsByClassName(handleClassName);
-    const $interval = document.getElementsByClassName(
-      intervalClassName,
-    )[0] as HTMLElement;
-    const $firstHandle = $handles[0] as HTMLElement;
-    const $secondHandle = $handles[1] as HTMLElement;
-    expect($handles.length).toBe(2);
-    expect($firstHandle.style.display).toBe('none');
-    expect($secondHandle.style.display).toBe('block');
-    expect($interval.style.left).toBe('40%');
-    expect($interval.style.width).toBe('0%');
   });
 });
