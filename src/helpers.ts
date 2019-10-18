@@ -1,5 +1,6 @@
+import { Options, Data, OptionsKey, DataKey } from './types';
 import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
-import { pipe, ifElse, always } from 'ramda';
+import { pipe, ifElse, always, identity, clone, applySpec } from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
 
 /**
@@ -22,4 +23,52 @@ function $(selector: string): Maybe<HTMLElement[]> {
   );
 }
 
-export { $ };
+/**
+ * Convert value to array
+ * @param v value to be converted
+ */
+function toArray<T>(v: T): T[] {
+  return Array.isArray(v) ? [...v] : [v];
+}
+
+/**
+ * Create new array from arr with length = neededLength and fill empty slots with value
+ * @param arr initial array
+ * @param neededLength new array length
+ * @param value value to fill empty slots
+ */
+function fillArrayWith<T>(arr: T[], neededLength: number, value: T): T[] {
+  if (arr.length >= neededLength) {
+    return [...arr];
+  }
+
+  // fill remaining slots with value
+  return arr.concat(Array(neededLength - arr.length).fill(value));
+}
+
+function convertOptionsToData(options: Options): Data {
+  const clonedOptions = clone(options);
+
+  const transformations: { [key in DataKey]: Function } = {
+    spots: (op: Options) =>
+      toArray(op.value).map((v, i) => ({ id: `value_${i}`, value: v })),
+    min: (op: Options) => op.min,
+    max: (op: Options) => op.max,
+    step: (op: Options) => op.step,
+    orientation: (op: Options) => op.orientation,
+    tooltips: (op: Options) =>
+      // TODO: maybe refactor false value to defaultTooltipValue
+      fillArrayWith(toArray(op.tooltips), toArray(op.value).length, false),
+    intervals: (op: Options) =>
+      // TODO: maybe refactor false value to defaultIntervalValue
+      fillArrayWith(toArray(op.intervals), toArray(op.value).length + 1, false),
+  };
+
+  return applySpec(transformations)(clonedOptions) as Data;
+}
+
+export {
+  $,
+  // converters
+  convertOptionsToData,
+};
