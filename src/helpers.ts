@@ -1,6 +1,6 @@
 import { Options, Data, OptionsKey, DataKey } from './types';
 import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
-import { pipe, ifElse, always, identity, clone, applySpec } from 'ramda';
+import { pipe, ifElse, always, pluck, clone, applySpec } from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
 
 /**
@@ -67,8 +67,25 @@ function convertOptionsToData(options: Options): Data {
   return applySpec(transformations)(clonedOptions) as Data;
 }
 
+function convertDataToOptions(data: Data): Options {
+  const clonedData = clone(data);
+
+  const transformations: { [key in OptionsKey]: Function } = {
+    value: (d: Data) => pluck('value', d.spots),
+    min: (d: Data) => d.min,
+    max: (d: Data) => d.max,
+    step: (d: Data) => d.step,
+    orientation: (d: Data) => d.orientation,
+    tooltips: (d: Data) => d.tooltips,
+    intervals: (d: Data) => d.intervals,
+  };
+
+  return applySpec(transformations)(clonedData) as Options;
+}
+
 export {
   $,
   // converters
   convertOptionsToData,
+  convertDataToOptions,
 };

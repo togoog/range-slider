@@ -1,5 +1,5 @@
 import { Options, Data } from '../types';
-import { $, convertOptionsToData } from '../helpers';
+import { $, convertOptionsToData, convertDataToOptions } from '../helpers';
 
 describe('$', () => {
   test('Should find existing elements', () => {
@@ -139,5 +139,53 @@ describe('convertOptionsToData', () => {
     };
 
     expect(convertOptionsToData(options)).toEqual(data);
+  });
+});
+
+describe('convertDataToOptions', () => {
+  test('should convert', () => {
+    let data: Data = {
+      spots: [{ id: 'value_0', value: 50 }],
+      min: 0,
+      max: 100,
+      step: 1,
+      orientation: 'horizontal',
+      tooltips: [true],
+      intervals: [false, false],
+    };
+
+    let options: Options = {
+      value: [50],
+      min: 0,
+      max: 100,
+      step: 1,
+      orientation: 'horizontal',
+      tooltips: [true],
+      intervals: [false, false],
+    };
+
+    expect(convertDataToOptions(data)).toEqual(options);
+
+    data = {
+      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
+      min: 0,
+      max: 100,
+      step: 1,
+      orientation: 'horizontal',
+      tooltips: [true, false],
+      intervals: [false, true, false],
+    };
+
+    options = {
+      value: [50, 70],
+      min: 0,
+      max: 100,
+      step: 1,
+      orientation: 'horizontal',
+      tooltips: [true, false],
+      intervals: [false, true, false],
+    };
+
+    expect(convertDataToOptions(data)).toEqual(options);
   });
 });
