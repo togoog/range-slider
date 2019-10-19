@@ -1,5 +1,10 @@
-import { Options, Data } from '../types';
-import { $, convertOptionsToData, convertDataToOptions } from '../helpers';
+import { Options, Data, State } from '../types';
+import {
+  $,
+  convertOptionsToData,
+  convertDataToOptions,
+  convertDataToState,
+} from '../helpers';
 
 describe('$', () => {
   test('Should find existing elements', () => {
@@ -187,5 +192,96 @@ describe('convertDataToOptions', () => {
     };
 
     expect(convertDataToOptions(data)).toEqual(options);
+  });
+});
+
+describe('convertDataToState', () => {
+  test('should convert with 1 spot', () => {
+    const data: Data = {
+      spots: [{ id: 'value_0', value: 50 }],
+      min: 0,
+      max: 100,
+      step: 1,
+      orientation: 'horizontal',
+      tooltips: [true],
+      intervals: [false, false],
+    };
+
+    const state: State = {
+      origin: 'left',
+      intervals: [
+        {
+          isVisible: false,
+          from: { id: 'first', value: 0 },
+          to: { id: 'value_0', value: 50 },
+        },
+        {
+          isVisible: false,
+          from: { id: 'value_0', value: 50 },
+          to: { id: 'last', value: 100 },
+        },
+      ],
+      handles: [{ position: { id: 'value_0', value: 50 } }],
+      tooltips: [
+        {
+          content: '50',
+          position: { id: 'value_0', value: 50 },
+          isVisible: true,
+        },
+      ],
+    };
+
+    expect(convertDataToState(data)).toEqual(state);
+  });
+
+  test('should convert with 2 spots', () => {
+    const data: Data = {
+      spots: [{ id: 'value_0', value: 500 }, { id: 'value_1', value: 700 }],
+      min: 0,
+      max: 1000,
+      step: 10,
+      orientation: 'vertical',
+      tooltips: [true, false],
+      intervals: [false, true, false],
+    };
+
+    const state: State = {
+      origin: 'bottom',
+      intervals: [
+        {
+          isVisible: false,
+          from: { id: 'first', value: 0 },
+          to: { id: 'value_0', value: 50 },
+        },
+        {
+          isVisible: true,
+          from: { id: 'value_0', value: 50 },
+          to: { id: 'value_1', value: 70 },
+        },
+        {
+          isVisible: false,
+          from: { id: 'value_1', value: 70 },
+          to: { id: 'last', value: 100 },
+        },
+      ],
+      handles: [
+        { position: { id: 'value_0', value: 50 } },
+        { position: { id: 'value_1', value: 70 } },
+      ],
+      tooltips: [
+        {
+          content: '500',
+          position: { id: 'value_0', value: 50 },
+          isVisible: true,
+        },
+        {
+          content: '700',
+          position: { id: 'value_1', value: 70 },
+          isVisible: false,
+        },
+      ],
+    };
+
+    expect(convertDataToState(data)).toEqual(state);
   });
 });

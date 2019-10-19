@@ -1,6 +1,26 @@
-import { Options, Data, OptionsKey, DataKey } from './types';
+import {
+  Options,
+  Data,
+  State,
+  OptionsKey,
+  DataKey,
+  Origin,
+  Position,
+  Interval,
+  Handle,
+  Tooltip,
+} from './types';
 import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
-import { pipe, ifElse, always, pluck, clone, applySpec } from 'ramda';
+import {
+  pipe,
+  ifElse,
+  always,
+  pluck,
+  clone,
+  applySpec,
+  zip,
+  aperture,
+} from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
 
 /**
@@ -83,9 +103,58 @@ function convertDataToOptions(data: Data): Options {
   return applySpec(transformations)(clonedData) as Options;
 }
 
+function getRelativePosition(min: number, max: number, value: number): number {
+  return ((value - min) / (max - min)) * 100;
+}
+
+function convertDataToState(data: Data): State {
+  // origin
+  const origin: Origin = data.orientation === 'horizontal' ? 'left' : 'bottom';
+
+  // intervals
+  const firstPosition: Position = { id: 'first', value: 0 };
+  const lastPosition: Position = { id: 'last', value: 100 };
+  const handlePositions: Position[] = data.spots.map(spot => ({
+    id: spot.id,
+    value: getRelativePosition(data.min, data.max, spot.value),
+  }));
+  const allPositions: Position[] = [
+    firstPosition,
+    ...handlePositions,
+    lastPosition,
+  ];
+  const intervals: Interval[] = zip(
+    data.intervals,
+    aperture(2, allPositions),
+  ).map(([isVisible, [from, to]]) => ({ isVisible, from, to }));
+
+  // handles
+  const handles: Handle[] = handlePositions.map(position => ({ position }));
+
+  // tooltips
+  const tooltips: Tooltip[] = zip(data.tooltips, data.spots).map(
+    ([isVisible, spot]) => ({
+      isVisible,
+      content: String(spot.value),
+      position: {
+        id: spot.id,
+        value: getRelativePosition(data.min, data.max, spot.value),
+      },
+    }),
+  );
+
+  return {
+    origin,
+    intervals,
+    handles,
+    tooltips,
+  };
+}
+
 export {
   $,
   // converters
   convertOptionsToData,
   convertDataToOptions,
+  convertDataToState,
 };
