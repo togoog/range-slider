@@ -8,18 +8,16 @@ import {
 } from '../components';
 
 class View implements View {
-  static cssClass = 'range-slider';
-
   constructor(private el: HTMLElement) {}
 
   render(state: State): void {
-    const track = trackView();
+    const track = trackView(state.track);
     const intervals = state.intervals.map(intervalView);
     const handles = state.handles.map(handleView);
     const tooltips = state.tooltips.map(tooltipView);
 
     const template = html`
-      <div class=${View.cssClass}>
+      <div class=${state.cssClass}>
         ${track} ${intervals} ${handles} ${tooltips}
       </div>
     `;

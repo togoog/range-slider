@@ -109,9 +109,23 @@ function getRelativePosition(min: number, max: number, value: number): number {
 }
 
 function convertDataToState(data: Data): State {
+  // css classes
+  // TODO: move css class names to Options
+  const cssClass = 'range-slider';
+  const trackCSSClass = `${cssClass}__track`;
+  const intervalCSSClass = `${cssClass}__interval`;
+  const handleCSSClass = `${cssClass}__handle`;
+  const tooltipCSSClass = `${cssClass}__tooltip`;
+  const addCSSClassProp = assoc('cssClass');
+
   // origin
   const origin: Origin = data.orientation === 'horizontal' ? 'left' : 'bottom';
   const addOriginProp = assoc('origin', origin);
+
+  // track
+  const track = {
+    cssClass: trackCSSClass,
+  };
 
   // intervals
   const firstPosition: Position = { id: 'first', value: 0 };
@@ -127,12 +141,14 @@ function convertDataToState(data: Data): State {
   ];
   const intervals: Interval[] = zip(data.intervals, aperture(2, allPositions))
     .map(([isVisible, [from, to]]) => ({ isVisible, from, to }))
-    .map(addOriginProp);
+    .map(addOriginProp)
+    .map(addCSSClassProp(intervalCSSClass));
 
   // handles
   const handles: Handle[] = handlePositions
     .map(position => ({ position }))
-    .map(addOriginProp);
+    .map(addOriginProp)
+    .map(addCSSClassProp(handleCSSClass));
 
   // tooltips
   const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
@@ -144,9 +160,12 @@ function convertDataToState(data: Data): State {
         value: getRelativePosition(data.min, data.max, spot.value),
       },
     }))
-    .map(addOriginProp);
+    .map(addOriginProp)
+    .map(addCSSClassProp(tooltipCSSClass));
 
   return {
+    cssClass,
+    track,
     intervals,
     handles,
     tooltips,

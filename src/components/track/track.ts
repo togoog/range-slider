@@ -1,11 +1,10 @@
 import { html, TemplateResult } from 'lit-html';
+import { Track } from '../../types';
 
-const className = 'range-slider__track';
-
-function trackView(): TemplateResult {
+function trackView({ cssClass }: Track): TemplateResult {
   return html`
-    <div class=${className}></div>
+    <div class=${cssClass}></div>
   `;
 }
 
-export { trackView, className };
+export { trackView };

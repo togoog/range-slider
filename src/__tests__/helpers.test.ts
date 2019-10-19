@@ -208,27 +208,38 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
+      cssClass: 'range-slider',
+      track: { cssClass: 'range-slider__track' },
       intervals: [
         {
           origin: 'left',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
+          cssClass: 'range-slider__interval',
         },
         {
           origin: 'left',
           isVisible: false,
           from: { id: 'value_0', value: 50 },
           to: { id: 'last', value: 100 },
+          cssClass: 'range-slider__interval',
         },
       ],
-      handles: [{ origin: 'left', position: { id: 'value_0', value: 50 } }],
+      handles: [
+        {
+          origin: 'left',
+          position: { id: 'value_0', value: 50 },
+          cssClass: 'range-slider__handle',
+        },
+      ],
       tooltips: [
         {
           origin: 'left',
           content: '50',
           position: { id: 'value_0', value: 50 },
           isVisible: true,
+          cssClass: 'range-slider__tooltip',
         },
       ],
     };
@@ -248,29 +259,42 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
+      cssClass: 'range-slider',
+      track: { cssClass: 'range-slider__track' },
       intervals: [
         {
           origin: 'bottom',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
+          cssClass: 'range-slider__interval',
         },
         {
           origin: 'bottom',
           isVisible: true,
           from: { id: 'value_0', value: 50 },
           to: { id: 'value_1', value: 70 },
+          cssClass: 'range-slider__interval',
         },
         {
           origin: 'bottom',
           isVisible: false,
           from: { id: 'value_1', value: 70 },
           to: { id: 'last', value: 100 },
+          cssClass: 'range-slider__interval',
         },
       ],
       handles: [
-        { origin: 'bottom', position: { id: 'value_0', value: 50 } },
-        { origin: 'bottom', position: { id: 'value_1', value: 70 } },
+        {
+          origin: 'bottom',
+          position: { id: 'value_0', value: 50 },
+          cssClass: 'range-slider__handle',
+        },
+        {
+          origin: 'bottom',
+          position: { id: 'value_1', value: 70 },
+          cssClass: 'range-slider__handle',
+        },
       ],
       tooltips: [
         {
@@ -278,12 +302,14 @@ describe('convertDataToState', () => {
           content: '500',
           position: { id: 'value_0', value: 50 },
           isVisible: true,
+          cssClass: 'range-slider__tooltip',
         },
         {
           origin: 'bottom',
           content: '700',
           position: { id: 'value_1', value: 70 },
           isVisible: false,
+          cssClass: 'range-slider__tooltip',
         },
       ],
     };
