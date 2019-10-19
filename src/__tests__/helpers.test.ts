@@ -208,22 +208,24 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
-      origin: 'left',
       intervals: [
         {
+          origin: 'left',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
         },
         {
+          origin: 'left',
           isVisible: false,
           from: { id: 'value_0', value: 50 },
           to: { id: 'last', value: 100 },
         },
       ],
-      handles: [{ position: { id: 'value_0', value: 50 } }],
+      handles: [{ origin: 'left', position: { id: 'value_0', value: 50 } }],
       tooltips: [
         {
+          origin: 'left',
           content: '50',
           position: { id: 'value_0', value: 50 },
           isVisible: true,
@@ -246,35 +248,39 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
-      origin: 'bottom',
       intervals: [
         {
+          origin: 'bottom',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
         },
         {
+          origin: 'bottom',
           isVisible: true,
           from: { id: 'value_0', value: 50 },
           to: { id: 'value_1', value: 70 },
         },
         {
+          origin: 'bottom',
           isVisible: false,
           from: { id: 'value_1', value: 70 },
           to: { id: 'last', value: 100 },
         },
       ],
       handles: [
-        { position: { id: 'value_0', value: 50 } },
-        { position: { id: 'value_1', value: 70 } },
+        { origin: 'bottom', position: { id: 'value_0', value: 50 } },
+        { origin: 'bottom', position: { id: 'value_1', value: 70 } },
       ],
       tooltips: [
         {
+          origin: 'bottom',
           content: '500',
           position: { id: 'value_0', value: 50 },
           isVisible: true,
         },
         {
+          origin: 'bottom',
           content: '700',
           position: { id: 'value_1', value: 70 },
           isVisible: false,

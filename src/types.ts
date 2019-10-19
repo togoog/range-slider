@@ -68,23 +68,26 @@ export type Position = {
 export type Origin = 'left' | 'right' | 'top' | 'bottom';
 
 export type Handle = {
+  origin: Origin;
   position: Position;
 };
 
 export type Tooltip = {
+  origin: Origin;
   position: Position;
   content: string;
   isVisible: boolean;
 };
 
 export type Interval = {
+  origin: Origin;
   from: Position;
   to: Position;
   isVisible: boolean;
 };
 
+// State is a data prepared for view rendering
 export type State = {
-  origin: Origin;
   handles: Handle[];
   tooltips: Tooltip[];
   intervals: Interval[];

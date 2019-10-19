@@ -1,9 +1,9 @@
 import { html, TemplateResult } from 'lit-html';
-import { Handle, Origin } from '../../types';
+import { Handle } from '../../types';
 
 const className = 'range-slider__handle';
 
-function handleView(origin: Origin, { position }: Handle): TemplateResult {
+function handleView({ origin, position }: Handle): TemplateResult {
   const style = `
     ${origin}: ${position.value};
   `;

@@ -14,15 +14,9 @@ class View implements View {
 
   render(state: State): void {
     const track = trackView();
-    const intervals = state.intervals.map(intervalState =>
-      intervalView(state.origin, intervalState),
-    );
-    const handles = state.handles.map(handleState =>
-      handleView(state.origin, handleState),
-    );
-    const tooltips = state.tooltips.map(tooltipState =>
-      tooltipView(state.origin, tooltipState),
-    );
+    const intervals = state.intervals.map(intervalView);
+    const handles = state.handles.map(handleView);
+    const tooltips = state.tooltips.map(tooltipView);
 
     const template = html`
       <div class=${View.cssClass}>

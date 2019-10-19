@@ -1,12 +1,14 @@
 import { html, TemplateResult } from 'lit-html';
-import { Tooltip, Origin } from '../../types';
+import { Tooltip } from '../../types';
 
 const className = 'range-slider__tooltip';
 
-function tooltipView(
-  origin: Origin,
-  { position, content, isVisible }: Tooltip,
-): TemplateResult {
+function tooltipView({
+  origin,
+  position,
+  content,
+  isVisible,
+}: Tooltip): TemplateResult {
   const style = `
     ${origin}: ${position.value}%;
     display: ${isVisible ? 'block' : 'none'};

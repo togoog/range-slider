@@ -10,9 +10,9 @@ import {
 
 describe('View.render', () => {
   const state: State = {
-    origin: 'left',
     intervals: [
       {
+        origin: 'left',
         isVisible: true,
         from: { id: 'value_0', value: 20 },
         to: { id: 'value_1', value: 40 },
@@ -20,19 +20,23 @@ describe('View.render', () => {
     ],
     handles: [
       {
+        origin: 'left',
         position: { id: 'value_0', value: 20 },
       },
       {
+        origin: 'left',
         position: { id: 'value_1', value: 40 },
       },
     ],
     tooltips: [
       {
+        origin: 'left',
         content: '250',
         isVisible: true,
         position: { id: 'value_0', value: 20 },
       },
       {
+        origin: 'left',
         content: '450',
         isVisible: true,
         position: { id: 'value_1', value: 40 },
@@ -100,11 +104,45 @@ describe('View.render', () => {
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
+    const state: State = {
+      intervals: [
+        {
+          origin: 'bottom',
+          isVisible: true,
+          from: { id: 'value_0', value: 20 },
+          to: { id: 'value_1', value: 40 },
+        },
+      ],
+      handles: [
+        {
+          origin: 'bottom',
+          position: { id: 'value_0', value: 20 },
+        },
+        {
+          origin: 'bottom',
+          position: { id: 'value_1', value: 40 },
+        },
+      ],
+      tooltips: [
+        {
+          origin: 'bottom',
+          content: '250',
+          isVisible: true,
+          position: { id: 'value_0', value: 20 },
+        },
+        {
+          origin: 'bottom',
+          content: '450',
+          isVisible: true,
+          position: { id: 'value_1', value: 40 },
+        },
+      ],
+    };
+
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     const stateVertical = clone(state);
-    stateVertical.origin = 'bottom';
     view.render(stateVertical);
     const $interval = document.getElementsByClassName(intervalClassName)[0];
     const style = ($interval as HTMLElement).style;

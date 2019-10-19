@@ -1,12 +1,14 @@
 import { html, TemplateResult } from 'lit-html';
-import { Interval, Origin } from '../../types';
+import { Interval } from '../../types';
 
 const className = 'range-slider__interval';
 
-function intervalView(
-  origin: Origin,
-  { from, to, isVisible }: Interval,
-): TemplateResult {
+function intervalView({
+  origin,
+  from,
+  to,
+  isVisible,
+}: Interval): TemplateResult {
   // prettier-ignore
   const dimension = 
     ['left', 'right'].includes(origin)

@@ -20,6 +20,7 @@ import {
   applySpec,
   zip,
   aperture,
+  assoc,
 } from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
 
@@ -110,6 +111,7 @@ function getRelativePosition(min: number, max: number, value: number): number {
 function convertDataToState(data: Data): State {
   // origin
   const origin: Origin = data.orientation === 'horizontal' ? 'left' : 'bottom';
+  const addOriginProp = assoc('origin', origin);
 
   // intervals
   const firstPosition: Position = { id: 'first', value: 0 };
@@ -123,28 +125,28 @@ function convertDataToState(data: Data): State {
     ...handlePositions,
     lastPosition,
   ];
-  const intervals: Interval[] = zip(
-    data.intervals,
-    aperture(2, allPositions),
-  ).map(([isVisible, [from, to]]) => ({ isVisible, from, to }));
+  const intervals: Interval[] = zip(data.intervals, aperture(2, allPositions))
+    .map(([isVisible, [from, to]]) => ({ isVisible, from, to }))
+    .map(addOriginProp);
 
   // handles
-  const handles: Handle[] = handlePositions.map(position => ({ position }));
+  const handles: Handle[] = handlePositions
+    .map(position => ({ position }))
+    .map(addOriginProp);
 
   // tooltips
-  const tooltips: Tooltip[] = zip(data.tooltips, data.spots).map(
-    ([isVisible, spot]) => ({
+  const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
+    .map(([isVisible, spot]) => ({
       isVisible,
       content: String(spot.value),
       position: {
         id: spot.id,
         value: getRelativePosition(data.min, data.max, spot.value),
       },
-    }),
-  );
+    }))
+    .map(addOriginProp);
 
   return {
-    origin,
     intervals,
     handles,
     tooltips,
