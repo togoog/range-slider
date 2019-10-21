@@ -1,5 +1,6 @@
 import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
+import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { Handle } from '../../types';
 
 function handleView({ origin, position, cssClass }: Handle): TemplateResult {
@@ -7,8 +8,12 @@ function handleView({ origin, position, cssClass }: Handle): TemplateResult {
     [origin]: `${position.value}`,
   };
 
+  const cssClasses: ClassInfo = {
+    [cssClass]: true,
+  };
+
   return html`
-    <div class=${cssClass} style=${styleMap(styles)}></div>
+    <div class=${classMap(cssClasses)} style=${styleMap(styles)}></div>
   `;
 }
 

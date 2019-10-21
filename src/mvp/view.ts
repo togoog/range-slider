@@ -1,4 +1,5 @@
 import { render, html } from 'lit-html';
+import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { State } from '../types';
 import {
   trackView,
@@ -16,8 +17,12 @@ class View implements View {
     const handles = state.handles.map(handleView);
     const tooltips = state.tooltips.map(tooltipView);
 
+    const cssClasses: ClassInfo = {
+      [state.cssClass]: true,
+    };
+
     const template = html`
-      <div class=${state.cssClass}>
+      <div class=${classMap(cssClasses)}>
         ${track} ${intervals} ${handles} ${tooltips}
       </div>
     `;
