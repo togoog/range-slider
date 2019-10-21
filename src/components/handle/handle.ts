@@ -1,13 +1,14 @@
 import { html, TemplateResult } from 'lit-html';
+import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { Handle } from '../../types';
 
 function handleView({ origin, position, cssClass }: Handle): TemplateResult {
-  const style = `
-    ${origin}: ${position.value};
-  `;
+  const styles: StyleInfo = {
+    [origin]: `${position.value}`,
+  };
 
   return html`
-    <div class=${cssClass} style=${style}></div>
+    <div class=${cssClass} style=${styleMap(styles)}></div>
   `;
 }
 

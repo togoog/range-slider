@@ -1,4 +1,5 @@
 import { html, TemplateResult } from 'lit-html';
+import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { Interval } from '../../types';
 
 function intervalView({
@@ -14,14 +15,14 @@ function intervalView({
     ? 'width' 
     : 'height';
 
-  const style = `
-    ${origin}: ${from.value}%; 
-    ${dimension}: ${to.value - from.value}%;
-    display: ${isVisible ? 'block' : 'none'};
-  `;
+  const styles: StyleInfo = {
+    [origin]: `${from.value}%`,
+    [dimension]: `${to.value - from.value}%`,
+    display: isVisible ? 'block' : 'none',
+  };
 
   return html`
-    <div class=${cssClass} style=${style}></div>
+    <div class=${cssClass} style=${styleMap(styles)}></div>
   `;
 }
 

@@ -1,4 +1,5 @@
 import { html, TemplateResult } from 'lit-html';
+import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { Tooltip } from '../../types';
 
 function tooltipView({
@@ -8,13 +9,13 @@ function tooltipView({
   isVisible,
   cssClass,
 }: Tooltip): TemplateResult {
-  const style = `
-    ${origin}: ${position.value}%;
-    display: ${isVisible ? 'block' : 'none'};
-  `;
+  const styles: StyleInfo = {
+    [origin]: `${position.value}%`,
+    display: isVisible ? 'block' : 'none',
+  };
 
   return html`
-    <div class=${cssClass} style=${style}>
+    <div class=${cssClass} style=${styleMap(styles)}>
       ${content}
     </div>
   `;
