@@ -67,6 +67,7 @@ describe('convertOptionsToData', () => {
 
     let data: Data = {
       spots: [{ id: 'value_0', value: 50 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -89,6 +90,7 @@ describe('convertOptionsToData', () => {
 
     data = {
       spots: [{ id: 'value_0', value: 50 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -113,6 +115,7 @@ describe('convertOptionsToData', () => {
 
     let data: Data = {
       spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -135,6 +138,7 @@ describe('convertOptionsToData', () => {
 
     data = {
       spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -151,6 +155,7 @@ describe('convertDataToOptions', () => {
   test('should convert', () => {
     let data: Data = {
       spots: [{ id: 'value_0', value: 50 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -173,6 +178,7 @@ describe('convertDataToOptions', () => {
 
     data = {
       spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -199,6 +205,7 @@ describe('convertDataToState', () => {
   test('should convert with 1 spot', () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 50 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 1,
@@ -231,6 +238,7 @@ describe('convertDataToState', () => {
           origin: 'left',
           position: { id: 'value_0', value: 50 },
           cssClass: 'range-slider__handle',
+          isActive: false,
         },
       ],
       tooltips: [
@@ -250,6 +258,7 @@ describe('convertDataToState', () => {
   test('should convert with 2 spots', () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 500 }, { id: 'value_1', value: 700 }],
+      activeSpotIds: [],
       min: 0,
       max: 1000,
       step: 10,
@@ -289,11 +298,86 @@ describe('convertDataToState', () => {
           origin: 'bottom',
           position: { id: 'value_0', value: 50 },
           cssClass: 'range-slider__handle',
+          isActive: false,
         },
         {
           origin: 'bottom',
           position: { id: 'value_1', value: 70 },
           cssClass: 'range-slider__handle',
+          isActive: false,
+        },
+      ],
+      tooltips: [
+        {
+          origin: 'bottom',
+          content: '500',
+          position: { id: 'value_0', value: 50 },
+          isVisible: true,
+          cssClass: 'range-slider__tooltip',
+        },
+        {
+          origin: 'bottom',
+          content: '700',
+          position: { id: 'value_1', value: 70 },
+          isVisible: false,
+          cssClass: 'range-slider__tooltip',
+        },
+      ],
+    };
+
+    expect(convertDataToState(data)).toEqual(state);
+  });
+
+  test('should set active handles', () => {
+    const data: Data = {
+      spots: [{ id: 'value_0', value: 500 }, { id: 'value_1', value: 700 }],
+      activeSpotIds: ['value_0', 'value_1'],
+      min: 0,
+      max: 1000,
+      step: 10,
+      orientation: 'vertical',
+      tooltips: [true, false],
+      intervals: [false, true, false],
+    };
+
+    const state: State = {
+      cssClass: 'range-slider',
+      track: { cssClass: 'range-slider__track' },
+      intervals: [
+        {
+          origin: 'bottom',
+          isVisible: false,
+          from: { id: 'first', value: 0 },
+          to: { id: 'value_0', value: 50 },
+          cssClass: 'range-slider__interval',
+        },
+        {
+          origin: 'bottom',
+          isVisible: true,
+          from: { id: 'value_0', value: 50 },
+          to: { id: 'value_1', value: 70 },
+          cssClass: 'range-slider__interval',
+        },
+        {
+          origin: 'bottom',
+          isVisible: false,
+          from: { id: 'value_1', value: 70 },
+          to: { id: 'last', value: 100 },
+          cssClass: 'range-slider__interval',
+        },
+      ],
+      handles: [
+        {
+          origin: 'bottom',
+          position: { id: 'value_0', value: 50 },
+          cssClass: 'range-slider__handle',
+          isActive: true,
+        },
+        {
+          origin: 'bottom',
+          position: { id: 'value_1', value: 70 },
+          cssClass: 'range-slider__handle',
+          isActive: true,
         },
       ],
       tooltips: [

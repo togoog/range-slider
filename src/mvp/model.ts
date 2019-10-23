@@ -68,6 +68,7 @@ function checkIntervalsCount({ spots, intervals }: Data): Maybe<Error> {
 
 const defaultData: Data = {
   spots: [{ id: 'value_0', value: 50 }],
+  activeSpotIds: [],
   min: 0,
   max: 100,
   step: 1,

@@ -40,6 +40,7 @@ export type Spot = {
 
 export type Data = {
   spots: Spot[];
+  activeSpotIds: ValueId[];
   min: number;
   max: number;
   step: number;
@@ -71,6 +72,7 @@ export type Handle = {
   origin: Origin;
   position: Position;
   cssClass: string;
+  isActive: boolean;
 };
 
 export type Tooltip = {

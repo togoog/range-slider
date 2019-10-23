@@ -1,6 +1,7 @@
 import { clone } from 'ramda';
 import { View } from '../mvp/view';
 import { State } from '../types';
+import { fireEvent } from '@testing-library/dom';
 
 describe('View.render', () => {
   const state: State = {
@@ -34,11 +35,13 @@ describe('View.render', () => {
         cssClass: 'range-slider__handle',
         origin: 'left',
         position: { id: 'value_0', value: 20 },
+        isActive: false,
       },
       {
         cssClass: 'range-slider__handle',
         origin: 'left',
         position: { id: 'value_1', value: 40 },
+        isActive: false,
       },
     ],
     tooltips: [
@@ -156,11 +159,13 @@ describe('View.render', () => {
           cssClass: 'range-slider__handle',
           origin: 'bottom',
           position: { id: 'value_0', value: 20 },
+          isActive: false,
         },
         {
           cssClass: 'range-slider__handle',
           origin: 'bottom',
           position: { id: 'value_1', value: 40 },
+          isActive: false,
         },
       ],
       tooltips: [
@@ -194,5 +199,93 @@ describe('View.render', () => {
     const height = style.getPropertyValue('height');
     expect(bottom).toBe('20%');
     expect(height).toBe('20%');
+  });
+});
+
+describe('Handle', () => {
+  const state: State = {
+    cssClass: 'range-slider',
+    track: { cssClass: 'range-slider__track' },
+    intervals: [
+      {
+        cssClass: 'range-slider__interval',
+        origin: 'left',
+        isVisible: true,
+        from: { id: 'first', value: 0 },
+        to: { id: 'value_0', value: 50 },
+      },
+      {
+        cssClass: 'range-slider__interval',
+        origin: 'left',
+        isVisible: false,
+        from: { id: 'value_0', value: 50 },
+        to: { id: 'last', value: 100 },
+      },
+    ],
+    handles: [
+      {
+        cssClass: 'range-slider__handle',
+        origin: 'left',
+        position: { id: 'value_0', value: 50 },
+        isActive: false,
+      },
+    ],
+    tooltips: [
+      {
+        cssClass: 'range-slider__tooltip',
+        origin: 'left',
+        content: '250',
+        isVisible: true,
+        position: { id: 'value_0', value: 500 },
+      },
+    ],
+  };
+
+  test(`View should emit ${View.EVENT_HANDLE_DRAG_START} on Handle mouseDown`, () => {
+    document.body.innerHTML = '<div id="root"></div>';
+    const $el = document.querySelector('#root');
+    const view = new View($el as HTMLElement);
+    const dragStartListener = jest.fn();
+    view.on(View.EVENT_HANDLE_DRAG_START, dragStartListener);
+    view.render(state);
+    const $handle = document.getElementsByClassName(
+      state.handles[0].cssClass,
+    )[0] as HTMLElement;
+    fireEvent.mouseDown($handle);
+    expect(dragStartListener).toBeCalledTimes(1);
+    expect(dragStartListener).toBeCalledWith({
+      id: 'value_0',
+      value: 50,
+    });
+  });
+
+  test(`View should emit ${View.EVENT_HANDLE_DRAG_END} on Handle mouseUp`, () => {
+    document.body.innerHTML = '<div id="root"></div>';
+    const $el = document.querySelector('#root');
+    const view = new View($el as HTMLElement);
+    const dragEndListener = jest.fn();
+    view.on(View.EVENT_HANDLE_DRAG_END, dragEndListener);
+    view.render(state);
+    const $handle = document.getElementsByClassName(
+      state.handles[0].cssClass,
+    )[0] as HTMLElement;
+    fireEvent.mouseDown($handle);
+    fireEvent.mouseUp($handle);
+    expect(dragEndListener).toBeCalledTimes(1);
+  });
+
+  test(`View should emit ${View.EVENT_HANDLE_DRAG} on Handle move`, () => {
+    document.body.innerHTML = '<div id="root"></div>';
+    const $el = document.querySelector('#root');
+    const view = new View($el as HTMLElement);
+    const dragListener = jest.fn();
+    view.on(View.EVENT_HANDLE_DRAG, dragListener);
+    view.render(state);
+    const $handle = document.getElementsByClassName(
+      state.handles[0].cssClass,
+    )[0] as HTMLElement;
+    fireEvent.mouseDown($handle);
+    fireEvent.mouseMove($handle, { clientX: 100 });
+    expect(dragListener).toBeCalledTimes(1);
   });
 });

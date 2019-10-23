@@ -15,6 +15,7 @@ describe('Model.checkDataIntegrity', () => {
   test('should contain errMinMax', () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }],
+      activeSpotIds: [],
       min: 100,
       max: 0,
       step: 500,
@@ -30,6 +31,7 @@ describe('Model.checkDataIntegrity', () => {
   test('should contain errValueNotInRange', () => {
     let data: Data = {
       spots: [{ id: 'value_0', value: -30 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 5,
@@ -43,6 +45,7 @@ describe('Model.checkDataIntegrity', () => {
 
     data = {
       spots: [{ id: 'value_0', value: 300 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 5,
@@ -58,6 +61,7 @@ describe('Model.checkDataIntegrity', () => {
   test('should contain errStepNotInRange', () => {
     let data: Data = {
       spots: [{ id: 'value_0', value: 30 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 200,
@@ -71,6 +75,7 @@ describe('Model.checkDataIntegrity', () => {
 
     data = {
       spots: [{ id: 'value_0', value: 30 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: -5,
@@ -86,6 +91,7 @@ describe('Model.checkDataIntegrity', () => {
   test(`should contain errTooltipsCount`, () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 5,
@@ -101,6 +107,7 @@ describe('Model.checkDataIntegrity', () => {
   test(`should contain errIntervalsCount`, () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 5,
@@ -116,6 +123,7 @@ describe('Model.checkDataIntegrity', () => {
   test('should return Right(data)', () => {
     const data: Data = {
       spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 5,
@@ -130,6 +138,7 @@ describe('Model.checkDataIntegrity', () => {
 describe('Model.propose', () => {
   const currentData: Data = {
     spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+    activeSpotIds: [],
     min: 0,
     max: 100,
     step: 5,
@@ -229,6 +238,7 @@ describe('Model.propose', () => {
     model.propose(proposal);
     expect(updateListener).toHaveBeenCalledWith({
       spots: [{ id: 'value_0', value: 21 }, { id: 'value_1', value: 41 }],
+      activeSpotIds: [],
       min: -10,
       max: 100,
       step: 10,
@@ -263,6 +273,7 @@ describe('Model.propose', () => {
 describe('Model.get', () => {
   const currentData: Data = {
     spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+    activeSpotIds: [],
     min: 0,
     max: 100,
     step: 5,
@@ -288,6 +299,7 @@ describe('Model.get', () => {
 describe('Model.set', () => {
   const currentData: Data = {
     spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+    activeSpotIds: [],
     min: 0,
     max: 100,
     step: 5,
@@ -313,6 +325,7 @@ describe('Model.set', () => {
     model.set('step', 20);
     expect(updateListener).toBeCalledWith({
       spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+      activeSpotIds: [],
       min: 0,
       max: 100,
       step: 20,

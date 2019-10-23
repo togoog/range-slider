@@ -9,6 +9,7 @@ import {
   Interval,
   Handle,
   Tooltip,
+  ValueId,
 } from './types';
 import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
 import {
@@ -73,6 +74,7 @@ function convertOptionsToData(options: Options): Data {
   const transformations: { [key in DataKey]: Function } = {
     spots: (op: Options) =>
       toArray(op.value).map((v, i) => ({ id: `value_${i}`, value: v })),
+    activeSpotIds: () => [],
     min: (op: Options) => op.min,
     max: (op: Options) => op.max,
     step: (op: Options) => op.step,
@@ -145,10 +147,13 @@ function convertDataToState(data: Data): State {
     .map(addCSSClassProp(intervalCSSClass));
 
   // handles
-  const handles: Handle[] = handlePositions
+  const addIsActiveProp = (ids: ValueId[]) => (v: { position: Position }) =>
+    assoc('isActive', ids.includes(v.position.id), v);
+  const handles = handlePositions
     .map(position => ({ position }))
     .map(addOriginProp)
-    .map(addCSSClassProp(handleCSSClass));
+    .map(addCSSClassProp(handleCSSClass))
+    .map(addIsActiveProp(data.activeSpotIds)) as Handle[];
 
   // tooltips
   const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
