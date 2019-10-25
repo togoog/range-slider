@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "demo": "parcel ./demo/demo.html"
   },
   "keywords": [
     "typescript",
@@ -13,6 +14,10 @@
   ],
   "author": "Roman Korenev",
   "license": "ISC",
+  "browserlist": [
+    "last 2 versions",
+    "> 1%"
+  ],
   "devDependencies": {
     "@testing-library/dom": "^6.8.1",
     "@types/events": "^3.0.0",
