@@ -1,15 +1,17 @@
+import { convertOrientationToOrigin } from '../../helpers';
 import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { Interval } from '../../types';
 
 function intervalView({
-  origin,
+  orientation,
   from,
   to,
-  isVisible,
   cssClass,
 }: Interval): TemplateResult {
+  const origin = convertOrientationToOrigin(orientation);
+
   // prettier-ignore
   const dimension = 
     ['left', 'right'].includes(origin)
@@ -19,11 +21,11 @@ function intervalView({
   const styles: StyleInfo = {
     [origin]: `${from.value}%`,
     [dimension]: `${to.value - from.value}%`,
-    display: isVisible ? 'block' : 'none',
   };
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
+    [`${cssClass}_${orientation}`]: true,
   };
 
   return html`

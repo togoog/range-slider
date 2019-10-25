@@ -1,15 +1,18 @@
+import { convertOrientationToOrigin } from '../../helpers';
 import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { Tooltip } from '../../types';
 
 function tooltipView({
-  origin,
+  orientation,
   position,
   content,
   isVisible,
   cssClass,
 }: Tooltip): TemplateResult {
+  const origin = convertOrientationToOrigin(orientation);
+
   const styles: StyleInfo = {
     [origin]: `${position.value}%`,
     display: isVisible ? 'block' : 'none',
@@ -17,6 +20,7 @@ function tooltipView({
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
+    [`${cssClass}_${orientation}`]: true,
   };
 
   return html`

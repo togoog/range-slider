@@ -10,6 +10,7 @@ import {
   Handle,
   Tooltip,
   ValueId,
+  Orientation,
 } from './types';
 import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
 import {
@@ -81,10 +82,18 @@ function convertOptionsToData(options: Options): Data {
     orientation: (op: Options) => op.orientation,
     tooltips: (op: Options) =>
       // TODO: maybe refactor false value to defaultTooltipValue
-      fillArrayWith(toArray(op.tooltips), toArray(op.value).length, false),
+      fillArrayWith(
+        toArray(op.tooltips),
+        toArray(op.value).length,
+        Array.isArray(op.tooltips) ? false : op.tooltips,
+      ),
     intervals: (op: Options) =>
       // TODO: maybe refactor false value to defaultIntervalValue
-      fillArrayWith(toArray(op.intervals), toArray(op.value).length + 1, false),
+      fillArrayWith(
+        toArray(op.intervals),
+        toArray(op.value).length + 1,
+        Array.isArray(op.intervals) ? false : op.intervals,
+      ),
   };
 
   return applySpec(transformations)(clonedOptions) as Data;
@@ -113,19 +122,20 @@ function getRelativePosition(min: number, max: number, value: number): number {
 function convertDataToState(data: Data): State {
   // css classes
   // TODO: move css class names to Options
-  const cssClass = 'range-slider';
+  const cssPrefix = 'curly';
+  const cssClass = `${cssPrefix}-range-slider`;
   const trackCSSClass = `${cssClass}__track`;
   const intervalCSSClass = `${cssClass}__interval`;
   const handleCSSClass = `${cssClass}__handle`;
   const tooltipCSSClass = `${cssClass}__tooltip`;
   const addCSSClassProp = assoc('cssClass');
 
-  // origin
-  const origin: Origin = data.orientation === 'horizontal' ? 'left' : 'bottom';
-  const addOriginProp = assoc('origin', origin);
+  // orientation
+  const addOrientationProp = assoc('orientation', data.orientation);
 
   // track
   const track = {
+    orientation: data.orientation,
     cssClass: trackCSSClass,
   };
 
@@ -143,7 +153,7 @@ function convertDataToState(data: Data): State {
   ];
   const intervals: Interval[] = zip(data.intervals, aperture(2, allPositions))
     .map(([isVisible, [from, to]]) => ({ isVisible, from, to }))
-    .map(addOriginProp)
+    .map(addOrientationProp)
     .map(addCSSClassProp(intervalCSSClass));
 
   // handles
@@ -151,7 +161,7 @@ function convertDataToState(data: Data): State {
     assoc('isActive', ids.includes(v.position.id), v);
   const handles = handlePositions
     .map(position => ({ position }))
-    .map(addOriginProp)
+    .map(addOrientationProp)
     .map(addCSSClassProp(handleCSSClass))
     .map(addIsActiveProp(data.activeSpotIds)) as Handle[];
 
@@ -159,13 +169,13 @@ function convertDataToState(data: Data): State {
   const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
     .map(([isVisible, spot]) => ({
       isVisible,
-      content: String(spot.value),
+      content: `Current value is: ${spot.value}`,
       position: {
         id: spot.id,
         value: getRelativePosition(data.min, data.max, spot.value),
       },
     }))
-    .map(addOriginProp)
+    .map(addOrientationProp)
     .map(addCSSClassProp(tooltipCSSClass));
 
   return {
@@ -177,9 +187,14 @@ function convertDataToState(data: Data): State {
   };
 }
 
+function convertOrientationToOrigin(orientation: Orientation): Origin {
+  return orientation === 'horizontal' ? 'left' : 'bottom';
+}
+
 export {
   $,
   // converters
+  convertOrientationToOrigin,
   convertOptionsToData,
   convertDataToOptions,
   convertDataToState,

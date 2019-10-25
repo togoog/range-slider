@@ -1,3 +1,4 @@
+import { convertOrientationToOrigin } from '../../helpers';
 import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
@@ -8,15 +9,18 @@ type Actions = {
 };
 
 function handleView(
-  { origin, position, cssClass, isActive }: Handle,
+  { orientation, position, cssClass, isActive }: Handle,
   actions: Actions,
 ): TemplateResult {
+  const origin = convertOrientationToOrigin(orientation);
+
   const styles: StyleInfo = {
-    [origin]: `${position.value}`,
+    [origin]: `${position.value}%`,
   };
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
+    [`${cssClass}_${orientation}`]: true,
     [`${cssClass}_is-active`]: isActive,
   };
 
