@@ -1,30 +1,49 @@
 import { clone } from 'ramda';
 import { View } from '../mvp/view';
-import { State } from '../types';
+import { State, Data } from '../types';
+import { getTooltipContent } from '../helpers';
 import { fireEvent } from '@testing-library/dom';
 
+const cssPrefix = 'curly';
+const cssClass = `${cssPrefix}-range-slider`;
+const trackCSSClass = `${cssClass}__track`;
+const intervalCSSClass = `${cssClass}__interval`;
+const handleCSSClass = `${cssClass}__handle`;
+const tooltipCSSClass = `${cssClass}__tooltip`;
+
 describe('View.render', () => {
+  const data: Data = {
+    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+    activeSpotIds: [],
+    min: 0,
+    max: 100,
+    step: 1,
+    orientation: 'horizontal',
+    intervals: [false, true, false],
+    tooltips: [true, true],
+  };
+
   const state: State = {
-    cssClass: 'range-slider',
-    track: { cssClass: 'range-slider__track' },
+    cssClass,
+    track: { orientation: 'horizontal', cssClass: trackCSSClass },
     intervals: [
       {
-        cssClass: 'range-slider__interval',
-        origin: 'left',
+        cssClass: intervalCSSClass,
+        orientation: 'horizontal',
         isVisible: false,
         from: { id: 'first', value: 0 },
         to: { id: 'value_0', value: 20 },
       },
       {
-        cssClass: 'range-slider__interval',
-        origin: 'left',
+        cssClass: intervalCSSClass,
+        orientation: 'horizontal',
         isVisible: true,
         from: { id: 'value_0', value: 20 },
         to: { id: 'value_1', value: 40 },
       },
       {
-        cssClass: 'range-slider__interval',
-        origin: 'left',
+        cssClass: intervalCSSClass,
+        orientation: 'horizontal',
         isVisible: false,
         from: { id: 'value_1', value: 40 },
         to: { id: 'last', value: 100 },
@@ -32,30 +51,30 @@ describe('View.render', () => {
     ],
     handles: [
       {
-        cssClass: 'range-slider__handle',
-        origin: 'left',
+        cssClass: handleCSSClass,
+        orientation: 'horizontal',
         position: { id: 'value_0', value: 20 },
         isActive: false,
       },
       {
-        cssClass: 'range-slider__handle',
-        origin: 'left',
+        cssClass: handleCSSClass,
+        orientation: 'horizontal',
         position: { id: 'value_1', value: 40 },
         isActive: false,
       },
     ],
     tooltips: [
       {
-        cssClass: 'range-slider__tooltip',
-        origin: 'left',
-        content: '250',
+        cssClass: tooltipCSSClass,
+        orientation: 'horizontal',
+        content: getTooltipContent(data, 0),
         isVisible: true,
         position: { id: 'value_0', value: 20 },
       },
       {
-        cssClass: 'range-slider__tooltip',
-        origin: 'left',
-        content: '450',
+        cssClass: tooltipCSSClass,
+        orientation: 'horizontal',
+        content: getTooltipContent(data, 1),
         isVisible: true,
         position: { id: 'value_1', value: 40 },
       },
@@ -73,7 +92,7 @@ describe('View.render', () => {
     expect($interval).toHaveLength(1);
   });
 
-  test('should render interval', () => {
+  test('should only render intervals with isVisible = true', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
@@ -83,7 +102,7 @@ describe('View.render', () => {
     expect($interval).toHaveLength(0);
     view.render(state);
     $interval = document.getElementsByClassName(state.intervals[0].cssClass);
-    expect($interval).toHaveLength(3);
+    expect($interval).toHaveLength(1);
   });
 
   test('should render handles', () => {
@@ -108,8 +127,6 @@ describe('View.render', () => {
     view.render(state);
     $tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
     expect($tooltips.length).toBe(2);
-    expect($tooltips[0].innerHTML).toMatch('250');
-    expect($tooltips[1].innerHTML).toMatch('450');
   });
 
   test('should position interval relative to beginning of track (horizontal)', () => {
@@ -117,9 +134,7 @@ describe('View.render', () => {
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     view.render(state);
-    const $interval = document.getElementsByClassName(
-      state.intervals[0].cssClass,
-    )[1];
+    const $interval = document.getElementsByClassName(intervalCSSClass)[0];
     const style = ($interval as HTMLElement).style;
     const left = style.getPropertyValue('left');
     const width = style.getPropertyValue('width');
@@ -128,27 +143,38 @@ describe('View.render', () => {
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
+    const data: Data = {
+      spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+      activeSpotIds: [],
+      min: 0,
+      max: 100,
+      step: 1,
+      orientation: 'vertical',
+      intervals: [false, true, false],
+      tooltips: [true, true],
+    };
+
     const state: State = {
-      cssClass: 'range-slider',
-      track: { cssClass: 'range-slider__track' },
+      cssClass,
+      track: { orientation: 'vertical', cssClass: trackCSSClass },
       intervals: [
         {
-          cssClass: 'range-slider__interval',
-          origin: 'bottom',
+          cssClass: intervalCSSClass,
+          orientation: 'vertical',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 20 },
         },
         {
-          cssClass: 'range-slider__interval',
-          origin: 'bottom',
+          cssClass: intervalCSSClass,
+          orientation: 'vertical',
           isVisible: true,
           from: { id: 'value_0', value: 20 },
           to: { id: 'value_1', value: 40 },
         },
         {
-          cssClass: 'range-slider__interval',
-          origin: 'bottom',
+          cssClass: intervalCSSClass,
+          orientation: 'vertical',
           isVisible: false,
           from: { id: 'value_1', value: 40 },
           to: { id: 'last', value: 100 },
@@ -156,30 +182,30 @@ describe('View.render', () => {
       ],
       handles: [
         {
-          cssClass: 'range-slider__handle',
-          origin: 'bottom',
+          cssClass: handleCSSClass,
+          orientation: 'vertical',
           position: { id: 'value_0', value: 20 },
           isActive: false,
         },
         {
-          cssClass: 'range-slider__handle',
-          origin: 'bottom',
+          cssClass: handleCSSClass,
+          orientation: 'vertical',
           position: { id: 'value_1', value: 40 },
           isActive: false,
         },
       ],
       tooltips: [
         {
-          cssClass: 'range-slider__tooltip',
-          origin: 'bottom',
-          content: '250',
+          cssClass: tooltipCSSClass,
+          orientation: 'vertical',
+          content: getTooltipContent(data, 0),
           isVisible: true,
           position: { id: 'value_0', value: 20 },
         },
         {
-          cssClass: 'range-slider__tooltip',
-          origin: 'bottom',
-          content: '450',
+          cssClass: tooltipCSSClass,
+          orientation: 'vertical',
+          content: getTooltipContent(data, 1),
           isVisible: true,
           position: { id: 'value_1', value: 40 },
         },
@@ -189,11 +215,8 @@ describe('View.render', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
-    const stateVertical = clone(state);
-    view.render(stateVertical);
-    const $interval = document.getElementsByClassName(
-      state.intervals[0].cssClass,
-    )[1];
+    view.render(state);
+    const $interval = document.getElementsByClassName(intervalCSSClass)[0];
     const style = ($interval as HTMLElement).style;
     const bottom = style.getPropertyValue('bottom');
     const height = style.getPropertyValue('height');
@@ -203,20 +226,31 @@ describe('View.render', () => {
 });
 
 describe('Handle', () => {
+  const data: Data = {
+    spots: [{ id: 'value_0', value: 50 }],
+    activeSpotIds: [],
+    min: 0,
+    max: 100,
+    step: 1,
+    orientation: 'horizontal',
+    intervals: [true, false],
+    tooltips: [true],
+  };
+
   const state: State = {
-    cssClass: 'range-slider',
-    track: { cssClass: 'range-slider__track' },
+    cssClass,
+    track: { orientation: 'horizontal', cssClass: trackCSSClass },
     intervals: [
       {
-        cssClass: 'range-slider__interval',
-        origin: 'left',
+        cssClass: intervalCSSClass,
+        orientation: 'horizontal',
         isVisible: true,
         from: { id: 'first', value: 0 },
         to: { id: 'value_0', value: 50 },
       },
       {
-        cssClass: 'range-slider__interval',
-        origin: 'left',
+        cssClass: intervalCSSClass,
+        orientation: 'horizontal',
         isVisible: false,
         from: { id: 'value_0', value: 50 },
         to: { id: 'last', value: 100 },
@@ -224,17 +258,17 @@ describe('Handle', () => {
     ],
     handles: [
       {
-        cssClass: 'range-slider__handle',
-        origin: 'left',
+        cssClass: handleCSSClass,
+        orientation: 'horizontal',
         position: { id: 'value_0', value: 50 },
         isActive: false,
       },
     ],
     tooltips: [
       {
-        cssClass: 'range-slider__tooltip',
-        origin: 'left',
-        content: '250',
+        cssClass: tooltipCSSClass,
+        orientation: 'horizontal',
+        content: getTooltipContent(data, 0),
         isVisible: true,
         position: { id: 'value_0', value: 500 },
       },

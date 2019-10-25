@@ -1,10 +1,18 @@
 import { Options, Data, State } from '../types';
 import {
   $,
+  getTooltipContent,
   convertOptionsToData,
   convertDataToOptions,
   convertDataToState,
 } from '../helpers';
+
+const cssPrefix = 'curly';
+const cssClass = `${cssPrefix}-range-slider`;
+const trackCSSClass = `${cssClass}__track`;
+const intervalCSSClass = `${cssClass}__interval`;
+const handleCSSClass = `${cssClass}__handle`;
+const tooltipCSSClass = `${cssClass}__tooltip`;
 
 describe('$', () => {
   test('Should find existing elements', () => {
@@ -40,7 +48,7 @@ describe('$', () => {
     expect(getElements().isNothing()).toBe(true);
   });
 
-  test('Should return none if selector is empty string', () => {
+  test('Should return Nothing if selector is empty string', () => {
     document.body.innerHTML = `
       <input type="range" class="range-slider" />
       <input type="range" class="range-slider" />
@@ -215,39 +223,39 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
-      cssClass: 'range-slider',
-      track: { cssClass: 'range-slider__track' },
+      cssClass,
+      track: { orientation: 'horizontal', cssClass: trackCSSClass },
       intervals: [
         {
-          origin: 'left',
+          orientation: 'horizontal',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
         {
-          origin: 'left',
+          orientation: 'horizontal',
           isVisible: false,
           from: { id: 'value_0', value: 50 },
           to: { id: 'last', value: 100 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
       ],
       handles: [
         {
-          origin: 'left',
+          orientation: 'horizontal',
           position: { id: 'value_0', value: 50 },
-          cssClass: 'range-slider__handle',
+          cssClass: handleCSSClass,
           isActive: false,
         },
       ],
       tooltips: [
         {
-          origin: 'left',
-          content: '50',
+          orientation: 'horizontal',
+          content: getTooltipContent(data, 0),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
-          cssClass: 'range-slider__tooltip',
+          cssClass: tooltipCSSClass,
         },
       ],
     };
@@ -268,59 +276,59 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
-      cssClass: 'range-slider',
-      track: { cssClass: 'range-slider__track' },
+      cssClass,
+      track: { orientation: 'vertical', cssClass: trackCSSClass },
       intervals: [
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           isVisible: true,
           from: { id: 'value_0', value: 50 },
           to: { id: 'value_1', value: 70 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           isVisible: false,
           from: { id: 'value_1', value: 70 },
           to: { id: 'last', value: 100 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
       ],
       handles: [
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           position: { id: 'value_0', value: 50 },
-          cssClass: 'range-slider__handle',
+          cssClass: handleCSSClass,
           isActive: false,
         },
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           position: { id: 'value_1', value: 70 },
-          cssClass: 'range-slider__handle',
+          cssClass: handleCSSClass,
           isActive: false,
         },
       ],
       tooltips: [
         {
-          origin: 'bottom',
-          content: '500',
+          orientation: 'vertical',
+          content: getTooltipContent(data, 0),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
-          cssClass: 'range-slider__tooltip',
+          cssClass: tooltipCSSClass,
         },
         {
-          origin: 'bottom',
-          content: '700',
+          orientation: 'vertical',
+          content: getTooltipContent(data, 1),
           position: { id: 'value_1', value: 70 },
           isVisible: false,
-          cssClass: 'range-slider__tooltip',
+          cssClass: tooltipCSSClass,
         },
       ],
     };
@@ -341,59 +349,59 @@ describe('convertDataToState', () => {
     };
 
     const state: State = {
-      cssClass: 'range-slider',
-      track: { cssClass: 'range-slider__track' },
+      cssClass,
+      track: { orientation: 'vertical', cssClass: trackCSSClass },
       intervals: [
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           isVisible: false,
           from: { id: 'first', value: 0 },
           to: { id: 'value_0', value: 50 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           isVisible: true,
           from: { id: 'value_0', value: 50 },
           to: { id: 'value_1', value: 70 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           isVisible: false,
           from: { id: 'value_1', value: 70 },
           to: { id: 'last', value: 100 },
-          cssClass: 'range-slider__interval',
+          cssClass: intervalCSSClass,
         },
       ],
       handles: [
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           position: { id: 'value_0', value: 50 },
-          cssClass: 'range-slider__handle',
+          cssClass: handleCSSClass,
           isActive: true,
         },
         {
-          origin: 'bottom',
+          orientation: 'vertical',
           position: { id: 'value_1', value: 70 },
-          cssClass: 'range-slider__handle',
+          cssClass: handleCSSClass,
           isActive: true,
         },
       ],
       tooltips: [
         {
-          origin: 'bottom',
-          content: '500',
+          orientation: 'vertical',
+          content: getTooltipContent(data, 0),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
-          cssClass: 'range-slider__tooltip',
+          cssClass: tooltipCSSClass,
         },
         {
-          origin: 'bottom',
-          content: '700',
+          orientation: 'vertical',
+          content: getTooltipContent(data, 1),
           position: { id: 'value_1', value: 70 },
           isVisible: false,
-          cssClass: 'range-slider__tooltip',
+          cssClass: tooltipCSSClass,
         },
       ],
     };

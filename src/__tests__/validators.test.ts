@@ -29,9 +29,9 @@ describe('checkValue', () => {
     expect(checkValue(3.1415)).toEqual(Nothing);
   });
 
-  test('pair of numbers is valid', () => {
+  test('array of numbers is valid', () => {
     expect(checkValue([0, 0])).toEqual(Nothing);
-    expect(checkValue([-10, -50])).toEqual(Nothing);
+    expect(checkValue([-10, -50, 40])).toEqual(Nothing);
     expect(checkValue([10, 50])).toEqual(Nothing);
     expect(checkValue([3.1415, 100])).toEqual(Nothing);
   });
