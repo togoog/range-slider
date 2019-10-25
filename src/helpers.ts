@@ -30,10 +30,12 @@ import { lengthEq } from 'ramda-adjunct';
  * Query dom elements
  * @param selector css selector
  */
-function $(selector: string): Maybe<HTMLElement[]> {
+function $(selector: string, rootEl?: HTMLElement): Maybe<HTMLElement[]> {
+  const element = typeof rootEl === 'undefined' ? document : rootEl;
+
   // prettier-ignore
   return Maybe
-    .encase(() => document.querySelectorAll(selector))
+    .encase(() => element.querySelectorAll(selector))
     .chain<HTMLElement[]>(
       ifElse(
         lengthEq(0),
@@ -119,6 +121,15 @@ function getRelativePosition(min: number, max: number, value: number): number {
   return ((value - min) / (max - min)) * 100;
 }
 
+/**
+ * Create tooltip content from Data object
+ * @param data Data object
+ * @param index tooltip index
+ */
+function getTooltipContent(data: Data, index: number): string {
+  return `Current value is: ${data.spots[index].value}`;
+}
+
 function convertDataToState(data: Data): State {
   // css classes
   // TODO: move css class names to Options
@@ -167,9 +178,9 @@ function convertDataToState(data: Data): State {
 
   // tooltips
   const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
-    .map(([isVisible, spot]) => ({
+    .map(([isVisible, spot], index) => ({
       isVisible,
-      content: `Current value is: ${spot.value}`,
+      content: getTooltipContent(data, index),
       position: {
         id: spot.id,
         value: getRelativePosition(data.min, data.max, spot.value),
@@ -193,6 +204,7 @@ function convertOrientationToOrigin(orientation: Orientation): Origin {
 
 export {
   $,
+  getTooltipContent,
   // converters
   convertOrientationToOrigin,
   convertOptionsToData,
