@@ -120,7 +120,7 @@ describe('convertOptionsToData', () => {
       max: 100,
       step: 1,
       orientation: 'horizontal',
-      tooltips: [true, false],
+      tooltips: [true, true],
       intervals: [false, false, false],
     };
 

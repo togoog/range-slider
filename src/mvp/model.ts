@@ -1,8 +1,8 @@
-import { Data, DataKey, Proposal } from '../types';
+import { RangeSliderModel, Data, DataKey, Proposal } from '../types';
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import { mergeAll, applySpec, all, pluck } from 'ramda';
+import { mergeAll, applySpec, all, pluck, inc } from 'ramda';
 import { inRange } from 'ramda-adjunct';
 import { err } from '../errors';
 
@@ -39,7 +39,7 @@ function checkIfValueInRange({ min, max, spots }: Data): Maybe<Error> {
     [min, max] = [max, min];
   }
 
-  const valueInRange = all(inRange(min, max), pluck('value', spots));
+  const valueInRange = all(inRange(min, inc(max)), pluck('value', spots));
 
   return valueInRange ? Nothing : Just(errValueNotInRange());
 }
@@ -77,7 +77,7 @@ const defaultData: Data = {
   intervals: [true, false],
 };
 
-class Model extends EventEmitter implements Model {
+class Model extends EventEmitter implements RangeSliderModel {
   private data!: Data;
 
   static EVENT_UPDATE = 'Model/update';
@@ -92,8 +92,9 @@ class Model extends EventEmitter implements Model {
     Model
       .checkDataIntegrity(mergedData)
       .caseOf({
-        Left: () => this.data = defaultData,
-        Right: (data: Data) => this.data = data
+        // TODO: create logger service for errors
+        Left: (errors) => {console.error(errors); this.data = defaultData;},
+        Right: (data: Data) => {this.data = data;}
       });
   }
 
@@ -104,6 +105,14 @@ class Model extends EventEmitter implements Model {
   set<K extends DataKey>(key: K, value: Data[K]): Model {
     this.propose({ [key]: () => value });
     return this;
+  }
+
+  getAll(): Data {
+    return this.data;
+  }
+
+  setAll(data: Data): void {
+    this.processData(data);
   }
 
   static checkDataIntegrity(data: Data): Either<Error[], Data> {
@@ -125,18 +134,22 @@ class Model extends EventEmitter implements Model {
    */
   propose(proposal: Partial<Proposal>): void {
     const newData = applySpec(proposal)(this.data) as Partial<Data>;
-    const mergedData = mergeAll([this.data, newData]) as Data;
+    const data = mergeAll([this.data, newData]) as Data;
 
+    this.processData(data);
+  }
+
+  private processData(data: Data): void {
     // prettier-ignore
-    return Model
-      .checkDataIntegrity(mergedData)
+    Model
+      .checkDataIntegrity(data)
       .caseOf({
         Left: errors => {
           this.emit(Model.EVENT_INTEGRITY_ERRORS, errors);
         },
-        Right: data => {
-          this.data = data;
-          this.emit(Model.EVENT_UPDATE, data);
+        Right: cleanData => {
+          this.data = cleanData;
+          this.emit(Model.EVENT_UPDATE, cleanData);
         },
       });
   }

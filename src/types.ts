@@ -1,18 +1,22 @@
 export type Plugin = {
   get<K extends OptionsKey>(key: K): Options[K];
   set<K extends OptionsKey>(key: K, value: Options[K]): Plugin;
+  getAll(): Options;
+  setAll(options: Options): void;
 };
 
 //
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
 
+export type Orientation = 'horizontal' | 'vertical';
+
 export type Options = {
   value: number | number[];
   min: number;
   max: number;
   step: number;
-  orientation: 'horizontal' | 'vertical';
+  orientation: Orientation;
   tooltips: boolean | boolean[];
   intervals: boolean | boolean[];
 };
@@ -23,9 +27,12 @@ export type OptionsKey = keyof Options;
 // ─── MODEL ──────────────────────────────────────────────────────────────────────
 //
 
-export type Model = {
+export type RangeSliderModel = {
+  getAll(): Data;
+  setAll(data: Data): void;
   get<K extends DataKey>(key: K): Data[K];
-  set<K extends DataKey>(key: K, value: Data[K]): Model;
+  set<K extends DataKey>(key: K, value: Data[K]): RangeSliderModel;
+  on(eventName: string, listener: Function): void;
   propose(change: Partial<Proposal>): void;
 };
 
@@ -44,7 +51,7 @@ export type Data = {
   min: number;
   max: number;
   step: number;
-  orientation: 'horizontal' | 'vertical';
+  orientation: Orientation;
   tooltips: boolean[];
   intervals: boolean[];
 };
@@ -69,14 +76,14 @@ export type Position = {
 export type Origin = 'left' | 'right' | 'top' | 'bottom';
 
 export type Handle = {
-  origin: Origin;
+  orientation: Orientation;
   position: Position;
   cssClass: string;
   isActive: boolean;
 };
 
 export type Tooltip = {
-  origin: Origin;
+  orientation: Orientation;
   position: Position;
   content: string;
   isVisible: boolean;
@@ -84,7 +91,7 @@ export type Tooltip = {
 };
 
 export type Interval = {
-  origin: Origin;
+  orientation: Orientation;
   from: Position;
   to: Position;
   isVisible: boolean;
@@ -92,6 +99,7 @@ export type Interval = {
 };
 
 export type Track = {
+  orientation: Orientation;
   cssClass: string;
 };
 
@@ -108,6 +116,16 @@ export type State = {
 // ─── VIEW ───────────────────────────────────────────────────────────────────────
 //
 
-export type View = {
+export type RangeSliderView = {
   render(state: State): void;
+  on(eventName: string, listener: Function): void;
+};
+
+//
+// ─── PRESENTER ──────────────────────────────────────────────────────────────────
+//
+
+export type RangeSliderPresenter = {
+  // start the application
+  startApp(): void;
 };

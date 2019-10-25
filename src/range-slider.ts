@@ -1,4 +1,14 @@
-import { Plugin, Options, OptionsKey } from './types';
+import { map } from 'ramda';
+import {
+  Plugin,
+  RangeSliderModel,
+  RangeSliderView,
+  RangeSliderPresenter,
+  Options,
+  OptionsKey,
+} from './types';
+import { Model, View, Presenter } from './mvp';
+import { convertOptionsToData, convertDataToOptions, $ } from './helpers';
 
 //
 // ─── EVENTS ─────────────────────────────────────────────────────────────────────
@@ -34,25 +44,72 @@ const EVENT_SLIDE_END = 'slideEnd';
 // ────────────────────────────────────────────────────────────────────────────────
 
 const defaultOptions: Options = {
-  value: [50],
+  value: 50,
   min: 0,
   max: 100,
   step: 1,
   orientation: 'horizontal',
-  tooltips: [true],
+  tooltips: true,
+  intervals: [true, false],
 };
 
 class RangeSlider implements Plugin {
-  constructor(private el: string, private options: Options = defaultOptions) {}
+  private model: RangeSliderModel;
+  private view: RangeSliderView;
+  private presenter: RangeSliderPresenter;
+
+  constructor(el: HTMLElement, options: Options = defaultOptions) {
+    const data = convertOptionsToData(options);
+    this.model = new Model(data);
+    this.view = new View(el);
+    this.presenter = new Presenter(this.model, this.view);
+  }
 
   get<T extends OptionsKey>(key: T): Options[T] {
-    return this.options[key];
+    const options = convertDataToOptions(this.model.getAll());
+    return options[key];
   }
 
   set<T extends OptionsKey>(key: T, value: Options[T]): RangeSlider {
-    this.options[key] = value;
+    const options = convertDataToOptions(this.model.getAll());
+    options[key] = value;
+    const data = convertOptionsToData(options);
+    this.model.setAll(data);
     return this;
+  }
+
+  getAll(): Options {
+    const options = convertDataToOptions(this.model.getAll());
+    return options;
+  }
+
+  setAll(options: Options): void {
+    const data = convertOptionsToData(options);
+    this.model.setAll(data);
   }
 }
 
-export { RangeSlider };
+function createRangeSlider(
+  source: string | HTMLElement | HTMLElement[],
+  options?: Options,
+): RangeSlider[] {
+  // if source is css selector
+  if (typeof source === 'string') {
+    return $(source).caseOf({
+      Just: map(el => new RangeSlider(el, options)),
+      Nothing: () => [],
+    });
+  }
+
+  if (Array.isArray(source)) {
+    return source.map(el => new RangeSlider(el, options));
+  }
+
+  if (source instanceof HTMLElement) {
+    return [new RangeSlider(source, options)];
+  }
+
+  return [];
+}
+
+export { RangeSlider, createRangeSlider };

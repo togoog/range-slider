@@ -1,7 +1,8 @@
+import { propEq } from 'ramda';
 import { EventEmitter } from 'events';
 import { render, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
-import { State, Position } from '../types';
+import { RangeSliderView, State, Position } from '../types';
 import {
   trackView,
   intervalView,
@@ -9,7 +10,7 @@ import {
   tooltipView,
 } from '../components';
 
-class View extends EventEmitter implements View {
+class View extends EventEmitter implements RangeSliderView {
   static EVENT_HANDLE_DRAG_START = 'View/Handle/dragStart';
   static EVENT_HANDLE_DRAG_END = 'View/Handle/dragEnd';
   static EVENT_HANDLE_DRAG = 'View/Handle/drag';
@@ -20,11 +21,17 @@ class View extends EventEmitter implements View {
 
   constructor(private el: HTMLElement) {
     super();
+
+    this.onHandleMouseDown = this.onHandleMouseDown.bind(this);
+    this.onHandleMouseUp = this.onHandleMouseUp.bind(this);
+    this.onHandleMove = this.onHandleMove.bind(this);
   }
 
   render(state: State): void {
     const track = trackView(state.track);
-    const intervals = state.intervals.map(intervalView);
+    const intervals = state.intervals
+      .filter(propEq('isVisible', true))
+      .map(intervalView);
     const handles = state.handles.map(state =>
       handleView(state, {
         onMouseDown: this.onHandleMouseDown,
@@ -45,20 +52,22 @@ class View extends EventEmitter implements View {
     render(template, this.el);
   }
 
-  onHandleMouseDown = (position: Position) => (e: MouseEvent): void => {
-    e.preventDefault();
-
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
-    this.handleShiftX = e.clientX - rect.left;
-    this.handleShiftY = e.clientY - rect.top;
-
+  onHandleMouseDown(position: Position): (e: MouseEvent) => void {
     document.addEventListener('mousemove', this.onHandleMove);
     document.addEventListener('mouseup', this.onHandleMouseUp);
 
-    this.emit(View.EVENT_HANDLE_DRAG_START, position);
-  };
+    return (e: MouseEvent): void => {
+      e.preventDefault();
 
-  onHandleMouseUp = (e: MouseEvent): void => {
+      const rect = (e.target as HTMLElement).getBoundingClientRect();
+      this.handleShiftX = e.clientX - rect.left;
+      this.handleShiftY = e.clientY - rect.top;
+
+      this.emit(View.EVENT_HANDLE_DRAG_START, position);
+    };
+  }
+
+  onHandleMouseUp(e: MouseEvent): void {
     e.preventDefault();
 
     this.handleShiftX = 0;
@@ -68,9 +77,9 @@ class View extends EventEmitter implements View {
     document.removeEventListener('mouseup', this.onHandleMouseUp);
 
     this.emit(View.EVENT_HANDLE_DRAG_END);
-  };
+  }
 
-  onHandleMove = (e: MouseEvent): void => {
+  onHandleMove(e: MouseEvent): void {
     e.preventDefault();
 
     const newHandlePosition = {
@@ -81,7 +90,7 @@ class View extends EventEmitter implements View {
     const rangeSliderRect = this.el.getBoundingClientRect();
 
     this.emit(View.EVENT_HANDLE_DRAG, newHandlePosition, rangeSliderRect);
-  };
+  }
 }
 
 export { View };

@@ -343,3 +343,86 @@ describe('Model.set', () => {
     expect(errorListener).toBeCalledWith([errStepNotInRange()]);
   });
 });
+
+describe('Model.getAll', () => {
+  const currentData: Data = {
+    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+    activeSpotIds: [],
+    min: 0,
+    max: 100,
+    step: 5,
+    orientation: 'horizontal',
+    tooltips: [true, true],
+    intervals: [false, true, false],
+  };
+
+  test('should return ModelData object', () => {
+    const model = new Model(currentData);
+    expect(model.getAll()).toEqual(currentData);
+  });
+});
+
+describe('Model.setAll', () => {
+  const currentData: Data = {
+    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
+    activeSpotIds: [],
+    min: 0,
+    max: 100,
+    step: 5,
+    orientation: 'horizontal',
+    tooltips: [true, true],
+    intervals: [false, true, false],
+  };
+
+  test('should change ModelData', () => {
+    const model = new Model(currentData);
+    const newData: Data = {
+      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
+      activeSpotIds: [],
+      min: 0,
+      max: 100,
+      step: 3,
+      orientation: 'vertical',
+      tooltips: [true, false],
+      intervals: [true, false, true],
+    };
+    model.setAll(newData);
+    expect(model.getAll()).toEqual(newData);
+  });
+
+  test('should emit update event', () => {
+    const model = new Model(currentData);
+    const updateListener = jest.fn();
+    model.on(Model.EVENT_UPDATE, updateListener);
+    const newData: Data = {
+      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
+      activeSpotIds: [],
+      min: 0,
+      max: 100,
+      step: 3,
+      orientation: 'vertical',
+      tooltips: [true, false],
+      intervals: [true, false, true],
+    };
+    model.setAll(newData);
+    expect(updateListener).toBeCalledWith(newData);
+  });
+
+  test('should emit integrityError event', () => {
+    const model = new Model(currentData);
+    const errorListener = jest.fn();
+    model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
+    const newData: Data = {
+      spots: [{ id: 'value_0', value: 500 }, { id: 'value_1', value: 700 }],
+      activeSpotIds: [],
+      min: 0,
+      max: 100,
+      step: 3,
+      orientation: 'vertical',
+      tooltips: [true, false],
+      intervals: [true, false, true],
+    };
+    model.setAll(newData);
+    expect(errorListener).toBeCalledWith([errValueNotInRange()]);
+  });
+});
