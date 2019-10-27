@@ -23,6 +23,7 @@ import {
   zip,
   aperture,
   assoc,
+  all,
 } from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
 
@@ -216,6 +217,18 @@ function detectRectCollision(rectA: ClientRect, rectB: ClientRect): boolean {
   );
 }
 
+function isSortedArray<T>(
+  arr: T[],
+  order: 'ascending' | 'descending' = 'ascending',
+): boolean {
+  const pairs = aperture(2, arr);
+
+  return all(
+    pair => (order === 'ascending' ? pair[0] <= pair[1] : pair[0] >= pair[1]),
+    pairs,
+  );
+}
+
 export {
   $,
   getTooltipContent,
@@ -225,4 +238,6 @@ export {
   convertOptionsToData,
   convertDataToOptions,
   convertDataToState,
+  // array utils
+  isSortedArray,
 };

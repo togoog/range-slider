@@ -6,6 +6,7 @@ import {
   convertOptionsToData,
   convertDataToOptions,
   convertDataToState,
+  isSortedArray,
 } from '../helpers';
 
 const cssPrefix = 'curly';
@@ -454,5 +455,22 @@ describe('detectRectCollision', () => {
     };
 
     expect(detectRectCollision(rectA, rectB)).toBe(false);
+  });
+});
+
+describe('isSortedArray', () => {
+  test('should return true for sorted array', () => {
+    expect(isSortedArray([1, 2, 3, 4, 5])).toBe(true);
+    expect(isSortedArray([5, 4, 3, 2, 1], 'descending')).toBe(true);
+    expect(isSortedArray([])).toBe(true);
+    expect(isSortedArray([1])).toBe(true);
+    expect(isSortedArray([1], 'descending')).toBe(true);
+  });
+
+  test('should return false for not sorted array', () => {
+    expect(isSortedArray([1, 2, 3, 4, 5], 'descending')).toBe(false);
+    expect(isSortedArray([5, 4, 3, 2, 1], 'ascending')).toBe(false);
+    expect(isSortedArray([5, 1, 3, 2, 4], 'ascending')).toBe(false);
+    expect(isSortedArray([2, 4], 'descending')).toBe(false);
   });
 });
