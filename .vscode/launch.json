@@ -27,6 +27,13 @@
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug in Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:1234",
+      "webRoot": "${workspaceFolder}/src"
     }
   ]
 }
