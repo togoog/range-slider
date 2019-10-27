@@ -8,24 +8,16 @@ import {
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import {
-  mergeAll,
-  applySpec,
-  all,
-  pluck,
-  inc,
-  indexBy,
-  prop,
-  intersection,
-  dissoc,
-} from 'ramda';
+import { mergeAll, applySpec, all, pluck, inc, clamp, clone } from 'ramda';
 import { inRange } from 'ramda-adjunct';
+import { isSortedArray } from '../helpers';
 
 //
 // ─── ERRORS ─────────────────────────────────────────────────────────────────────
 //
 
 const ErrorValueNotInRange = 'RangeSlider/Model/ErrorValueNotInRange';
+const ErrorValueOrder = 'RangeSlider/Model/ErrorValueOrder';
 const ErrorStepNotInRange = 'RangeSlider/Model/ErrorStepNotInRange';
 const ErrorMinMax = 'RangeSlider/Model/ErrorMinMax';
 const ErrorTooltipsCount = 'RangeSlider/Model/ErrorTooltipsCount';
@@ -35,6 +27,13 @@ function errValueNotInRange(): RangeSliderError {
   return {
     id: ErrorValueNotInRange,
     desc: `(spots < min || spots > max)`,
+  };
+}
+
+function errValueOrder(): RangeSliderError {
+  return {
+    id: ErrorValueOrder,
+    desc: `(spots[prev].value < spots[next].value)`,
   };
 }
 
@@ -81,6 +80,12 @@ function checkIfValueInRange({
   return valueInRange ? Nothing : Just(errValueNotInRange());
 }
 
+function checkValueOrder({ spots }: Data): Maybe<RangeSliderError> {
+  const hasCorrectOrder = isSortedArray(pluck('value', spots), 'ascending');
+
+  return hasCorrectOrder ? Nothing : Just(errValueOrder());
+}
+
 function checkIfStepInRange({ min, max, step }: Data): Maybe<RangeSliderError> {
   const stepInRange = inRange(0, Math.abs(max - min), step);
 
@@ -123,22 +128,18 @@ const defaultData: Data = {
 class Model extends EventEmitter implements RangeSliderModel {
   private data!: Data;
 
+  static defaultTooltipValue = true;
+  static defaultIntervalValue = false;
+
   static EVENT_UPDATE = 'Model/update';
-  static EVENT_INTEGRITY_ERRORS = 'Model/integrityErrors';
+  static EVENT_VALIDATION_ERRORS = 'Model/validationErrors';
 
   constructor(data: Partial<Data> = defaultData) {
     super();
 
     const mergedData = mergeAll([defaultData, data]) as Data;
-
-    // prettier-ignore
-    Model
-      .checkDataIntegrity(mergedData)
-      .caseOf({
-        // TODO: create logger service for errors
-        Left: (errors) => {console.error(errors); this.data = defaultData;},
-        Right: (data: Data) => {this.data = data;}
-      });
+    const validationResults = Model.validate(mergedData);
+    this.data = validationResults.orDefault(defaultData);
   }
 
   get<K extends DataKey>(key: K): Data[K] {
@@ -158,10 +159,11 @@ class Model extends EventEmitter implements RangeSliderModel {
     this.processData(data);
   }
 
-  static checkDataIntegrity(data: Data): Either<RangeSliderError[], Data> {
+  static validate(data: Data): Either<RangeSliderError[], Data> {
     const validationResults = [];
     validationResults.push(checkMinMax(data));
     validationResults.push(checkIfValueInRange(data));
+    validationResults.push(checkValueOrder(data));
     validationResults.push(checkIfStepInRange(data));
     validationResults.push(checkTooltipsCount(data));
     validationResults.push(checkIntervalsCount(data));
@@ -183,58 +185,102 @@ class Model extends EventEmitter implements RangeSliderModel {
   }
 
   private processData(data: Data): void {
-    // prettier-ignore
-    Model
-      .checkDataIntegrity(data)
-      .caseOf({
-        Left: errors => {
-          this.tryRecoverFromErrors(errors, data);
-        },
-        Right: cleanData => {
-          this.data = cleanData;
-          this.emit(Model.EVENT_UPDATE, cleanData);
-        },
-      });
+    const validationResults = Model.validate(data);
+
+    if (validationResults.isLeft()) {
+      validationResults.mapLeft(errors => this.tryFixErrors(errors, data));
+    } else {
+      this.updateData(data);
+    }
   }
 
-  private tryRecoverFromErrors(errors: RangeSliderError[], data: Data): void {
-    const unrecoverableErrors = [
-      ErrorMinMax,
-      ErrorStepNotInRange,
-      ErrorTooltipsCount,
-      ErrorIntervalsCount,
-    ];
+  private updateData(data: Data): void {
+    this.data = data;
+    this.emit(Model.EVENT_UPDATE, data);
+  }
 
-    let errorsMap = indexBy(prop('id'), errors);
+  private tryFixErrors(errors: RangeSliderError[], data: Data): void {
+    let fixedData: Data = clone(data);
 
-    const hasUnrecoverableErrors =
-      intersection(unrecoverableErrors, Object.keys(errorsMap)).length > 0;
-
-    if (hasUnrecoverableErrors) {
-      // can not recover
-      this.emit(Model.EVENT_INTEGRITY_ERRORS, errors);
-    } else {
-      // try to recover from valueNotInRange error
-      const newSpots = data.spots.map(spot => {
-        const newSpot = { ...spot };
-        if (newSpot.value < data.min) {
-          newSpot.value = data.min;
-        } else if (newSpot.value > data.max) {
-          newSpot.value = data.max;
-        }
-
-        return newSpot;
-      });
-
-      errorsMap = dissoc(ErrorValueNotInRange, errorsMap);
-
-      // process data again if no other errors
-      if (Object.keys(errorsMap).length === 0) {
-        this.processData({ ...data, spots: newSpots });
-      } else {
-        this.emit(Model.EVENT_INTEGRITY_ERRORS, Object.values(errorsMap));
+    // eslint-disable-next-line complexity
+    errors.forEach(error => {
+      switch (error.id) {
+        case ErrorValueNotInRange:
+          fixedData = this.fixErrorValueNotInRange(fixedData);
+          break;
+        case ErrorValueOrder:
+          fixedData = this.fixErrorValueOrder(fixedData);
+          break;
+        case ErrorMinMax:
+          fixedData = this.fixErrorMinMax(fixedData);
+          break;
+        case ErrorStepNotInRange:
+          fixedData = this.fixErrorStepNotInRange(fixedData);
+          break;
+        case ErrorTooltipsCount:
+          fixedData = this.fixErrorTooltipsCount(fixedData);
+          break;
+        case ErrorIntervalsCount:
+          fixedData = this.fixErrorIntervalsCount(fixedData);
+          break;
       }
+    });
+
+    // validate data again
+    if (Model.validate(fixedData).isLeft()) {
+      this.emit(Model.EVENT_VALIDATION_ERRORS, errors);
+    } else {
+      this.updateData(fixedData);
     }
+  }
+
+  private fixErrorValueNotInRange(data: Data): Data {
+    const { min, max } = data;
+
+    // prettier-ignore
+    const spots = data.spots.map(
+      ({ id, value }) => ({id, value: clamp(min, max, value)})
+    ) as Data['spots'];
+
+    return { ...data, spots };
+  }
+
+  private fixErrorValueOrder(data: Data): Data {
+    const spots = data.spots.map(({ id, value }, idx, arr) => {
+      const nextValue = arr[idx + 1] ? arr[idx + 1].value : data.max;
+      const prevValue = arr[idx - 1] ? arr[idx - 1].value : data.min;
+
+      if (nextValue >= prevValue && data.activeSpotIds.includes(id)) {
+        return { id, value: clamp(prevValue, nextValue, value) };
+      }
+
+      return { id, value };
+    });
+
+    return { ...data, spots };
+  }
+
+  private fixErrorMinMax(data: Data): Data {
+    return { ...data, min: data.max, max: data.min };
+  }
+
+  private fixErrorStepNotInRange(data: Data): Data {
+    const step = clamp(0, Math.abs(data.max - data.min), data.step);
+    return { ...data, step };
+  }
+
+  private fixErrorTooltipsCount(data: Data): Data {
+    const tooltips = data.spots.map(
+      (_, idx) => data.tooltips[idx] || Model.defaultTooltipValue,
+    );
+    return { ...data, tooltips };
+  }
+
+  private fixErrorIntervalsCount(data: Data): Data {
+    const intervals = [...Array(data.spots.length + 1)].map(
+      (_, idx) => data.intervals[idx] || Model.defaultIntervalValue,
+    );
+    return { ...data, intervals };
   }
 }
 
@@ -242,6 +288,7 @@ export {
   Model,
   // errors
   errValueNotInRange,
+  errValueOrder,
   errStepNotInRange,
   errMinMax,
   errTooltipsCount,

@@ -64,6 +64,7 @@ class Presenter implements RangeSliderPresenter {
   ): void {
     this.model.propose({
       spots: data => {
+        // eslint-disable-next-line complexity
         return data.spots.map(spot => {
           if (not(data.activeSpotIds.includes(spot.id))) {
             return { ...spot };
@@ -78,9 +79,7 @@ class Presenter implements RangeSliderPresenter {
           const absPos = handleCoords[axis] - rangeSliderRect[origin];
           const relPos = absPos / rangeSliderRect[dimension];
 
-          const value = (data.max - data.min) * relPos;
-
-          return { ...spot, value };
+          return { ...spot, value: data.min + (data.max - data.min) * relPos };
         });
       },
     });

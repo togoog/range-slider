@@ -5,6 +5,7 @@ import {
   Model,
   // errors
   errValueNotInRange,
+  errValueOrder,
   errStepNotInRange,
   errMinMax,
   errTooltipsCount,
@@ -23,7 +24,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true],
       intervals: [true, false],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errMinMax())]),
     );
   });
@@ -39,7 +40,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true],
       intervals: [true, false],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
 
@@ -53,7 +54,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true],
       intervals: [true, false],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
   });
@@ -69,7 +70,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true],
       intervals: [true, false],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
     );
 
@@ -83,7 +84,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true],
       intervals: [true, false],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
     );
   });
@@ -99,7 +100,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true, true, false],
       intervals: [false, true, false],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errTooltipsCount())]),
     );
   });
@@ -115,7 +116,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true, true, false],
       intervals: [false, true, false, true],
     };
-    expect(Model.checkDataIntegrity(data).extract()).toEqual(
+    expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errIntervalsCount())]),
     );
   });
@@ -131,7 +132,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: [true, true],
       intervals: [false, true, false],
     };
-    expect(Model.checkDataIntegrity(data)).toEqual(Right(data));
+    expect(Model.validate(data)).toEqual(Right(data));
   });
 });
 
@@ -248,25 +249,32 @@ describe('Model.propose', () => {
     });
   });
 
-  test('should emit integrityError event', () => {
-    const proposal: Partial<Proposal> = {
-      spots: (data: Data) =>
-        data.spots.map(
-          evolve({
-            id: identity,
-            value: multiply(3),
-          }),
-        ) as Spot[],
-      tooltips: data => [...data.tooltips, true],
+  test('should emit validationErrors event when errors can not be fixed', () => {
+    const data: Data = {
+      spots: [{ id: 'value_0', value: 40 }, { id: 'value_1', value: 70 }],
+      activeSpotIds: [],
+      min: 0,
+      max: 100,
+      step: 5,
+      orientation: 'horizontal',
+      tooltips: [true, true],
+      intervals: [false, true, false],
     };
-    const model = new Model(currentData);
-    const errorListener = jest.fn();
-    model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
+    const model = new Model(data);
+
+    const modelListener = jest.fn();
+    model.on(Model.EVENT_VALIDATION_ERRORS, modelListener);
+
+    const proposal: Partial<Proposal> = {
+      spots: (data: Data) => [
+        { id: 'value_0', value: 60 },
+        { id: 'value_1', value: 30 },
+      ],
+    };
+
     model.propose(proposal);
-    expect(errorListener).toHaveBeenCalledWith([
-      errValueNotInRange(),
-      errTooltipsCount(),
-    ]);
+
+    expect(modelListener).toBeCalledWith([errValueOrder()]);
   });
 });
 
@@ -338,7 +346,7 @@ describe('Model.set', () => {
   test('should emit integrityError event', () => {
     const model = new Model(currentData);
     const errorListener = jest.fn();
-    model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
+    model.on(Model.EVENT_VALIDATION_ERRORS, errorListener);
     model.set('step', 200);
     expect(errorListener).toBeCalledWith([errStepNotInRange()]);
   });
@@ -411,7 +419,7 @@ describe('Model.setAll', () => {
   test('should emit integrityError event', () => {
     const model = new Model(currentData);
     const errorListener = jest.fn();
-    model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
+    model.on(Model.EVENT_VALIDATION_ERRORS, errorListener);
     const newData: Data = {
       spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
       activeSpotIds: [],
