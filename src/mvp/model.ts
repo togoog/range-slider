@@ -1,40 +1,77 @@
-import { RangeSliderModel, Data, DataKey, Proposal } from '../types';
+import {
+  RangeSliderError,
+  RangeSliderModel,
+  Data,
+  DataKey,
+  Proposal,
+} from '../types';
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
-import { mergeAll, applySpec, all, pluck, inc } from 'ramda';
+import {
+  mergeAll,
+  applySpec,
+  all,
+  pluck,
+  inc,
+  indexBy,
+  prop,
+  intersection,
+  dissoc,
+} from 'ramda';
 import { inRange } from 'ramda-adjunct';
-import { err } from '../errors';
 
 //
 // ─── ERRORS ─────────────────────────────────────────────────────────────────────
 //
 
-function errValueNotInRange(): Error {
-  return err(`(spots < min || spots > max)`);
+const ErrorValueNotInRange = 'RangeSlider/Model/ErrorValueNotInRange';
+const ErrorStepNotInRange = 'RangeSlider/Model/ErrorStepNotInRange';
+const ErrorMinMax = 'RangeSlider/Model/ErrorMinMax';
+const ErrorTooltipsCount = 'RangeSlider/Model/ErrorTooltipsCount';
+const ErrorIntervalsCount = 'RangeSlider/Model/ErrorIntervalsCount';
+
+function errValueNotInRange(): RangeSliderError {
+  return {
+    id: ErrorValueNotInRange,
+    desc: `(spots < min || spots > max)`,
+  };
 }
 
-function errStepNotInRange(): Error {
-  return err(`(step < 0 || step > max - min)`);
+function errStepNotInRange(): RangeSliderError {
+  return {
+    id: ErrorStepNotInRange,
+    desc: `(step < 0 || step > max - min)`,
+  };
 }
 
-function errMinMax(): Error {
-  return err(`(min > max)`);
+function errMinMax(): RangeSliderError {
+  return { id: ErrorMinMax, desc: `(min > max)` };
 }
 
-function errTooltipsCount(): Error {
-  return err(`(tooltips.length !== spots.length)`);
+function errTooltipsCount(): RangeSliderError {
+  return {
+    id: ErrorTooltipsCount,
+    desc: `(tooltips.length !== spots.length)`,
+  };
 }
 
-function errIntervalsCount(): Error {
-  return err(`(intervals.length !== spots.length + 1)`);
+function errIntervalsCount(): RangeSliderError {
+  return {
+    id: ErrorIntervalsCount,
+    desc: `(intervals.length !== spots.length + 1)`,
+  };
 }
 
 //
 // ─── INTEGRITY VALIDATORS ───────────────────────────────────────────────────────
 //
 
-function checkIfValueInRange({ min, max, spots }: Data): Maybe<Error> {
+function checkIfValueInRange({
+  min,
+  max,
+  spots,
+}: Data): Maybe<RangeSliderError> {
   if (min > max) {
     [min, max] = [max, min];
   }
@@ -44,21 +81,27 @@ function checkIfValueInRange({ min, max, spots }: Data): Maybe<Error> {
   return valueInRange ? Nothing : Just(errValueNotInRange());
 }
 
-function checkIfStepInRange({ min, max, step }: Data): Maybe<Error> {
+function checkIfStepInRange({ min, max, step }: Data): Maybe<RangeSliderError> {
   const stepInRange = inRange(0, Math.abs(max - min), step);
 
   return stepInRange ? Nothing : Just(errStepNotInRange());
 }
 
-function checkMinMax({ min, max }: Data): Maybe<Error> {
+function checkMinMax({ min, max }: Data): Maybe<RangeSliderError> {
   return max > min ? Nothing : Just(errMinMax());
 }
 
-function checkTooltipsCount({ spots, tooltips }: Data): Maybe<Error> {
+function checkTooltipsCount({
+  spots,
+  tooltips,
+}: Data): Maybe<RangeSliderError> {
   return tooltips.length === spots.length ? Nothing : Just(errTooltipsCount());
 }
 
-function checkIntervalsCount({ spots, intervals }: Data): Maybe<Error> {
+function checkIntervalsCount({
+  spots,
+  intervals,
+}: Data): Maybe<RangeSliderError> {
   return intervals.length === spots.length + 1
     ? Nothing
     : Just(errIntervalsCount());
@@ -115,15 +158,15 @@ class Model extends EventEmitter implements RangeSliderModel {
     this.processData(data);
   }
 
-  static checkDataIntegrity(data: Data): Either<Error[], Data> {
-    const validationResults: Maybe<Error>[] = [];
+  static checkDataIntegrity(data: Data): Either<RangeSliderError[], Data> {
+    const validationResults = [];
     validationResults.push(checkMinMax(data));
     validationResults.push(checkIfValueInRange(data));
     validationResults.push(checkIfStepInRange(data));
     validationResults.push(checkTooltipsCount(data));
     validationResults.push(checkIntervalsCount(data));
 
-    const errors: Error[] = Maybe.catMaybes(validationResults);
+    const errors: RangeSliderError[] = Maybe.catMaybes(validationResults);
 
     return errors.length > 0 ? Left(errors) : Right(data);
   }
@@ -145,13 +188,53 @@ class Model extends EventEmitter implements RangeSliderModel {
       .checkDataIntegrity(data)
       .caseOf({
         Left: errors => {
-          this.emit(Model.EVENT_INTEGRITY_ERRORS, errors);
+          this.tryRecoverFromErrors(errors, data);
         },
         Right: cleanData => {
           this.data = cleanData;
           this.emit(Model.EVENT_UPDATE, cleanData);
         },
       });
+  }
+
+  private tryRecoverFromErrors(errors: RangeSliderError[], data: Data): void {
+    const unrecoverableErrors = [
+      ErrorMinMax,
+      ErrorStepNotInRange,
+      ErrorTooltipsCount,
+      ErrorIntervalsCount,
+    ];
+
+    let errorsMap = indexBy(prop('id'), errors);
+
+    const hasUnrecoverableErrors =
+      intersection(unrecoverableErrors, Object.keys(errorsMap)).length > 0;
+
+    if (hasUnrecoverableErrors) {
+      // can not recover
+      this.emit(Model.EVENT_INTEGRITY_ERRORS, errors);
+    } else {
+      // try to recover from valueNotInRange error
+      const newSpots = data.spots.map(spot => {
+        const newSpot = { ...spot };
+        if (newSpot.value < data.min) {
+          newSpot.value = data.min;
+        } else if (newSpot.value > data.max) {
+          newSpot.value = data.max;
+        }
+
+        return newSpot;
+      });
+
+      errorsMap = dissoc(ErrorValueNotInRange, errorsMap);
+
+      // process data again if no other errors
+      if (Object.keys(errorsMap).length === 0) {
+        this.processData({ ...data, spots: newSpots });
+      } else {
+        this.emit(Model.EVENT_INTEGRITY_ERRORS, Object.values(errorsMap));
+      }
+    }
   }
 }
 

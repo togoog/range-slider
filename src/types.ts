@@ -5,6 +5,11 @@ export type Plugin = {
   setAll(options: Options): void;
 };
 
+export type RangeSliderError = {
+  id: string;
+  desc: string;
+};
+
 //
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
@@ -65,6 +70,10 @@ export type Proposal = {
 //
 // ─── STATE ──────────────────────────────────────────────────────────────────────
 //
+export type Coordinates = {
+  x: number;
+  y: number;
+};
 
 export type Position = {
   // PositionId === SpotId

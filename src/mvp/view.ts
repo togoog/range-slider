@@ -1,8 +1,9 @@
-import { propEq } from 'ramda';
+import { propEq, aperture } from 'ramda';
 import { EventEmitter } from 'events';
 import { render, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
-import { RangeSliderView, State, Position } from '../types';
+import { RangeSliderView, State, Position, Coordinates } from '../types';
+import { $, detectRectCollision } from '../helpers';
 import {
   trackView,
   intervalView,
@@ -18,6 +19,10 @@ class View extends EventEmitter implements RangeSliderView {
   // mouse pointer offset coords for Handle when dragging
   private handleShiftX = 0;
   private handleShiftY = 0;
+
+  // handle width and height
+  private handleWidth = 0;
+  private handleHeight = 0;
 
   constructor(private el: HTMLElement) {
     super();
@@ -37,7 +42,9 @@ class View extends EventEmitter implements RangeSliderView {
         onMouseDown: this.onHandleMouseDown,
       }),
     );
-    const tooltips = state.tooltips.map(tooltipView);
+    const tooltips = state.tooltips
+      .filter(propEq('isVisible', true))
+      .map(tooltipView);
 
     const cssClasses: ClassInfo = {
       [state.cssClass]: true,
@@ -52,19 +59,24 @@ class View extends EventEmitter implements RangeSliderView {
     render(template, this.el);
   }
 
-  onHandleMouseDown(position: Position): (e: MouseEvent) => void {
+  // private resolveTooltipCollisions(tooltipSelector: string): void {
+  //   const tooltips = document.querySelectorAll(tooltipSelector);
+  //   console.log(tooltips, tooltipSelector);
+  // }
+
+  onHandleMouseDown(position: Position, e: MouseEvent): void {
+    e.preventDefault();
+
     document.addEventListener('mousemove', this.onHandleMove);
     document.addEventListener('mouseup', this.onHandleMouseUp);
 
-    return (e: MouseEvent): void => {
-      e.preventDefault();
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    this.handleShiftX = e.clientX - rect.left;
+    this.handleShiftY = e.clientY - rect.top;
+    this.handleWidth = rect.width;
+    this.handleHeight = rect.height;
 
-      const rect = (e.target as HTMLElement).getBoundingClientRect();
-      this.handleShiftX = e.clientX - rect.left;
-      this.handleShiftY = e.clientY - rect.top;
-
-      this.emit(View.EVENT_HANDLE_DRAG_START, position);
-    };
+    this.emit(View.EVENT_HANDLE_DRAG_START, position);
   }
 
   onHandleMouseUp(e: MouseEvent): void {
@@ -72,6 +84,8 @@ class View extends EventEmitter implements RangeSliderView {
 
     this.handleShiftX = 0;
     this.handleShiftY = 0;
+    this.handleWidth = 0;
+    this.handleHeight = 0;
 
     document.removeEventListener('mousemove', this.onHandleMove);
     document.removeEventListener('mouseup', this.onHandleMouseUp);
@@ -82,14 +96,15 @@ class View extends EventEmitter implements RangeSliderView {
   onHandleMove(e: MouseEvent): void {
     e.preventDefault();
 
-    const newHandlePosition = {
-      x: e.clientX - this.handleShiftX,
-      y: e.clientY - this.handleShiftY,
+    // Handle center coordinates
+    const handleCoords: Coordinates = {
+      x: e.clientX - this.handleShiftX + this.handleWidth / 2,
+      y: e.clientY - this.handleShiftY + this.handleHeight / 2,
     };
 
     const rangeSliderRect = this.el.getBoundingClientRect();
 
-    this.emit(View.EVENT_HANDLE_DRAG, newHandlePosition, rangeSliderRect);
+    this.emit(View.EVENT_HANDLE_DRAG, handleCoords, rangeSliderRect);
   }
 }
 

@@ -202,9 +202,24 @@ function convertOrientationToOrigin(orientation: Orientation): Origin {
   return orientation === 'horizontal' ? 'left' : 'bottom';
 }
 
+/**
+ * Check if 2 elements overlap
+ * @param rectA DOMRect of element A
+ * @param rectB DOMRect of element B
+ */
+function detectRectCollision(rectA: ClientRect, rectB: ClientRect): boolean {
+  return !(
+    rectB.left >= rectA.right ||
+    rectB.right <= rectA.left ||
+    rectB.top >= rectA.bottom ||
+    rectB.bottom <= rectA.top
+  );
+}
+
 export {
   $,
   getTooltipContent,
+  detectRectCollision,
   // converters
   convertOrientationToOrigin,
   convertOptionsToData,

@@ -413,16 +413,16 @@ describe('Model.setAll', () => {
     const errorListener = jest.fn();
     model.on(Model.EVENT_INTEGRITY_ERRORS, errorListener);
     const newData: Data = {
-      spots: [{ id: 'value_0', value: 500 }, { id: 'value_1', value: 700 }],
+      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
       activeSpotIds: [],
       min: 0,
       max: 100,
-      step: 3,
+      step: 300,
       orientation: 'vertical',
       tooltips: [true, false],
       intervals: [true, false, true],
     };
     model.setAll(newData);
-    expect(errorListener).toBeCalledWith([errValueNotInRange()]);
+    expect(errorListener).toBeCalledWith([errStepNotInRange()]);
   });
 });

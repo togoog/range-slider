@@ -5,7 +5,7 @@ import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { Handle, Position } from '../../types';
 
 type Actions = {
-  onMouseDown: (position: Position) => (e: MouseEvent) => void;
+  onMouseDown: (position: Position, e: MouseEvent) => void;
 };
 
 function handleView(
@@ -29,7 +29,7 @@ function handleView(
       class=${classMap(cssClasses)}
       style=${styleMap(styles)}
       @dragstart=${() => false}
-      @mousedown=${actions.onMouseDown(position)}
+      @mousedown=${(e: MouseEvent) => actions.onMouseDown(position, e)}
     ></div>
   `;
 }

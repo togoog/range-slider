@@ -1,61 +1,45 @@
-function err(s: string): Error {
-  return new Error(s);
-}
+import { RangeSliderError } from './types';
 
-function errNotANumber(varName = '', v: unknown): Error {
-  const msg = `
+const ErrorNotANumber = 'RangeSlider/ErrorNotANumber';
+const ErrorNotOneOf = 'RangeSlider/ErrorNotOneOf';
+const ErrorIncorrectObjectShape = 'RangeSlider/ErrorIncorrectObjectShape';
+
+// function err(s: { id: string; desc: string }): Error {
+//   return new Error(JSON.stringify(s));
+// }
+
+function errNotANumber(varName = '', v: unknown): RangeSliderError {
+  const desc = `
     ${varName} should be a number, 
     but ${typeof v} given instead
   `.trim();
 
-  return err(msg);
-}
-
-function errNotANumberOrPairOfNumbers(varName = '', v: unknown): Error {
-  const msg = `
-    ${varName} should be a number or pair of numbers, 
-    but ${typeof v} given instead
-  `.trim();
-
-  return err(msg);
+  return { id: ErrorNotANumber, desc };
 }
 
 function errNotOneOf(
   varName = '',
   possibleValues: unknown[],
   v: unknown,
-): Error {
-  const msg = `
+): RangeSliderError {
+  const desc = `
       ${varName} should be one of: ${possibleValues.join(', ')}, 
       but ${v} given instead
     `.trim();
 
-  return err(msg);
+  return { id: ErrorNotOneOf, desc };
 }
 
-function errNotABooleanOrPairOfBooleans(varName = '', v: unknown) {
-  const msg = `
-    ${varName} should be a boolean or pair of booleans,
-    but ${v} given instead
-  `.trim();
-
-  return err(msg);
-}
-
-function errIncorrectObjectShape(varName = '', keys: string[]) {
-  const msg = `
+function errIncorrectObjectShape(
+  varName = '',
+  keys: string[],
+): RangeSliderError {
+  const desc = `
     ${varName} should be an object with keys:
     ${keys.join(', ')}
   `.trim();
 
-  return err(msg);
+  return { id: ErrorIncorrectObjectShape, desc };
 }
 
-export {
-  err,
-  errNotANumber,
-  errNotOneOf,
-  errNotANumberOrPairOfNumbers,
-  errNotABooleanOrPairOfBooleans,
-  errIncorrectObjectShape,
-};
+export { errNotANumber, errNotOneOf, errIncorrectObjectShape };

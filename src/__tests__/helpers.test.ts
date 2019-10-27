@@ -2,6 +2,7 @@ import { Options, Data, State } from '../types';
 import {
   $,
   getTooltipContent,
+  detectRectCollision,
   convertOptionsToData,
   convertDataToOptions,
   convertDataToState,
@@ -407,5 +408,51 @@ describe('convertDataToState', () => {
     };
 
     expect(convertDataToState(data)).toEqual(state);
+  });
+});
+
+describe('detectRectCollision', () => {
+  test('should return true if 2 elements overlap', () => {
+    // overlap a.right & b.left sides
+    const rectA: ClientRect = {
+      top: 100,
+      left: 100,
+      bottom: 200,
+      right: 200,
+      width: 100,
+      height: 100,
+    };
+    const rectB: ClientRect = {
+      top: 100,
+      left: 190,
+      bottom: 200,
+      right: 200,
+      width: 100,
+      height: 100,
+    };
+
+    expect(detectRectCollision(rectA, rectB)).toBe(true);
+  });
+
+  test('should return false if 2 elements do not overlap', () => {
+    // overlap a.right & b.left sides
+    const rectA: ClientRect = {
+      top: 100,
+      left: 100,
+      bottom: 200,
+      right: 200,
+      width: 100,
+      height: 100,
+    };
+    const rectB: ClientRect = {
+      top: 100,
+      left: 300,
+      bottom: 200,
+      right: 200,
+      width: 100,
+      height: 100,
+    };
+
+    expect(detectRectCollision(rectA, rectB)).toBe(false);
   });
 });
