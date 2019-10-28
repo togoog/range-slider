@@ -7,6 +7,7 @@ import {
   convertDataToOptions,
   convertDataToState,
   isSortedArray,
+  closestToStep,
 } from '../helpers';
 
 const cssPrefix = 'curly';
@@ -472,5 +473,20 @@ describe('isSortedArray', () => {
     expect(isSortedArray([5, 4, 3, 2, 1], 'ascending')).toBe(false);
     expect(isSortedArray([5, 1, 3, 2, 4], 'ascending')).toBe(false);
     expect(isSortedArray([2, 4], 'descending')).toBe(false);
+  });
+});
+
+describe('closestToStep', () => {
+  test('should return value unchanged if step <= 0', () => {
+    expect(closestToStep(0, 1)).toBe(1);
+    expect(closestToStep(0, -10)).toBe(-10);
+    expect(closestToStep(0, 4.56)).toBe(4.56);
+    expect(closestToStep(-1, 1)).toBe(1);
+  });
+
+  test('should return value rounded to closest step if step ', () => {
+    expect(closestToStep(1, 10)).toBe(10);
+    expect(closestToStep(2, 31)).toBe(32);
+    expect(closestToStep(0.5, 5.3)).toBe(5.5);
   });
 });

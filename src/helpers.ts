@@ -58,6 +58,15 @@ function toArray<T>(v: T): T[] {
 }
 
 /**
+ * Get value rounded to closest step
+ * @param step
+ * @param value
+ */
+function closestToStep(step: number, value: number): number {
+  return step <= 0 ? value : Math.round(value / step) * step;
+}
+
+/**
  * Create new array from arr with length = neededLength and fill empty slots with value
  * @param arr initial array
  * @param neededLength new array length
@@ -77,7 +86,10 @@ function convertOptionsToData(options: Options): Data {
 
   const transformations: { [key in DataKey]: Function } = {
     spots: (op: Options) =>
-      toArray(op.value).map((v, i) => ({ id: `value_${i}`, value: v })),
+      toArray(op.value).map((v, i) => ({
+        id: `value_${i}`,
+        value: closestToStep(op.step, v as number),
+      })),
     activeSpotIds: () => [],
     min: (op: Options) => op.min,
     max: (op: Options) => op.max,
@@ -238,6 +250,7 @@ export {
   convertOptionsToData,
   convertDataToOptions,
   convertDataToState,
-  // array utils
+  // utils
   isSortedArray,
+  closestToStep,
 };

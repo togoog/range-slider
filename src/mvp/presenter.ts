@@ -9,7 +9,7 @@ import {
   Coordinates,
 } from '../types';
 import { Model, View } from './index';
-import { convertDataToState } from '../helpers';
+import { convertDataToState, closestToStep } from '../helpers';
 
 class Presenter implements RangeSliderPresenter {
   constructor(private model: RangeSliderModel, private view: RangeSliderView) {
@@ -78,8 +78,9 @@ class Presenter implements RangeSliderPresenter {
 
           const absPos = handleCoords[axis] - rangeSliderRect[origin];
           const relPos = absPos / rangeSliderRect[dimension];
+          const absVal = data.min + (data.max - data.min) * relPos;
 
-          return { ...spot, value: data.min + (data.max - data.min) * relPos };
+          return { ...spot, value: closestToStep(data.step, absVal) };
         });
       },
     });
