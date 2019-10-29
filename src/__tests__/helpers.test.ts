@@ -17,6 +17,8 @@ const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
 
+const tooltipsFormatter = (value: number) => value.toLocaleString();
+
 describe('$', () => {
   test('Should find existing elements', () => {
     document.body.innerHTML = `
@@ -73,6 +75,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
+      tooltipsFormatter,
       intervals: false,
     };
 
@@ -84,6 +87,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -96,6 +100,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -107,6 +112,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -121,6 +127,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
+      tooltipsFormatter,
       intervals: false,
     };
 
@@ -132,6 +139,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, false, false],
     };
 
@@ -144,6 +152,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, true],
     };
 
@@ -155,6 +164,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -172,6 +182,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -182,6 +193,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -195,6 +207,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -205,6 +218,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -222,6 +236,7 @@ describe('convertDataToState', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -275,6 +290,7 @@ describe('convertDataToState', () => {
       step: 10,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -348,6 +364,7 @@ describe('convertDataToState', () => {
       step: 10,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
 

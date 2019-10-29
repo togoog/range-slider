@@ -1,4 +1,4 @@
-import { map } from 'ramda';
+import { map, mergeAll } from 'ramda';
 import {
   Plugin,
   RangeSliderModel,
@@ -9,6 +9,7 @@ import {
 } from './types';
 import { Model, View, Presenter } from './mvp';
 import { convertOptionsToData, convertDataToOptions, $ } from './helpers';
+import { checkRangeSliderOptions } from './validators';
 
 //
 // ─── EVENTS ─────────────────────────────────────────────────────────────────────
@@ -50,16 +51,27 @@ const defaultOptions: Options = {
   step: 1,
   orientation: 'horizontal',
   tooltips: true,
+  tooltipsFormatter: (value: number) => value.toLocaleString(),
   intervals: [true, false],
 };
 
 class RangeSlider implements Plugin {
-  private model: RangeSliderModel;
-  private view: RangeSliderView;
-  private presenter: RangeSliderPresenter;
+  private model!: RangeSliderModel;
+  private view!: RangeSliderView;
+  private presenter!: RangeSliderPresenter;
 
-  constructor(el: HTMLElement, options: Options = defaultOptions) {
-    const data = convertOptionsToData(options);
+  constructor(el: HTMLElement, options: Partial<Options> = defaultOptions) {
+    const mergedOptions = mergeAll([defaultOptions, options]) as Options;
+
+    // if options are not valid -> show message to user in console and exit
+    // TODO some errors can be fixed. Fix erroneous options when possible
+    const optionErrors = checkRangeSliderOptions(mergedOptions);
+    if (optionErrors.isLeft()) {
+      console.log(optionErrors.unsafeCoerce());
+      return;
+    }
+
+    const data = convertOptionsToData(mergedOptions);
     this.model = new Model(data);
     this.view = new View(el);
     this.presenter = new Presenter(this.model, this.view);
@@ -91,7 +103,7 @@ class RangeSlider implements Plugin {
 
 function createRangeSlider(
   source: string | HTMLElement | HTMLElement[],
-  options?: Options,
+  options?: Partial<Options>,
 ): RangeSlider[] {
   // if source is css selector
   if (typeof source === 'string') {

@@ -7,6 +7,7 @@ import {
   errNotValidStep,
   errNotValidOrientation,
   errNotValidTooltips,
+  errNotValidTooltipsFormatter,
   errNotValidIntervals,
   errOptionsIsNotAnObject,
   // validators
@@ -16,6 +17,7 @@ import {
   checkStep,
   checkOrientation,
   checkTooltips,
+  checkTooltipsFormatter,
   checkIntervals,
   checkRangeSliderOptions,
 } from '../validators';
@@ -155,6 +157,28 @@ describe('checkTooltips', () => {
     expect(checkTooltips({ foo: true })).toEqual(Just(errNotValidTooltips()));
     expect(checkTooltips([true, 1])).toEqual(Just(errNotValidTooltips()));
     expect(checkTooltips([true, 'a'])).toEqual(Just(errNotValidTooltips()));
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkTooltipsFormatter', () => {
+  test('should be a function that returns string', () => {
+    const formatterOk = (value: number) => `${value}`;
+    expect(checkTooltipsFormatter(formatterOk)).toEqual(Nothing);
+
+    const formatterBad = (value: number) => value;
+    expect(checkTooltipsFormatter(formatterBad)).toEqual(
+      Just(errNotValidTooltipsFormatter()),
+    );
+
+    expect(checkTooltipsFormatter('abc')).toEqual(
+      Just(errNotValidTooltipsFormatter()),
+    );
+
+    expect(checkTooltipsFormatter(123)).toEqual(
+      Just(errNotValidTooltipsFormatter()),
+    );
   });
 });
 

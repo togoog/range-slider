@@ -1,4 +1,3 @@
-import { clone } from 'ramda';
 import { View } from '../mvp/view';
 import { State, Data } from '../types';
 import { getTooltipContent } from '../helpers';
@@ -11,6 +10,8 @@ const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
 
+const tooltipsFormatter = (value: number) => value.toLocaleString();
+
 describe('View.render', () => {
   const data: Data = {
     spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
@@ -19,8 +20,9 @@ describe('View.render', () => {
     max: 100,
     step: 1,
     orientation: 'horizontal',
-    intervals: [false, true, false],
     tooltips: [true, true],
+    tooltipsFormatter,
+    intervals: [false, true, false],
   };
 
   const state: State = {
@@ -151,6 +153,7 @@ describe('View.render', () => {
       step: 1,
       orientation: 'vertical',
       intervals: [false, true, false],
+      tooltipsFormatter,
       tooltips: [true, true],
     };
 
@@ -233,8 +236,9 @@ describe('Handle', () => {
     max: 100,
     step: 1,
     orientation: 'horizontal',
-    intervals: [true, false],
     tooltips: [true],
+    tooltipsFormatter,
+    intervals: [true, false],
   };
 
   const state: State = {

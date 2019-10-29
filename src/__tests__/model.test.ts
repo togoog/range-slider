@@ -12,6 +12,8 @@ import {
   errIntervalsCount,
 } from '../mvp/model';
 
+const tooltipsFormatter = (value: number) => value.toLocaleString();
+
 describe('Model.checkDataIntegrity', () => {
   test('should contain errMinMax', () => {
     const data: Data = {
@@ -22,6 +24,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 500,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -38,6 +41,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -52,6 +56,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -68,6 +73,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 200,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -82,6 +88,7 @@ describe('Model.checkDataIntegrity', () => {
       step: -5,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -98,6 +105,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true, true, false],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -114,6 +122,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true, true, false],
+      tooltipsFormatter,
       intervals: [false, true, false, true],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -130,6 +139,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
     expect(Model.validate(data)).toEqual(Right(data));
@@ -145,6 +155,7 @@ describe('Model.propose', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -245,6 +256,7 @@ describe('Model.propose', () => {
       step: 10,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, true, false],
     });
   });
@@ -258,6 +270,7 @@ describe('Model.propose', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, true, false],
     };
     const model = new Model(data);
@@ -287,6 +300,7 @@ describe('Model.get', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -313,6 +327,7 @@ describe('Model.set', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -339,6 +354,7 @@ describe('Model.set', () => {
       step: 20,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, true, false],
     });
   });
@@ -361,6 +377,7 @@ describe('Model.getAll', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -379,6 +396,7 @@ describe('Model.setAll', () => {
     step: 5,
     orientation: 'horizontal',
     tooltips: [true, true],
+    tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -392,6 +410,7 @@ describe('Model.setAll', () => {
       step: 3,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [true, false, true],
     };
     model.setAll(newData);
@@ -410,6 +429,7 @@ describe('Model.setAll', () => {
       step: 3,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [true, false, true],
     };
     model.setAll(newData);
@@ -428,6 +448,7 @@ describe('Model.setAll', () => {
       step: 300,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipsFormatter,
       intervals: [true, false, true],
     };
     model.setAll(newData);

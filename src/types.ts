@@ -15,6 +15,7 @@ export type RangeSliderError = {
 //
 
 export type Orientation = 'horizontal' | 'vertical';
+export type Formatter = (value: number) => string;
 
 export type Options = {
   value: number | number[];
@@ -23,6 +24,7 @@ export type Options = {
   step: number;
   orientation: Orientation;
   tooltips: boolean | boolean[];
+  tooltipsFormatter: Formatter;
   intervals: boolean | boolean[];
 };
 
@@ -58,6 +60,7 @@ export type Data = {
   step: number;
   orientation: Orientation;
   tooltips: boolean[];
+  tooltipsFormatter: Formatter;
   intervals: boolean[];
 };
 

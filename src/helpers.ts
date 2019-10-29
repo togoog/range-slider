@@ -102,6 +102,7 @@ function convertOptionsToData(options: Options): Data {
         toArray(op.value).length,
         Array.isArray(op.tooltips) ? false : op.tooltips,
       ),
+    tooltipsFormatter: (op: Options) => op.tooltipsFormatter,
     intervals: (op: Options) =>
       // TODO: maybe refactor false value to defaultIntervalValue
       fillArrayWith(
@@ -124,6 +125,7 @@ function convertDataToOptions(data: Data): Options {
     step: (d: Data) => d.step,
     orientation: (d: Data) => d.orientation,
     tooltips: (d: Data) => d.tooltips,
+    tooltipsFormatter: (d: Data) => d.tooltipsFormatter,
     intervals: (d: Data) => d.intervals,
   };
 
@@ -140,7 +142,7 @@ function getRelativePosition(min: number, max: number, value: number): number {
  * @param index tooltip index
  */
 function getTooltipContent(data: Data, index: number): string {
-  return `Current value is: ${data.spots[index].value}`;
+  return data.tooltipsFormatter(data.spots[index].value);
 }
 
 function convertDataToState(data: Data): State {

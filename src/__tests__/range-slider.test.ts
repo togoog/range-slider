@@ -1,6 +1,8 @@
 import { Options } from '../types';
 import { RangeSlider, createRangeSlider } from '../range-slider';
 
+const tooltipsFormatter = (value: number) => value.toLocaleString();
+
 describe('RangeSlider.get', () => {
   test('should return Option value by key', () => {
     document.body.innerHTML = '<div id="root"></div>';
@@ -12,6 +14,7 @@ describe('RangeSlider.get', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
+      tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -22,6 +25,7 @@ describe('RangeSlider.get', () => {
     expect(rs.get('orientation')).toEqual('horizontal');
     expect(rs.get('tooltips')).toEqual([true]);
     expect(rs.get('intervals')).toEqual([true, false]);
+    expect(rs.get('tooltipsFormatter')).toEqual(tooltipsFormatter);
   });
 });
 
@@ -36,6 +40,7 @@ describe('RangeSlider.set', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
+      tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -58,6 +63,10 @@ describe('RangeSlider.set', () => {
     rs.set('tooltips', false);
     expect(rs.get('tooltips')).toEqual([false]);
 
+    const newFormatter = (value: number) => `value: ${value}`;
+    rs.set('tooltipsFormatter', newFormatter);
+    expect(rs.get('tooltipsFormatter')).toEqual(newFormatter);
+
     rs.set('intervals', false);
     expect(rs.get('intervals')).toEqual([false, false]);
   });
@@ -74,6 +83,7 @@ describe('RangeSlider.getAll', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
+      tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -84,6 +94,7 @@ describe('RangeSlider.getAll', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipsFormatter,
       intervals: [true, false],
     });
   });
@@ -100,6 +111,7 @@ describe('RangeSlider.setAll', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
+      tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -111,6 +123,7 @@ describe('RangeSlider.setAll', () => {
       step: 5,
       orientation: 'vertical',
       tooltips: true,
+      tooltipsFormatter,
       intervals: false,
     };
 
@@ -123,6 +136,7 @@ describe('RangeSlider.setAll', () => {
       step: 5,
       orientation: 'vertical',
       tooltips: [true, true],
+      tooltipsFormatter,
       intervals: [false, false, false],
     });
   });

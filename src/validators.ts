@@ -1,6 +1,6 @@
 import { Options, RangeSliderError } from './types';
 import { all, allPass, anyPass } from 'ramda';
-import { isNotObject, isArray } from 'ramda-adjunct';
+import { isNotObject, isArray, isFunction, isString } from 'ramda-adjunct';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
 
@@ -36,6 +36,7 @@ const ErrorNotValidMax = `${errorPrefix}/ErrorNotValidMax`;
 const ErrorNotValidStep = `${errorPrefix}/ErrorNotValidStep`;
 const ErrorNotValidOrientation = `${errorPrefix}/ErrorNotValidOrientation`;
 const ErrorNotValidTooltips = `${errorPrefix}/ErrorNotValidTooltips`;
+const ErrorNotValidTooltipsFormatter = `${errorPrefix}/ErrorNotValidTooltipsFormatter`;
 const ErrorNotValidIntervals = `${errorPrefix}/ErrorNotValidIntervals`;
 const ErrorOptionsIsNotAnObject = `${errorPrefix}/ErrorOptionsIsNotAnObject`;
 
@@ -78,6 +79,13 @@ function errNotValidTooltips(): RangeSliderError {
   return {
     id: ErrorNotValidTooltips,
     desc: `(tooltips should be boolean or array of booleans)`,
+  };
+}
+
+function errNotValidTooltipsFormatter(): RangeSliderError {
+  return {
+    id: ErrorNotValidTooltipsFormatter,
+    desc: `(tooltipsFormatter should be a function that returns string`,
   };
 }
 
@@ -129,6 +137,12 @@ function checkTooltips(v: unknown): Maybe<RangeSliderError> {
     : Just(errNotValidTooltips());
 }
 
+function checkTooltipsFormatter(v: unknown): Maybe<RangeSliderError> {
+  return isFunction(v) && isString(v(1))
+    ? Nothing
+    : Just(errNotValidTooltipsFormatter());
+}
+
 function checkIntervals(v: unknown): Maybe<RangeSliderError> {
   return isBoolean(v) || isArrayOfBooleans(v)
     ? Nothing
@@ -152,6 +166,7 @@ function checkRangeSliderOptions(
   validationResults.push(checkStep(options.step));
   validationResults.push(checkOrientation(options.orientation));
   validationResults.push(checkTooltips(options.tooltips));
+  validationResults.push(checkTooltipsFormatter(options.tooltipsFormatter));
   validationResults.push(checkIntervals(options.intervals));
 
   const errors = Maybe.catMaybes(validationResults);
@@ -167,6 +182,7 @@ export {
   errNotValidStep,
   errNotValidOrientation,
   errNotValidTooltips,
+  errNotValidTooltipsFormatter,
   errNotValidIntervals,
   errOptionsIsNotAnObject,
   // validators
@@ -176,6 +192,7 @@ export {
   checkStep,
   checkOrientation,
   checkTooltips,
+  checkTooltipsFormatter,
   checkIntervals,
   checkRangeSliderOptions,
 };
