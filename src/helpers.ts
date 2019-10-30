@@ -24,6 +24,7 @@ import {
   aperture,
   assoc,
   all,
+  clamp,
 } from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
 
@@ -88,7 +89,7 @@ function convertOptionsToData(options: Options): Data {
     spots: (op: Options) =>
       toArray(op.value).map((v, i) => ({
         id: `value_${i}`,
-        value: closestToStep(op.step, v as number),
+        value: clamp(op.min, op.max, closestToStep(op.step, v as number)),
       })),
     activeSpotIds: () => [],
     min: (op: Options) => op.min,

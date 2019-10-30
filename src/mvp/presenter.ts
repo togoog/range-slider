@@ -1,4 +1,4 @@
-import { pipe, not } from 'ramda';
+import { pipe, not, clamp } from 'ramda';
 import {
   RangeSliderModel,
   RangeSliderView,
@@ -80,7 +80,10 @@ class Presenter implements RangeSliderPresenter {
           const relPos = absPos / rangeSliderRect[dimension];
           const absVal = data.min + (data.max - data.min) * relPos;
 
-          return { ...spot, value: closestToStep(data.step, absVal) };
+          return {
+            ...spot,
+            value: clamp(data.min, data.max, closestToStep(data.step, absVal)),
+          };
         });
       },
     });
