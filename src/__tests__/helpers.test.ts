@@ -7,6 +7,7 @@ import {
   convertDataToOptions,
   convertDataToState,
   isSortedArray,
+  arraysMatch,
   closestToStep,
 } from '../helpers';
 
@@ -433,21 +434,27 @@ describe('convertDataToState', () => {
 describe('detectRectCollision', () => {
   test('should return true if 2 elements overlap', () => {
     // overlap a.right & b.left sides
-    const rectA: ClientRect = {
+    const rectA: DOMRect = {
       top: 100,
       left: 100,
       bottom: 200,
       right: 200,
       width: 100,
       height: 100,
+      x: 100,
+      y: 100,
+      toJSON: () => '',
     };
-    const rectB: ClientRect = {
+    const rectB: DOMRect = {
       top: 100,
       left: 190,
       bottom: 200,
       right: 200,
       width: 100,
       height: 100,
+      x: 100,
+      y: 100,
+      toJSON: () => '',
     };
 
     expect(detectRectCollision(rectA, rectB)).toBe(true);
@@ -455,21 +462,27 @@ describe('detectRectCollision', () => {
 
   test('should return false if 2 elements do not overlap', () => {
     // overlap a.right & b.left sides
-    const rectA: ClientRect = {
+    const rectA: DOMRect = {
       top: 100,
       left: 100,
       bottom: 200,
       right: 200,
       width: 100,
       height: 100,
+      x: 100,
+      y: 100,
+      toJSON: () => '',
     };
-    const rectB: ClientRect = {
+    const rectB: DOMRect = {
       top: 100,
       left: 300,
       bottom: 200,
       right: 200,
       width: 100,
       height: 100,
+      x: 100,
+      y: 100,
+      toJSON: () => '',
     };
 
     expect(detectRectCollision(rectA, rectB)).toBe(false);
@@ -490,6 +503,28 @@ describe('isSortedArray', () => {
     expect(isSortedArray([5, 4, 3, 2, 1], 'ascending')).toBe(false);
     expect(isSortedArray([5, 1, 3, 2, 4], 'ascending')).toBe(false);
     expect(isSortedArray([2, 4], 'descending')).toBe(false);
+  });
+});
+
+describe('arraysMatch', () => {
+  test('empty arrays are equal', () => {
+    expect(arraysMatch([], [])).toBe(true);
+  });
+
+  test('arrays with different length are not equal', () => {
+    const arr1 = [1, 2, 3];
+    const arr2 = [1, 2, 3];
+    arr2.length = 5;
+    expect(arraysMatch(arr1, arr2)).toBe(false);
+  });
+
+  test('arrays with same items, but in different order are not equal', () => {
+    expect(arraysMatch([1, 2, 3], [3, 2, 1])).toBe(false);
+  });
+
+  test('arrays with same elements and in same order are equal', () => {
+    expect(arraysMatch([1, 2, 3], [1, 2, 3])).toBe(true);
+    expect(arraysMatch(['a', 'b', 'c'], ['a', 'b', 'c'])).toBe(true);
   });
 });
 

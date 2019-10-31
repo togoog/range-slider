@@ -84,6 +84,18 @@ function fillArrayWith<T>(arr: T[], neededLength: number, value: T): T[] {
   return arr.concat(Array(neededLength - arr.length).fill(value));
 }
 
+function arraysMatch<T>(first: T[], second: T[]): boolean {
+  // check if arrays have the same length
+  if (first.length !== second.length) return false;
+
+  // check if all items are equal
+  for (let i = 0; i < first.length; i += 1) {
+    if (first[i] !== second[i]) return false;
+  }
+
+  return true;
+}
+
 function convertOptionsToData(options: Options): Data {
   const clonedOptions = clone(options);
 
@@ -257,5 +269,6 @@ export {
   convertDataToState,
   // utils
   isSortedArray,
+  arraysMatch,
   closestToStep,
 };
