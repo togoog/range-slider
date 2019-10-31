@@ -37,7 +37,9 @@ function $(selector: string, rootEl?: HTMLElement): Maybe<HTMLElement[]> {
 
   // prettier-ignore
   return Maybe
-    .encase(() => element.querySelectorAll(selector))
+    // if rootEl exists - restrict search only inside this element
+    // ref: https://developer.mozilla.org/ru/docs/Web/API/Document/querySelectorAll
+    .encase(() => element.querySelectorAll(`${rootEl ? ':scope' : ''} ${selector}`))
     .chain<HTMLElement[]>(
       ifElse(
         lengthEq(0),
@@ -223,7 +225,7 @@ function convertOrientationToOrigin(orientation: Orientation): Origin {
  * @param rectA DOMRect of element A
  * @param rectB DOMRect of element B
  */
-function detectRectCollision(rectA: ClientRect, rectB: ClientRect): boolean {
+function detectRectCollision(rectA: DOMRect, rectB: DOMRect): boolean {
   return !(
     rectB.left >= rectA.right ||
     rectB.right <= rectA.left ||
