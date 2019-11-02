@@ -17,7 +17,7 @@ import {
   pipe,
   ifElse,
   always,
-  pluck,
+  path,
   clone,
   applySpec,
   zip,
@@ -25,8 +25,9 @@ import {
   assoc,
   all,
   clamp,
+  pluck,
 } from 'ramda';
-import { lengthEq } from 'ramda-adjunct';
+import { lengthEq, isNotEmpty } from 'ramda-adjunct';
 
 /**
  * Query dom elements
@@ -118,6 +119,7 @@ function convertOptionsToData(options: Options): Data {
         Array.isArray(op.tooltips) ? false : op.tooltips,
       ),
     tooltipsFormatter: (op: Options) => op.tooltipsFormatter,
+    tooltipCollisions: () => [],
     intervals: (op: Options) =>
       // TODO: maybe refactor false value to defaultIntervalValue
       fillArrayWith(
@@ -152,12 +154,84 @@ function getRelativePosition(min: number, max: number, value: number): number {
 }
 
 /**
- * Create tooltip content from Data object
- * @param data Data object
- * @param index tooltip index
+ * Check if tooltip has collisions with other tooltips by id
+ * @param collisions tooltipCollisions array
+ * @param idx tooltip index
  */
-function getTooltipContent(data: Data, index: number): string {
-  return data.tooltipsFormatter(data.spots[index].value);
+function checkIfTooltipHasCollisions(
+  collisions: boolean[],
+  idx: number,
+): boolean {
+  const cl = collisions.length;
+  if (cl === 0) return false;
+
+  const hasCollisionBefore = !!collisions[idx - 1];
+  const hasCollisionAfter = !!collisions[idx];
+
+  return hasCollisionBefore || hasCollisionAfter;
+}
+
+function joinTooltipsContent(
+  data: Data,
+  tooltips: Tooltip[],
+): Tooltip['content'] {
+  const contentList = pluck('content', tooltips);
+
+  return contentList.join('; ');
+}
+
+function calculateTooltips(cssClass: string, data: Data): State['tooltips'] {
+  const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
+    .map(([isVisible, spot], idx) => ({
+      content: data.tooltipsFormatter(data.spots[idx].value),
+      position: {
+        id: spot.id,
+        value: getRelativePosition(data.min, data.max, spot.value),
+      },
+      isVisible,
+      hasCollisions: checkIfTooltipHasCollisions(data.tooltipCollisions, idx),
+    }))
+    .map(assoc('orientation', data.orientation))
+    .map(assoc('cssClass', cssClass));
+
+  const mergedTooltips = tooltips
+    // find groups of overlapping tooltips
+    .reduce<Tooltip[][]>((result, tooltip, idx) => {
+      if (tooltip.hasCollisions) {
+        if (Array.isArray(result[result.length - 1])) {
+          result[result.length - 1].push(tooltip);
+        } else {
+          result.push([tooltip]);
+        }
+      } else {
+        result.push([]);
+      }
+
+      return result;
+    }, [])
+    .filter(isNotEmpty)
+    // merge grouped tooltips into 1
+    .map(
+      (group: Tooltip[]): Tooltip => {
+        return {
+          orientation: group[0].orientation,
+          cssClass: cssClass,
+          content: joinTooltipsContent(data, group),
+          position: {
+            id: group.map(path(['position', 'id'])).join(','),
+            value:
+              (group[0].position.value +
+                group[group.length - 1].position.value) /
+              2,
+          },
+          role: 'tooltip-merged',
+          hasCollisions: false,
+          isVisible: true,
+        };
+      },
+    );
+
+  return tooltips.concat(mergedTooltips);
 }
 
 function convertDataToState(data: Data): State {
@@ -207,17 +281,7 @@ function convertDataToState(data: Data): State {
     .map(addIsActiveProp(data.activeSpotIds)) as Handle[];
 
   // tooltips
-  const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
-    .map(([isVisible, spot], index) => ({
-      isVisible,
-      content: getTooltipContent(data, index),
-      position: {
-        id: spot.id,
-        value: getRelativePosition(data.min, data.max, spot.value),
-      },
-    }))
-    .map(addOrientationProp)
-    .map(addCSSClassProp(tooltipCSSClass));
+  const tooltips = calculateTooltips(tooltipCSSClass, data);
 
   return {
     cssClass,
@@ -260,7 +324,6 @@ function isSortedArray<T>(
 
 export {
   $,
-  getTooltipContent,
   detectRectCollision,
   // converters
   convertOrientationToOrigin,
@@ -271,4 +334,5 @@ export {
   isSortedArray,
   arraysMatch,
   closestToStep,
+  checkIfTooltipHasCollisions,
 };

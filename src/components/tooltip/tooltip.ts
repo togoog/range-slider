@@ -9,7 +9,9 @@ function tooltipView({
   position,
   content,
   isVisible,
+  role = 'tooltip',
   cssClass,
+  hasCollisions,
 }: Tooltip): TemplateResult {
   const origin = convertOrientationToOrigin(orientation);
 
@@ -21,10 +23,15 @@ function tooltipView({
   const cssClasses: ClassInfo = {
     [cssClass]: true,
     [`${cssClass}_${orientation}`]: true,
+    [`${cssClass}_has-collisions`]: hasCollisions,
   };
 
   return html`
-    <div class=${classMap(cssClasses)} style=${styleMap(styles)}>
+    <div
+      class=${classMap(cssClasses)}
+      style=${styleMap(styles)}
+      data-role=${role}
+    >
       ${content}
     </div>
   `;

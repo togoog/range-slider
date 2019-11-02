@@ -60,7 +60,20 @@ export type Data = {
   step: number;
   orientation: Orientation;
   tooltips: boolean[];
+  // TODO: rename tooltipsFormatter into tooltipFormatter
   tooltipsFormatter: Formatter;
+  // true  - tooltip has collisions with other tooltips
+  // false - tooltip has no collisions with other tooltips
+  // tooltipCollisions.length === tooltips.length - 1
+  // tooltipCollisions        |      tooltips
+  // [false]                  |   [tp1, tp2]
+  // [true]                   |   [(tp1, tp2)]
+  // [false, false]           |   [tp1, tp2, tp3]
+  // [false, true]            |   [tp1, (tp2, tp3)]
+  // [true, true]             |   [(tp1, tp2, tp3)]
+  // [false, true, false]     |   [tp1, (tp2, tp3), tp4]
+  // where () means - have collisions
+  tooltipCollisions: boolean[];
   intervals: boolean[];
 };
 
@@ -98,8 +111,10 @@ export type Tooltip = {
   orientation: Orientation;
   position: Position;
   content: string;
-  isVisible: boolean;
   cssClass: string;
+  isVisible: boolean;
+  hasCollisions: boolean;
+  role?: string;
 };
 
 export type Interval = {

@@ -123,6 +123,7 @@ const defaultData: Data = {
   orientation: 'horizontal',
   tooltips: [true],
   tooltipsFormatter: (value: number) => value.toLocaleString(),
+  tooltipCollisions: [],
   intervals: [true, false],
 };
 

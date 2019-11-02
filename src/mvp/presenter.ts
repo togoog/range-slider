@@ -9,7 +9,7 @@ import {
   Coordinates,
 } from '../types';
 import { Model, View } from './index';
-import { convertDataToState, closestToStep } from '../helpers';
+import { convertDataToState, closestToStep, arraysMatch } from '../helpers';
 
 class Presenter implements RangeSliderPresenter {
   constructor(private model: RangeSliderModel, private view: RangeSliderView) {
@@ -37,13 +37,16 @@ class Presenter implements RangeSliderPresenter {
   }
 
   private processViewEvents(): void {
+    // Bind event handlers to preserve context of Presenter
     const onHandleDragStart = this.onHandleDragStart.bind(this);
     const onHandleDragEnd = this.onHandleDragEnd.bind(this);
     const onHandleDrag = this.onHandleDrag.bind(this);
+    const onTooltipCollisions = this.onTooltipCollisions.bind(this);
 
     this.view.on(View.EVENT_HANDLE_DRAG_START, onHandleDragStart);
     this.view.on(View.EVENT_HANDLE_DRAG_END, onHandleDragEnd);
     this.view.on(View.EVENT_HANDLE_DRAG, onHandleDrag);
+    this.view.on(View.EVENT_TOOLTIP_COLLISIONS, onTooltipCollisions);
   }
 
   private onHandleDragStart(position: Position): void {
@@ -87,6 +90,14 @@ class Presenter implements RangeSliderPresenter {
         });
       },
     });
+  }
+
+  private onTooltipCollisions(collisions: boolean[]): void {
+    if (!arraysMatch(collisions, this.model.get('tooltipCollisions'))) {
+      this.model.propose({
+        tooltipCollisions: () => [...collisions],
+      });
+    }
   }
 }
 

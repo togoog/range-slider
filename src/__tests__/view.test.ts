@@ -1,6 +1,5 @@
 import { View } from '../mvp/view';
 import { State, Data } from '../types';
-import { getTooltipContent } from '../helpers';
 import { fireEvent } from '@testing-library/dom';
 
 const cssPrefix = 'curly';
@@ -21,6 +20,7 @@ describe('View.render', () => {
     step: 1,
     orientation: 'horizontal',
     tooltips: [true, true],
+    tooltipCollisions: [],
     tooltipsFormatter,
     intervals: [false, true, false],
   };
@@ -69,15 +69,17 @@ describe('View.render', () => {
       {
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: getTooltipContent(data, 0),
+        content: data.tooltipsFormatter(data.spots[0].value),
         isVisible: true,
+        hasCollisions: false,
         position: { id: 'value_0', value: 20 },
       },
       {
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: getTooltipContent(data, 1),
+        content: data.tooltipsFormatter(data.spots[1].value),
         isVisible: true,
+        hasCollisions: false,
         position: { id: 'value_1', value: 40 },
       },
     ],
@@ -153,6 +155,7 @@ describe('View.render', () => {
       step: 1,
       orientation: 'vertical',
       intervals: [false, true, false],
+      tooltipCollisions: [],
       tooltipsFormatter,
       tooltips: [true, true],
     };
@@ -201,15 +204,17 @@ describe('View.render', () => {
         {
           cssClass: tooltipCSSClass,
           orientation: 'vertical',
-          content: getTooltipContent(data, 0),
+          content: data.tooltipsFormatter(data.spots[0].value),
           isVisible: true,
+          hasCollisions: false,
           position: { id: 'value_0', value: 20 },
         },
         {
           cssClass: tooltipCSSClass,
           orientation: 'vertical',
-          content: getTooltipContent(data, 1),
+          content: data.tooltipsFormatter(data.spots[1].value),
           isVisible: true,
+          hasCollisions: false,
           position: { id: 'value_1', value: 40 },
         },
       ],
@@ -237,6 +242,7 @@ describe('Handle', () => {
     step: 1,
     orientation: 'horizontal',
     tooltips: [true],
+    tooltipCollisions: [],
     tooltipsFormatter,
     intervals: [true, false],
   };
@@ -272,8 +278,9 @@ describe('Handle', () => {
       {
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: getTooltipContent(data, 0),
+        content: data.tooltipsFormatter(data.spots[0].value),
         isVisible: true,
+        hasCollisions: false,
         position: { id: 'value_0', value: 500 },
       },
     ],

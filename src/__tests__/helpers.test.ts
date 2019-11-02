@@ -1,7 +1,6 @@
 import { Options, Data, State } from '../types';
 import {
   $,
-  getTooltipContent,
   detectRectCollision,
   convertOptionsToData,
   convertDataToOptions,
@@ -9,6 +8,7 @@ import {
   isSortedArray,
   arraysMatch,
   closestToStep,
+  checkIfTooltipHasCollisions,
 } from '../helpers';
 
 const cssPrefix = 'curly';
@@ -88,6 +88,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, false],
     };
@@ -113,6 +114,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, true, false],
     };
@@ -140,6 +142,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, false, false],
     };
@@ -165,6 +168,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, true],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, true, false],
     };
@@ -183,6 +187,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, false],
     };
@@ -208,6 +213,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, true, false],
     };
@@ -237,6 +243,7 @@ describe('convertDataToState', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, false],
     };
@@ -271,9 +278,10 @@ describe('convertDataToState', () => {
       tooltips: [
         {
           orientation: 'horizontal',
-          content: getTooltipContent(data, 0),
+          content: data.tooltipsFormatter(data.spots[0].value),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
+          hasCollisions: false,
           cssClass: tooltipCSSClass,
         },
       ],
@@ -291,6 +299,7 @@ describe('convertDataToState', () => {
       step: 10,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, true, false],
     };
@@ -338,16 +347,18 @@ describe('convertDataToState', () => {
       tooltips: [
         {
           orientation: 'vertical',
-          content: getTooltipContent(data, 0),
+          content: data.tooltipsFormatter(data.spots[0].value),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
+          hasCollisions: false,
           cssClass: tooltipCSSClass,
         },
         {
           orientation: 'vertical',
-          content: getTooltipContent(data, 1),
+          content: data.tooltipsFormatter(data.spots[1].value),
           position: { id: 'value_1', value: 70 },
           isVisible: false,
+          hasCollisions: false,
           cssClass: tooltipCSSClass,
         },
       ],
@@ -365,6 +376,7 @@ describe('convertDataToState', () => {
       step: 10,
       orientation: 'vertical',
       tooltips: [true, false],
+      tooltipCollisions: [],
       tooltipsFormatter,
       intervals: [false, true, false],
     };
@@ -412,16 +424,18 @@ describe('convertDataToState', () => {
       tooltips: [
         {
           orientation: 'vertical',
-          content: getTooltipContent(data, 0),
+          content: data.tooltipsFormatter(data.spots[0].value),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
+          hasCollisions: false,
           cssClass: tooltipCSSClass,
         },
         {
           orientation: 'vertical',
-          content: getTooltipContent(data, 1),
+          content: data.tooltipsFormatter(data.spots[1].value),
           position: { id: 'value_1', value: 70 },
           isVisible: false,
+          hasCollisions: false,
           cssClass: tooltipCSSClass,
         },
       ],
@@ -540,5 +554,57 @@ describe('closestToStep', () => {
     expect(closestToStep(1, 10)).toBe(10);
     expect(closestToStep(2, 31)).toBe(32);
     expect(closestToStep(0.5, 5.3)).toBe(5.5);
+  });
+});
+
+describe('checkIfTooltipHasCollisions', () => {
+  test('should return false if collisions is empty array', () => {
+    expect(checkIfTooltipHasCollisions([], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([], 1)).toBe(false);
+    expect(checkIfTooltipHasCollisions([], 2)).toBe(false);
+  });
+
+  test('should return true if tooltip has collisions or false if not', () => {
+    expect(checkIfTooltipHasCollisions([true], 0)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true], 1)).toBe(true);
+
+    expect(checkIfTooltipHasCollisions([false], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false], 1)).toBe(false);
+
+    expect(checkIfTooltipHasCollisions([true, true], 0)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, true], 1)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, true], 2)).toBe(true);
+
+    expect(checkIfTooltipHasCollisions([true, false], 0)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, false], 1)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, false], 2)).toBe(false);
+
+    expect(checkIfTooltipHasCollisions([false, true], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, true], 1)).toBe(true);
+    expect(checkIfTooltipHasCollisions([false, true], 2)).toBe(true);
+
+    expect(checkIfTooltipHasCollisions([false, false], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, false], 1)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, false], 2)).toBe(false);
+
+    expect(checkIfTooltipHasCollisions([true, true, true], 0)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, true, true], 1)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, true, true], 2)).toBe(true);
+    expect(checkIfTooltipHasCollisions([true, true, true], 3)).toBe(true);
+
+    expect(checkIfTooltipHasCollisions([false, true, true], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, true, true], 1)).toBe(true);
+    expect(checkIfTooltipHasCollisions([false, true, true], 2)).toBe(true);
+    expect(checkIfTooltipHasCollisions([false, true, true], 3)).toBe(true);
+
+    expect(checkIfTooltipHasCollisions([false, false, true], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, false, true], 1)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, false, true], 2)).toBe(true);
+    expect(checkIfTooltipHasCollisions([false, false, true], 3)).toBe(true);
+
+    expect(checkIfTooltipHasCollisions([false, true, false], 0)).toBe(false);
+    expect(checkIfTooltipHasCollisions([false, true, false], 1)).toBe(true);
+    expect(checkIfTooltipHasCollisions([false, true, false], 2)).toBe(true);
+    expect(checkIfTooltipHasCollisions([false, true, false], 3)).toBe(false);
   });
 });
