@@ -10,6 +10,20 @@ export type RangeSliderError = {
   desc: string;
 };
 
+// coordinate system origin
+// is used to set position of absolute positioned elements
+export type Origin = 'left' | 'right' | 'top' | 'bottom';
+
+// real value user wants
+export type RealValue = number;
+// relative position inside range slider
+export type RelativePos = number;
+
+export type ValueId = string;
+export type HandleId = string;
+export type TooltipId = string;
+export type IntervalId = string;
+
 //
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
@@ -24,8 +38,9 @@ export type Options = {
   step: number;
   orientation: Orientation;
   tooltips: boolean | boolean[];
-  tooltipsFormatter: Formatter;
+  tooltipFormatter: Formatter;
   intervals: boolean | boolean[];
+  cssClass: string;
 };
 
 export type OptionsKey = keyof Options;
@@ -43,38 +58,61 @@ export type RangeSliderModel = {
   propose(change: Partial<Proposal>): void;
 };
 
-export type ValueId = string;
+export type Handle = {
+  id: HandleId;
+  valueId: ValueId;
+  orientation: Orientation;
+  position: Position;
+  cssClass: string;
+  isActive: boolean;
+};
 
-export type Spot = {
-  // SpotId === PositionId
-  id: ValueId;
-  // actual value user wants
-  value: number;
+export type Tooltip = {
+  id: TooltipId;
+  valueId: ValueId[];
+  orientation: Orientation;
+  position: RelativePos;
+  content: string;
+  cssClass: string;
+  isVisible: boolean;
+  hasCollisions: boolean;
+  role: string;
+};
+
+export type Interval = {
+  id: IntervalId;
+  valueId: ValueId[];
+  orientation: Orientation;
+  from: RelativePos;
+  to: RelativePos;
+  isVisible: boolean;
+  cssClass: string;
+  role: string;
+};
+
+export type Track = {
+  orientation: Orientation;
+  cssClass: string;
 };
 
 export type Data = {
-  spots: Spot[];
-  activeSpotIds: ValueId[];
+  values: { [valueId: string]: RealValue };
+  valueIds: ValueId[];
   min: number;
   max: number;
   step: number;
   orientation: Orientation;
-  tooltips: boolean[];
-  // TODO: rename tooltipsFormatter into tooltipFormatter
-  tooltipsFormatter: Formatter;
-  // true  - tooltip has collisions with other tooltips
-  // false - tooltip has no collisions with other tooltips
-  // tooltipCollisions.length === tooltips.length - 1
-  // tooltipCollisions        |      tooltips
-  // [false]                  |   [tp1, tp2]
-  // [true]                   |   [(tp1, tp2)]
-  // [false, false]           |   [tp1, tp2, tp3]
-  // [false, true]            |   [tp1, (tp2, tp3)]
-  // [true, true]             |   [(tp1, tp2, tp3)]
-  // [false, true, false]     |   [tp1, (tp2, tp3), tp4]
-  // where () means - have collisions
-  tooltipCollisions: boolean[];
-  intervals: boolean[];
+  cssClass: string;
+  handles: { [handleId: string]: Handle };
+  handleIds: HandleId[];
+  tooltips: { [tooltipId: string]: Tooltip };
+  tooltipIds: TooltipId[];
+  tooltipFormatter: Formatter;
+  // array of tooltipId groups
+  // each group contain ids of overlapping tooltips
+  tooltipCollisions: TooltipId[][];
+  intervals: { [intervalId: string]: Interval };
+  intervalIds: IntervalId[];
 };
 
 export type DataKey = keyof Data;
@@ -86,49 +124,6 @@ export type Proposal = {
 //
 // ─── STATE ──────────────────────────────────────────────────────────────────────
 //
-export type Coordinates = {
-  x: number;
-  y: number;
-};
-
-export type Position = {
-  // PositionId === SpotId
-  id: ValueId;
-  // relative position of value in from the beginning of range-slider (in %)
-  value: number;
-};
-
-export type Origin = 'left' | 'right' | 'top' | 'bottom';
-
-export type Handle = {
-  orientation: Orientation;
-  position: Position;
-  cssClass: string;
-  isActive: boolean;
-};
-
-export type Tooltip = {
-  orientation: Orientation;
-  position: Position;
-  content: string;
-  cssClass: string;
-  isVisible: boolean;
-  hasCollisions: boolean;
-  role?: string;
-};
-
-export type Interval = {
-  orientation: Orientation;
-  from: Position;
-  to: Position;
-  isVisible: boolean;
-  cssClass: string;
-};
-
-export type Track = {
-  orientation: Orientation;
-  cssClass: string;
-};
 
 // State is a data prepared for view rendering
 export type State = {

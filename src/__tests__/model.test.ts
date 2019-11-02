@@ -24,7 +24,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 500,
       orientation: 'horizontal',
       tooltips: [true],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       tooltipCollisions: [],
       intervals: [true, false],
     };
@@ -42,7 +42,7 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       tooltips: [true],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       tooltipCollisions: [],
       intervals: [true, false],
     };
@@ -59,7 +59,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -77,7 +77,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -93,7 +93,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -111,7 +111,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true, true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -129,7 +129,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true, true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false, true],
     };
     expect(Model.validate(data).extract()).toEqual(
@@ -147,7 +147,7 @@ describe('Model.checkDataIntegrity', () => {
       orientation: 'horizontal',
       tooltips: [true, true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
     expect(Model.validate(data)).toEqual(Right(data));
@@ -164,7 +164,7 @@ describe('Model.propose', () => {
     orientation: 'horizontal',
     tooltips: [true, true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -281,7 +281,7 @@ describe('Model.propose', () => {
       orientation: 'horizontal',
       tooltips: [true, true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
     const model = new Model(data);
@@ -312,7 +312,7 @@ describe('Model.get', () => {
     orientation: 'horizontal',
     tooltips: [true, true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -340,7 +340,7 @@ describe('Model.set', () => {
     orientation: 'horizontal',
     tooltips: [true, true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -392,7 +392,7 @@ describe('Model.getAll', () => {
     orientation: 'horizontal',
     tooltips: [true, true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -412,7 +412,7 @@ describe('Model.setAll', () => {
     orientation: 'horizontal',
     tooltips: [true, true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -427,7 +427,7 @@ describe('Model.setAll', () => {
       orientation: 'vertical',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false, true],
     };
     model.setAll(newData);
@@ -447,7 +447,7 @@ describe('Model.setAll', () => {
       orientation: 'vertical',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false, true],
     };
     model.setAll(newData);
@@ -467,7 +467,7 @@ describe('Model.setAll', () => {
       orientation: 'vertical',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false, true],
     };
     model.setAll(newData);

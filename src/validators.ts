@@ -38,6 +38,7 @@ const ErrorNotValidOrientation = `${errorPrefix}/ErrorNotValidOrientation`;
 const ErrorNotValidTooltips = `${errorPrefix}/ErrorNotValidTooltips`;
 const ErrorNotValidTooltipsFormatter = `${errorPrefix}/ErrorNotValidTooltipsFormatter`;
 const ErrorNotValidIntervals = `${errorPrefix}/ErrorNotValidIntervals`;
+const ErrorNotValidCSSClass = `${errorPrefix}/ErrorNotValidCSSClass`;
 const ErrorOptionsIsNotAnObject = `${errorPrefix}/ErrorOptionsIsNotAnObject`;
 
 function errNotValidValue(): RangeSliderError {
@@ -96,6 +97,13 @@ function errNotValidIntervals(): RangeSliderError {
   };
 }
 
+function errNotValidCSSClass(): RangeSliderError {
+  return {
+    id: ErrorNotValidCSSClass,
+    desc: `(cssClass should start with letter & contain: letters, numbers, _ , -)`,
+  };
+}
+
 function errOptionsIsNotAnObject(): RangeSliderError {
   return {
     id: ErrorOptionsIsNotAnObject,
@@ -149,6 +157,12 @@ function checkIntervals(v: unknown): Maybe<RangeSliderError> {
     : Just(errNotValidIntervals());
 }
 
+function checkCSSClass(v: unknown): Maybe<RangeSliderError> {
+  return isString(v) && /^[a-zA-Z]{1}[a-zA-Z0-9\-_]*/g.test(v)
+    ? Nothing
+    : Just(errNotValidCSSClass());
+}
+
 function checkRangeSliderOptions(
   v: unknown,
 ): Either<RangeSliderError[], Options> {
@@ -166,8 +180,9 @@ function checkRangeSliderOptions(
   validationResults.push(checkStep(options.step));
   validationResults.push(checkOrientation(options.orientation));
   validationResults.push(checkTooltips(options.tooltips));
-  validationResults.push(checkTooltipsFormatter(options.tooltipsFormatter));
+  validationResults.push(checkTooltipsFormatter(options.tooltipFormatter));
   validationResults.push(checkIntervals(options.intervals));
+  validationResults.push(checkCSSClass(options.cssClass));
 
   const errors = Maybe.catMaybes(validationResults);
 
@@ -184,6 +199,7 @@ export {
   errNotValidTooltips,
   errNotValidTooltipsFormatter,
   errNotValidIntervals,
+  errNotValidCSSClass,
   errOptionsIsNotAnObject,
   // validators
   checkValue,
@@ -194,5 +210,6 @@ export {
   checkTooltips,
   checkTooltipsFormatter,
   checkIntervals,
+  checkCSSClass,
   checkRangeSliderOptions,
 };

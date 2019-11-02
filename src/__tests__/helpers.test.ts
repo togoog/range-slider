@@ -76,7 +76,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: false,
     };
 
@@ -89,7 +89,7 @@ describe('convertOptionsToData', () => {
       orientation: 'horizontal',
       tooltips: [true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -102,7 +102,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -115,7 +115,7 @@ describe('convertOptionsToData', () => {
       orientation: 'horizontal',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -130,7 +130,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: false,
     };
 
@@ -143,7 +143,7 @@ describe('convertOptionsToData', () => {
       orientation: 'horizontal',
       tooltips: [true, true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, false, false],
     };
 
@@ -156,7 +156,7 @@ describe('convertOptionsToData', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, true],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true],
     };
 
@@ -169,7 +169,7 @@ describe('convertOptionsToData', () => {
       orientation: 'horizontal',
       tooltips: [true, true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -188,7 +188,7 @@ describe('convertDataToOptions', () => {
       orientation: 'horizontal',
       tooltips: [true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -199,7 +199,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -214,7 +214,7 @@ describe('convertDataToOptions', () => {
       orientation: 'horizontal',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -225,7 +225,7 @@ describe('convertDataToOptions', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: [true, false],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -244,7 +244,7 @@ describe('convertDataToState', () => {
       orientation: 'horizontal',
       tooltips: [true],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, false],
     };
 
@@ -278,7 +278,7 @@ describe('convertDataToState', () => {
       tooltips: [
         {
           orientation: 'horizontal',
-          content: data.tooltipsFormatter(data.spots[0].value),
+          content: data.tooltipFormatter(data.spots[0].value),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
           hasCollisions: false,
@@ -300,7 +300,7 @@ describe('convertDataToState', () => {
       orientation: 'vertical',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -347,7 +347,7 @@ describe('convertDataToState', () => {
       tooltips: [
         {
           orientation: 'vertical',
-          content: data.tooltipsFormatter(data.spots[0].value),
+          content: data.tooltipFormatter(data.spots[0].value),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
           hasCollisions: false,
@@ -355,7 +355,7 @@ describe('convertDataToState', () => {
         },
         {
           orientation: 'vertical',
-          content: data.tooltipsFormatter(data.spots[1].value),
+          content: data.tooltipFormatter(data.spots[1].value),
           position: { id: 'value_1', value: 70 },
           isVisible: false,
           hasCollisions: false,
@@ -377,7 +377,7 @@ describe('convertDataToState', () => {
       orientation: 'vertical',
       tooltips: [true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [false, true, false],
     };
 
@@ -424,7 +424,7 @@ describe('convertDataToState', () => {
       tooltips: [
         {
           orientation: 'vertical',
-          content: data.tooltipsFormatter(data.spots[0].value),
+          content: data.tooltipFormatter(data.spots[0].value),
           position: { id: 'value_0', value: 50 },
           isVisible: true,
           hasCollisions: false,
@@ -432,7 +432,7 @@ describe('convertDataToState', () => {
         },
         {
           orientation: 'vertical',
-          content: data.tooltipsFormatter(data.spots[1].value),
+          content: data.tooltipFormatter(data.spots[1].value),
           position: { id: 'value_1', value: 70 },
           isVisible: false,
           hasCollisions: false,

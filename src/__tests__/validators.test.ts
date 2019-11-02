@@ -9,6 +9,7 @@ import {
   errNotValidTooltips,
   errNotValidTooltipsFormatter,
   errNotValidIntervals,
+  errNotValidCSSClass,
   errOptionsIsNotAnObject,
   // validators
   checkValue,
@@ -19,6 +20,7 @@ import {
   checkTooltips,
   checkTooltipsFormatter,
   checkIntervals,
+  checkCSSClass,
   checkRangeSliderOptions,
 } from '../validators';
 import { Just, Nothing } from 'purify-ts/Maybe';
@@ -206,6 +208,23 @@ describe('checkIntervals', () => {
     expect(checkIntervals({ foo: true })).toEqual(Just(errNotValidIntervals()));
     expect(checkIntervals([true, 1])).toEqual(Just(errNotValidIntervals()));
     expect(checkIntervals([true, 'a'])).toEqual(Just(errNotValidIntervals()));
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────────
+
+describe('checkCSSClass', () => {
+  test('should be a string that starts with a letter and contain: letters, numbers, _, -', () => {
+    expect(checkCSSClass(true)).toEqual(Just(errNotValidCSSClass()));
+    expect(checkCSSClass(1)).toEqual(Just(errNotValidCSSClass()));
+    expect(checkCSSClass([])).toEqual(Just(errNotValidCSSClass()));
+
+    expect(checkCSSClass('123foo')).toEqual(Just(errNotValidCSSClass()));
+    expect(checkCSSClass('-foo')).toEqual(Just(errNotValidCSSClass()));
+    expect(checkCSSClass('_foo')).toEqual(Just(errNotValidCSSClass()));
+    expect(checkCSSClass('foo')).toEqual(Nothing);
+    expect(checkCSSClass('f123')).toEqual(Nothing);
+    expect(checkCSSClass('f-123_bar')).toEqual(Nothing);
   });
 });
 

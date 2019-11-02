@@ -122,7 +122,7 @@ const defaultData: Data = {
   step: 1,
   orientation: 'horizontal',
   tooltips: [true],
-  tooltipsFormatter: (value: number) => value.toLocaleString(),
+  tooltipFormatter: (value: number) => value.toLocaleString(),
   tooltipCollisions: [],
   intervals: [true, false],
 };

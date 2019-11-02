@@ -5,12 +5,11 @@ import {
   OptionsKey,
   DataKey,
   Origin,
-  Position,
   Interval,
   Handle,
   Tooltip,
-  ValueId,
   Orientation,
+  ValueId,
 } from './types';
 import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
 import {
@@ -24,7 +23,6 @@ import {
   aperture,
   assoc,
   all,
-  clamp,
   pluck,
 } from 'ramda';
 import { lengthEq, isNotEmpty } from 'ramda-adjunct';
@@ -57,7 +55,7 @@ function $(selector: string, rootEl?: HTMLElement): Maybe<HTMLElement[]> {
  * Convert value to array
  * @param v value to be converted
  */
-function toArray<T>(v: T): T[] {
+function toArray<T>(v: T | T[]): T[] {
   return Array.isArray(v) ? [...v] : [v];
 }
 
@@ -97,62 +95,6 @@ function arraysMatch<T>(first: T[], second: T[]): boolean {
   return true;
 }
 
-function convertOptionsToData(options: Options): Data {
-  const clonedOptions = clone(options);
-
-  const transformations: { [key in DataKey]: Function } = {
-    spots: (op: Options) =>
-      toArray(op.value).map((v, i) => ({
-        id: `value_${i}`,
-        value: clamp(op.min, op.max, closestToStep(op.step, v as number)),
-      })),
-    activeSpotIds: () => [],
-    min: (op: Options) => op.min,
-    max: (op: Options) => op.max,
-    step: (op: Options) => op.step,
-    orientation: (op: Options) => op.orientation,
-    tooltips: (op: Options) =>
-      // TODO: maybe refactor false value to defaultTooltipValue
-      fillArrayWith(
-        toArray(op.tooltips),
-        toArray(op.value).length,
-        Array.isArray(op.tooltips) ? false : op.tooltips,
-      ),
-    tooltipsFormatter: (op: Options) => op.tooltipsFormatter,
-    tooltipCollisions: () => [],
-    intervals: (op: Options) =>
-      // TODO: maybe refactor false value to defaultIntervalValue
-      fillArrayWith(
-        toArray(op.intervals),
-        toArray(op.value).length + 1,
-        Array.isArray(op.intervals) ? false : op.intervals,
-      ),
-  };
-
-  return applySpec(transformations)(clonedOptions) as Data;
-}
-
-function convertDataToOptions(data: Data): Options {
-  const clonedData = clone(data);
-
-  const transformations: { [key in OptionsKey]: Function } = {
-    value: (d: Data) => pluck('value', d.spots),
-    min: (d: Data) => d.min,
-    max: (d: Data) => d.max,
-    step: (d: Data) => d.step,
-    orientation: (d: Data) => d.orientation,
-    tooltips: (d: Data) => d.tooltips,
-    tooltipsFormatter: (d: Data) => d.tooltipsFormatter,
-    intervals: (d: Data) => d.intervals,
-  };
-
-  return applySpec(transformations)(clonedData) as Options;
-}
-
-function getRelativePosition(min: number, max: number, value: number): number {
-  return ((value - min) / (max - min)) * 100;
-}
-
 /**
  * Check if tooltip has collisions with other tooltips by id
  * @param collisions tooltipCollisions array
@@ -183,7 +125,7 @@ function joinTooltipsContent(
 function calculateTooltips(cssClass: string, data: Data): State['tooltips'] {
   const tooltips: Tooltip[] = zip(data.tooltips, data.spots)
     .map(([isVisible, spot], idx) => ({
-      content: data.tooltipsFormatter(data.spots[idx].value),
+      content: data.tooltipFormatter(data.spots[idx].value),
       position: {
         id: spot.id,
         value: getRelativePosition(data.min, data.max, spot.value),
@@ -272,7 +214,7 @@ function convertDataToState(data: Data): State {
     .map(addCSSClassProp(intervalCSSClass));
 
   // handles
-  const addIsActiveProp = (ids: ValueId[]) => (v: { position: Position }) =>
+  const addIsActiveProp = (ids: SpotId[]) => (v: { position: Position }) =>
     assoc('isActive', ids.includes(v.position.id), v);
   const handles = handlePositions
     .map(position => ({ position }))
@@ -322,17 +264,27 @@ function isSortedArray<T>(
   );
 }
 
+function makeId(entityName: string, idx: number): string {
+  return `${entityName.replace(/\s+/g, '')}_${idx}`;
+}
+
+function getRelativePosition(min: number, max: number, value: number): number {
+  return ((value - min) / (max - min)) * 100;
+}
+
 export {
   $,
   detectRectCollision,
   // converters
   convertOrientationToOrigin,
-  convertOptionsToData,
-  convertDataToOptions,
   convertDataToState,
   // utils
+  makeId,
   isSortedArray,
+  toArray,
+  fillArrayWith,
   arraysMatch,
   closestToStep,
   checkIfTooltipHasCollisions,
+  getRelativePosition,
 };

@@ -21,7 +21,7 @@ describe('View.render', () => {
     orientation: 'horizontal',
     tooltips: [true, true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [false, true, false],
   };
 
@@ -69,7 +69,7 @@ describe('View.render', () => {
       {
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: data.tooltipsFormatter(data.spots[0].value),
+        content: data.tooltipFormatter(data.spots[0].value),
         isVisible: true,
         hasCollisions: false,
         position: { id: 'value_0', value: 20 },
@@ -77,7 +77,7 @@ describe('View.render', () => {
       {
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: data.tooltipsFormatter(data.spots[1].value),
+        content: data.tooltipFormatter(data.spots[1].value),
         isVisible: true,
         hasCollisions: false,
         position: { id: 'value_1', value: 40 },
@@ -156,7 +156,7 @@ describe('View.render', () => {
       orientation: 'vertical',
       intervals: [false, true, false],
       tooltipCollisions: [],
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       tooltips: [true, true],
     };
 
@@ -204,7 +204,7 @@ describe('View.render', () => {
         {
           cssClass: tooltipCSSClass,
           orientation: 'vertical',
-          content: data.tooltipsFormatter(data.spots[0].value),
+          content: data.tooltipFormatter(data.spots[0].value),
           isVisible: true,
           hasCollisions: false,
           position: { id: 'value_0', value: 20 },
@@ -212,7 +212,7 @@ describe('View.render', () => {
         {
           cssClass: tooltipCSSClass,
           orientation: 'vertical',
-          content: data.tooltipsFormatter(data.spots[1].value),
+          content: data.tooltipFormatter(data.spots[1].value),
           isVisible: true,
           hasCollisions: false,
           position: { id: 'value_1', value: 40 },
@@ -243,7 +243,7 @@ describe('Handle', () => {
     orientation: 'horizontal',
     tooltips: [true],
     tooltipCollisions: [],
-    tooltipsFormatter,
+    tooltipFormatter: tooltipsFormatter,
     intervals: [true, false],
   };
 
@@ -278,7 +278,7 @@ describe('Handle', () => {
       {
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: data.tooltipsFormatter(data.spots[0].value),
+        content: data.tooltipFormatter(data.spots[0].value),
         isVisible: true,
         hasCollisions: false,
         position: { id: 'value_0', value: 500 },

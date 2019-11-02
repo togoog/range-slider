@@ -14,7 +14,7 @@ describe('RangeSlider.get', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -40,7 +40,7 @@ describe('RangeSlider.set', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -83,7 +83,7 @@ describe('RangeSlider.getAll', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -111,7 +111,7 @@ describe('RangeSlider.setAll', () => {
       step: 1,
       orientation: 'horizontal',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -123,7 +123,7 @@ describe('RangeSlider.setAll', () => {
       step: 5,
       orientation: 'vertical',
       tooltips: true,
-      tooltipsFormatter,
+      tooltipFormatter: tooltipsFormatter,
       intervals: false,
     };
 
