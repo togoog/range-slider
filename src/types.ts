@@ -76,7 +76,7 @@ export type Data = {
   tooltips: { [tooltipId: string]: boolean };
   tooltipIds: TooltipId[];
   tooltipFormatter: Formatter;
-  tooltipCollisions: TooltipId[][]; // groups overlapping tooltips
+  tooltipCollisions: TooltipId[][]; // groups of overlapping tooltips
   /** INTERVALS */
   intervals: { [intervalId: string]: boolean };
   intervalIds: IntervalId[];

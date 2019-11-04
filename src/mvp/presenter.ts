@@ -5,7 +5,7 @@ import {
   RangeSliderPresenter,
   RealValue,
   HandleId,
-  TooltipId,
+  Data,
 } from '../types';
 import { Model, View } from './index';
 import { closestToStep } from '../helpers';
@@ -97,9 +97,9 @@ class Presenter implements RangeSliderPresenter {
     });
   }
 
-  private onTooltipCollisions(collisions: [TooltipId, TooltipId][]): void {
+  private onTooltipCollisions(collisions: Data['tooltipCollisions']): void {
     this.model.propose({
-      tooltipCollisions: () => [...collisions],
+      tooltipCollisions: () => collisions,
     });
   }
 }

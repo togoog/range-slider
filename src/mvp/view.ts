@@ -136,7 +136,7 @@ class View extends EventEmitter implements RangeSliderView {
     // if there are more then 1 tooltip -> try to find collisions
     if (tooltipCoordsList.length > 1) {
       const collisions = aperture(2, tooltipCoordsList)
-        .flatMap(adjacentTooltips => {
+        .map(adjacentTooltips => {
           const firstId = adjacentTooltips[0][0];
           const firstRect = adjacentTooltips[0][1];
 
@@ -147,7 +147,24 @@ class View extends EventEmitter implements RangeSliderView {
 
           return haveCollision ? [firstId, secondId] : [];
         })
-        .filter(isNotEmpty);
+        .filter(isNotEmpty)
+        .reduce(
+          (acc, cur): TooltipId[][] => {
+            const prevGroup = acc[acc.length - 1];
+            const prevTooltipId = prevGroup
+              ? prevGroup[prevGroup.length - 1]
+              : null;
+
+            if (prevTooltipId === cur[0]) {
+              prevGroup.push(cur[1]);
+            } else {
+              acc.push(cur);
+            }
+
+            return acc;
+          },
+          [] as TooltipId[][],
+        );
 
       this.emit(View.EVENT_TOOLTIP_COLLISIONS, collisions);
     }

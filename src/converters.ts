@@ -4,11 +4,9 @@ import {
   applySpec,
   includes,
   zip,
-  map,
-  prop,
+  props,
   aperture,
 } from 'ramda';
-import { isNotEmpty } from 'ramda-adjunct';
 import {
   RelativePos,
   Orientation,
@@ -24,6 +22,7 @@ import {
   Tooltip,
   Interval,
   IntervalId,
+  TooltipId,
 } from './types';
 import {
   toArray,
@@ -33,6 +32,7 @@ import {
   fillArrayWith,
 } from './helpers';
 import * as defaults from './defaults';
+import { numberLiteralTypeAnnotation } from '@babel/types';
 
 //
 // ─── ORIENTATION TO ORIGIN ──────────────────────────────────────────────────────
@@ -179,16 +179,29 @@ function getMergedTooltipsContent(
     )
     .map(handleId => ({
       handleIdx: data.handleIds.findIndex(id => id === handleId),
-      value: data.tooltipFormatter(data.handles[handleId]),
+      value: data.handles[handleId],
     }))
+    .reduce(
+      (acc, cur, idx, arr): { handleIdx: number; value: number }[] => {
+        const nextVal = arr[idx + 1] ? arr[idx + 1].value : null;
+
+        if (nextVal !== cur.value) {
+          acc.push(cur);
+        }
+
+        return acc;
+      },
+      [] as { handleIdx: number; value: number }[],
+    )
     .flatMap(({ handleIdx, value }) => {
       const intervalId = data.intervalIds[handleIdx + 1];
+      const formatedValue = data.tooltipFormatter(value);
 
       if (data.intervals[intervalId]) {
-        return [value, ' - '];
+        return [formatedValue, ' - '];
       }
 
-      return [value, '; '];
+      return [formatedValue, '; '];
     });
 
   // remove last connector
@@ -197,57 +210,64 @@ function getMergedTooltipsContent(
   return valuesWithConnectors.join('');
 }
 
+function getMergedTooltipPosition(
+  tooltipsToMerge: Tooltip[],
+): Tooltip['position'] {
+  const len = tooltipsToMerge.length;
+  const firstTooltipPosition = tooltipsToMerge[0].position;
+  const lastTooltipPosition = tooltipsToMerge[len - 1].position;
+
+  return (firstTooltipPosition + lastTooltipPosition) / 2;
+}
+
 function makeTooltips(data: Data): Tooltip[] {
   const role = 'tooltip';
   const cssClass = `${data.cssClass}__${role}`;
 
-  const tooltips = zip(data.handleIds, data.tooltipIds).map(
-    ([handleId, tooltipId]): Tooltip => ({
-      id: tooltipId,
-      handleIds: [handleId],
-      content: data.tooltipFormatter(data.handles[handleId]),
-      orientation: data.orientation,
-      hasCollisions: data.tooltipCollisions.some(includes(tooltipId)),
-      isVisible: data.tooltips[tooltipId],
-      position: getRelativePosition(data.min, data.max, data.handles[handleId]),
-      cssClass,
-      role: 'tooltip',
-    }),
+  const tooltipPairs = zip(data.handleIds, data.tooltipIds).map(
+    ([handleId, tooltipId]): [TooltipId, Tooltip] => [
+      tooltipId,
+      {
+        id: tooltipId,
+        handleIds: [handleId],
+        content: data.tooltipFormatter(data.handles[handleId]),
+        orientation: data.orientation,
+        hasCollisions: data.tooltipCollisions.some(includes(tooltipId)),
+        isVisible: data.tooltips[tooltipId],
+        position: getRelativePosition(
+          data.min,
+          data.max,
+          data.handles[handleId],
+        ),
+        cssClass,
+        role: 'tooltip',
+      },
+    ],
   );
+
+  const tooltipsMap = fromPairs(tooltipPairs);
 
   // when tooltips overlap - they are hidden
   // mergedTooltip is shown instead of group of overlapping tooltips
-  const overlappingGroups: Tooltip[][] = [];
-  tooltips.forEach(tooltip => {
-    if (tooltip.hasCollisions) {
-      if (overlappingGroups[overlappingGroups.length - 1]) {
-        overlappingGroups[overlappingGroups.length - 1].push(tooltip);
-      } else {
-        overlappingGroups.push([tooltip]);
-      }
-    } else {
-      overlappingGroups.push([]);
-    }
-  });
 
-  const mergedTooltips = overlappingGroups.filter(isNotEmpty).map(
+  const mergedTooltips = data.tooltipCollisions.map(
     (group, idx): Tooltip => ({
       id: makeId('tooltip-merged', idx),
       handleIds: group.reduce(
-        (acc, cur) => acc.concat(cur.handleIds),
+        (acc, tooltipId) => acc.concat(tooltipsMap[tooltipId].handleIds),
         [] as HandleId[],
       ),
-      content: getMergedTooltipsContent(data, group),
+      content: getMergedTooltipsContent(data, props(group, tooltipsMap)),
       orientation: data.orientation,
       hasCollisions: false,
       isVisible: true,
-      position: (group[group.length - 1].position + group[0].position) / 2,
+      position: getMergedTooltipPosition(props(group, tooltipsMap)),
       cssClass,
       role: 'tooltip-merged',
     }),
   );
 
-  return tooltips.concat(mergedTooltips);
+  return Object.values(tooltipsMap).concat(mergedTooltips);
 }
 
 function makeIntervals(data: Data): Interval[] {
