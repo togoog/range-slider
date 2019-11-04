@@ -17,5 +17,6 @@ module.exports = {
     semi: ['error', 'always'],
     complexity: ['error', 5],
     '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/camelcase': 0,
   },
 };
