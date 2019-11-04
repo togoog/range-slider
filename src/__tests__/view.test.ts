@@ -2,27 +2,30 @@ import { View } from '../mvp/view';
 import { State, Data } from '../types';
 import { fireEvent } from '@testing-library/dom';
 
-const cssPrefix = 'curly';
-const cssClass = `${cssPrefix}-range-slider`;
+const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;
 const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
 
-const tooltipsFormatter = (value: number) => value.toLocaleString();
+const tooltipFormatter = (value: number) => value.toLocaleString();
 
 describe('View.render', () => {
   const data: Data = {
-    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-    activeSpotIds: [],
+    handles: { handle_0: 20, handle_1: 40 },
+    handleIds: ['handle_0', 'handle_1'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 1,
     orientation: 'horizontal',
-    tooltips: [true, true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [false, true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
   };
 
   const state: State = {
@@ -30,57 +33,76 @@ describe('View.render', () => {
     track: { orientation: 'horizontal', cssClass: trackCSSClass },
     intervals: [
       {
+        id: 'interval_0',
+        handleIds: ['first', 'handle_0'],
+        from: 0,
+        to: 20,
         cssClass: intervalCSSClass,
         orientation: 'horizontal',
         isVisible: false,
-        from: { id: 'first', value: 0 },
-        to: { id: 'value_0', value: 20 },
+        role: 'interval',
       },
       {
+        id: 'interval_1',
+        handleIds: ['handle_0', 'handle_1'],
+        from: 20,
+        to: 40,
         cssClass: intervalCSSClass,
         orientation: 'horizontal',
         isVisible: true,
-        from: { id: 'value_0', value: 20 },
-        to: { id: 'value_1', value: 40 },
+        role: 'interval',
       },
       {
+        id: 'interval_2',
+        handleIds: ['handle_1', 'last'],
+        from: 40,
+        to: 100,
         cssClass: intervalCSSClass,
         orientation: 'horizontal',
         isVisible: false,
-        from: { id: 'value_1', value: 40 },
-        to: { id: 'last', value: 100 },
+        role: 'interval',
       },
     ],
     handles: [
       {
+        id: 'handle_0',
+        position: 20,
         cssClass: handleCSSClass,
         orientation: 'horizontal',
-        position: { id: 'value_0', value: 20 },
         isActive: false,
+        role: 'handle',
       },
       {
+        id: 'handle_1',
+        position: 40,
         cssClass: handleCSSClass,
         orientation: 'horizontal',
-        position: { id: 'value_1', value: 40 },
         isActive: false,
+        role: 'handle',
       },
     ],
     tooltips: [
       {
-        cssClass: tooltipCSSClass,
+        id: 'tooltip_0',
+        handleIds: ['handle_0'],
+        position: 20,
+        content: data.tooltipFormatter(data.handles['handle_0']),
         orientation: 'horizontal',
-        content: data.tooltipFormatter(data.spots[0].value),
+        cssClass: tooltipCSSClass,
         isVisible: true,
         hasCollisions: false,
-        position: { id: 'value_0', value: 20 },
+        role: 'tooltip',
       },
       {
-        cssClass: tooltipCSSClass,
+        id: 'tooltip_1',
+        handleIds: ['handle_1'],
+        position: 40,
+        content: data.tooltipFormatter(data.handles['handle_1']),
         orientation: 'horizontal',
-        content: data.tooltipFormatter(data.spots[1].value),
+        cssClass: tooltipCSSClass,
         isVisible: true,
         hasCollisions: false,
-        position: { id: 'value_1', value: 40 },
+        role: 'tooltip',
       },
     ],
   };
@@ -89,24 +111,25 @@ describe('View.render', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
-    let $interval = document.getElementsByClassName(state.track.cssClass);
+    let $interval = document.getElementsByClassName(trackCSSClass);
     expect($interval).toHaveLength(0);
     view.render(state);
-    $interval = document.getElementsByClassName(state.track.cssClass);
+    $interval = document.getElementsByClassName(trackCSSClass);
     expect($interval).toHaveLength(1);
   });
 
-  test('should only render intervals with isVisible = true', () => {
+  test('interval should be hidden if isVisible = false', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
-    let $interval = document.getElementsByClassName(
-      state.intervals[0].cssClass,
-    );
-    expect($interval).toHaveLength(0);
+    let $intervals = document.getElementsByClassName(intervalCSSClass);
+    expect($intervals).toHaveLength(0);
     view.render(state);
-    $interval = document.getElementsByClassName(state.intervals[0].cssClass);
-    expect($interval).toHaveLength(1);
+    $intervals = document.getElementsByClassName(intervalCSSClass);
+    expect($intervals).toHaveLength(3);
+    expect(window.getComputedStyle($intervals[0]).display).toBe('none');
+    expect(window.getComputedStyle($intervals[1]).display).toBe('block');
+    expect(window.getComputedStyle($intervals[2]).display).toBe('none');
   });
 
   test('should render handles', () => {
@@ -138,26 +161,31 @@ describe('View.render', () => {
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     view.render(state);
-    const $interval = document.getElementsByClassName(intervalCSSClass)[0];
-    const style = ($interval as HTMLElement).style;
-    const left = style.getPropertyValue('left');
-    const width = style.getPropertyValue('width');
-    expect(left).toBe('20%');
-    expect(width).toBe('20%');
+    const $intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(window.getComputedStyle($intervals[0]).left).toBe('0%');
+    expect(window.getComputedStyle($intervals[0]).width).toBe('20%');
+    expect(window.getComputedStyle($intervals[1]).left).toBe('20%');
+    expect(window.getComputedStyle($intervals[1]).width).toBe('20%');
+    expect(window.getComputedStyle($intervals[2]).left).toBe('40%');
+    expect(window.getComputedStyle($intervals[2]).width).toBe('60%');
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
     const data: Data = {
-      spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-      activeSpotIds: [],
+      handles: { handle_0: 20, handle_1: 40 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 1,
       orientation: 'vertical',
-      intervals: [false, true, false],
+      cssClass,
+      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      tooltips: [true, true],
+      tooltipFormatter: tooltipFormatter,
     };
 
     const state: State = {
@@ -165,57 +193,76 @@ describe('View.render', () => {
       track: { orientation: 'vertical', cssClass: trackCSSClass },
       intervals: [
         {
+          id: 'interval_0',
+          handleIds: ['first', 'handle_0'],
+          from: 0,
+          to: 20,
           cssClass: intervalCSSClass,
           orientation: 'vertical',
           isVisible: false,
-          from: { id: 'first', value: 0 },
-          to: { id: 'value_0', value: 20 },
+          role: 'interval',
         },
         {
+          id: 'interval_1',
+          handleIds: ['handle_0', 'handle_1'],
+          from: 20,
+          to: 40,
           cssClass: intervalCSSClass,
           orientation: 'vertical',
           isVisible: true,
-          from: { id: 'value_0', value: 20 },
-          to: { id: 'value_1', value: 40 },
+          role: 'interval',
         },
         {
+          id: 'interval_2',
+          handleIds: ['handle_1', 'last'],
+          from: 40,
+          to: 100,
           cssClass: intervalCSSClass,
           orientation: 'vertical',
           isVisible: false,
-          from: { id: 'value_1', value: 40 },
-          to: { id: 'last', value: 100 },
+          role: 'interval',
         },
       ],
       handles: [
         {
+          id: 'handle_0',
+          position: 20,
           cssClass: handleCSSClass,
           orientation: 'vertical',
-          position: { id: 'value_0', value: 20 },
           isActive: false,
+          role: 'handle',
         },
         {
+          id: 'handle_1',
+          position: 40,
           cssClass: handleCSSClass,
           orientation: 'vertical',
-          position: { id: 'value_1', value: 40 },
           isActive: false,
+          role: 'handle',
         },
       ],
       tooltips: [
         {
-          cssClass: tooltipCSSClass,
+          id: 'tooltip_0',
+          handleIds: ['handle_0'],
+          position: 20,
+          content: data.tooltipFormatter(data.handles['handle_0']),
           orientation: 'vertical',
-          content: data.tooltipFormatter(data.spots[0].value),
+          cssClass: tooltipCSSClass,
           isVisible: true,
           hasCollisions: false,
-          position: { id: 'value_0', value: 20 },
+          role: 'tooltip',
         },
         {
-          cssClass: tooltipCSSClass,
+          id: 'tooltip_1',
+          handleIds: ['handle_1'],
+          position: 40,
+          content: data.tooltipFormatter(data.handles['handle_1']),
           orientation: 'vertical',
-          content: data.tooltipFormatter(data.spots[1].value),
+          cssClass: tooltipCSSClass,
           isVisible: true,
           hasCollisions: false,
-          position: { id: 'value_1', value: 40 },
+          role: 'tooltip',
         },
       ],
     };
@@ -224,27 +271,32 @@ describe('View.render', () => {
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     view.render(state);
-    const $interval = document.getElementsByClassName(intervalCSSClass)[0];
-    const style = ($interval as HTMLElement).style;
-    const bottom = style.getPropertyValue('bottom');
-    const height = style.getPropertyValue('height');
-    expect(bottom).toBe('20%');
-    expect(height).toBe('20%');
+    const $intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(window.getComputedStyle($intervals[0]).bottom).toBe('0%');
+    expect(window.getComputedStyle($intervals[0]).height).toBe('20%');
+    expect(window.getComputedStyle($intervals[1]).bottom).toBe('20%');
+    expect(window.getComputedStyle($intervals[1]).height).toBe('20%');
+    expect(window.getComputedStyle($intervals[2]).bottom).toBe('40%');
+    expect(window.getComputedStyle($intervals[2]).height).toBe('60%');
   });
 });
 
 describe('Handle', () => {
   const data: Data = {
-    spots: [{ id: 'value_0', value: 50 }],
-    activeSpotIds: [],
+    handles: { handle_0: 50 },
+    handleIds: ['handle_0'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 1,
     orientation: 'horizontal',
-    tooltips: [true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true },
+    tooltipIds: ['tooltip_0'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: true, interval_1: false },
+    intervalIds: ['interval_0', 'interval_1'],
   };
 
   const state: State = {
@@ -252,82 +304,90 @@ describe('Handle', () => {
     track: { orientation: 'horizontal', cssClass: trackCSSClass },
     intervals: [
       {
+        id: 'interval_0',
+        handleIds: ['first', 'handle_0'],
+        from: 0,
+        to: 50,
         cssClass: intervalCSSClass,
         orientation: 'horizontal',
         isVisible: true,
-        from: { id: 'first', value: 0 },
-        to: { id: 'value_0', value: 50 },
+        role: 'interval',
       },
       {
+        id: 'interval_1',
+        handleIds: ['handle_0', 'last'],
+        from: 50,
+        to: 100,
         cssClass: intervalCSSClass,
         orientation: 'horizontal',
         isVisible: false,
-        from: { id: 'value_0', value: 50 },
-        to: { id: 'last', value: 100 },
+        role: 'interval',
       },
     ],
     handles: [
       {
+        id: 'handle_0',
+        position: 50,
         cssClass: handleCSSClass,
         orientation: 'horizontal',
-        position: { id: 'value_0', value: 50 },
         isActive: false,
+        role: 'handle',
       },
     ],
     tooltips: [
       {
+        id: 'tooltip_0',
+        handleIds: ['handle_0'],
+        position: 50,
+        content: data.tooltipFormatter(data.handles['handle_0']),
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
-        content: data.tooltipFormatter(data.spots[0].value),
         isVisible: true,
         hasCollisions: false,
-        position: { id: 'value_0', value: 500 },
+        role: 'tooltip',
       },
     ],
   };
 
-  test(`View should emit ${View.EVENT_HANDLE_DRAG_START} on Handle mouseDown`, () => {
+  test(`View should emit ${View.EVENT_HANDLE_MOVE_START} on Handle mouseDown`, () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     const dragStartListener = jest.fn();
-    view.on(View.EVENT_HANDLE_DRAG_START, dragStartListener);
+    view.on(View.EVENT_HANDLE_MOVE_START, dragStartListener);
     view.render(state);
     const $handle = document.getElementsByClassName(
-      state.handles[0].cssClass,
+      handleCSSClass,
     )[0] as HTMLElement;
     fireEvent.mouseDown($handle);
     expect(dragStartListener).toBeCalledTimes(1);
-    expect(dragStartListener).toBeCalledWith({
-      id: 'value_0',
-      value: 50,
-    });
+    expect(dragStartListener).toBeCalledWith('handle_0');
   });
 
-  test(`View should emit ${View.EVENT_HANDLE_DRAG_END} on Handle mouseUp`, () => {
+  test(`View should emit ${View.EVENT_HANDLE_MOVE_END} on Handle mouseUp`, () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     const dragEndListener = jest.fn();
-    view.on(View.EVENT_HANDLE_DRAG_END, dragEndListener);
+    view.on(View.EVENT_HANDLE_MOVE_END, dragEndListener);
     view.render(state);
     const $handle = document.getElementsByClassName(
-      state.handles[0].cssClass,
+      handleCSSClass,
     )[0] as HTMLElement;
     fireEvent.mouseDown($handle);
     fireEvent.mouseUp($handle);
     expect(dragEndListener).toBeCalledTimes(1);
   });
 
-  test(`View should emit ${View.EVENT_HANDLE_DRAG} on Handle move`, () => {
+  test(`View should emit ${View.EVENT_HANDLE_MOVE} on Handle move`, () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');
     const view = new View($el as HTMLElement);
     const dragListener = jest.fn();
-    view.on(View.EVENT_HANDLE_DRAG, dragListener);
+    view.on(View.EVENT_HANDLE_MOVE, dragListener);
     view.render(state);
     const $handle = document.getElementsByClassName(
-      state.handles[0].cssClass,
+      handleCSSClass,
     )[0] as HTMLElement;
     fireEvent.mouseDown($handle);
     fireEvent.mouseMove($handle, { clientX: 100 });

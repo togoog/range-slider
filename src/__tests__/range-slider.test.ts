@@ -1,7 +1,7 @@
 import { Options } from '../types';
 import { RangeSlider, createRangeSlider } from '../range-slider';
 
-const tooltipsFormatter = (value: number) => value.toLocaleString();
+const tooltipFormatter = (value: number) => value.toLocaleString();
 
 describe('RangeSlider.get', () => {
   test('should return Option value by key', () => {
@@ -13,8 +13,9 @@ describe('RangeSlider.get', () => {
       max: 100,
       step: 1,
       orientation: 'horizontal',
+      cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter: tooltipsFormatter,
+      tooltipFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -25,7 +26,8 @@ describe('RangeSlider.get', () => {
     expect(rs.get('orientation')).toEqual('horizontal');
     expect(rs.get('tooltips')).toEqual([true]);
     expect(rs.get('intervals')).toEqual([true, false]);
-    expect(rs.get('tooltipsFormatter')).toEqual(tooltipsFormatter);
+    expect(rs.get('cssClass')).toEqual('range-slider');
+    expect(rs.get('tooltipFormatter')).toEqual(tooltipFormatter);
   });
 });
 
@@ -39,8 +41,9 @@ describe('RangeSlider.set', () => {
       max: 100,
       step: 1,
       orientation: 'horizontal',
+      cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter: tooltipsFormatter,
+      tooltipFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -60,12 +63,15 @@ describe('RangeSlider.set', () => {
     rs.set('orientation', 'vertical');
     expect(rs.get('orientation')).toEqual('vertical');
 
+    rs.set('cssClass', 'super-range-slider');
+    expect(rs.get('cssClass')).toEqual('super-range-slider');
+
     rs.set('tooltips', false);
     expect(rs.get('tooltips')).toEqual([false]);
 
     const newFormatter = (value: number) => `value: ${value}`;
-    rs.set('tooltipsFormatter', newFormatter);
-    expect(rs.get('tooltipsFormatter')).toEqual(newFormatter);
+    rs.set('tooltipFormatter', newFormatter);
+    expect(rs.get('tooltipFormatter')).toEqual(newFormatter);
 
     rs.set('intervals', false);
     expect(rs.get('intervals')).toEqual([false, false]);
@@ -82,8 +88,9 @@ describe('RangeSlider.getAll', () => {
       max: 100,
       step: 1,
       orientation: 'horizontal',
+      cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter: tooltipsFormatter,
+      tooltipFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -93,8 +100,9 @@ describe('RangeSlider.getAll', () => {
       max: 100,
       step: 1,
       orientation: 'horizontal',
+      cssClass: 'range-slider',
       tooltips: [true],
-      tooltipsFormatter,
+      tooltipFormatter,
       intervals: [true, false],
     });
   });
@@ -110,8 +118,9 @@ describe('RangeSlider.setAll', () => {
       max: 100,
       step: 1,
       orientation: 'horizontal',
+      cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter: tooltipsFormatter,
+      tooltipFormatter,
       intervals: [true, false],
     };
     const rs = new RangeSlider($el, options);
@@ -122,8 +131,9 @@ describe('RangeSlider.setAll', () => {
       max: 100,
       step: 5,
       orientation: 'vertical',
+      cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter: tooltipsFormatter,
+      tooltipFormatter,
       intervals: false,
     };
 
@@ -135,8 +145,9 @@ describe('RangeSlider.setAll', () => {
       max: 100,
       step: 5,
       orientation: 'vertical',
+      cssClass: 'range-slider',
       tooltips: [true, true],
-      tooltipsFormatter,
+      tooltipFormatter,
       intervals: [false, false, false],
     });
   });

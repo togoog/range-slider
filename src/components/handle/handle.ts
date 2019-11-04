@@ -1,21 +1,21 @@
-import { convertOrientationToOrigin } from '../../helpers';
 import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
-import { Handle, Position } from '../../types';
+import { Handle, HandleId } from '../../types';
+import { convertOrientationToOrigin } from '../../converters';
 
 type Actions = {
-  onMouseDown: (position: Position, e: MouseEvent) => void;
+  onMouseDown: (id: HandleId, e: MouseEvent) => void;
 };
 
 function handleView(
-  { orientation, position, cssClass, isActive }: Handle,
+  { id, orientation, position, cssClass, isActive, role }: Handle,
   actions: Actions,
 ): TemplateResult {
   const origin = convertOrientationToOrigin(orientation);
 
   const styles: StyleInfo = {
-    [origin]: `${position.value}%`,
+    [origin]: `${position}%`,
   };
 
   const cssClasses: ClassInfo = {
@@ -28,8 +28,10 @@ function handleView(
     <div
       class=${classMap(cssClasses)}
       style=${styleMap(styles)}
+      data-role=${role}
+      data-handle-id=${id}
       @dragstart=${() => false}
-      @mousedown=${(e: MouseEvent) => actions.onMouseDown(position, e)}
+      @mousedown=${(e: MouseEvent) => actions.onMouseDown(id, e)}
     ></div>
   `;
 }

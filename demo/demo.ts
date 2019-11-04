@@ -3,13 +3,15 @@ import { Options } from '../src/types';
 
 const selector = '.range-slider-demo';
 const options: Options = {
-  value: [52, 160],
-  min: 0,
-  max: 200,
-  step: 1,
+  value: [52, 160, 200, 345],
+  min: -100,
+  max: 500,
+  step: 5,
+  cssClass: 'range-slider',
   orientation: 'horizontal',
   tooltips: true,
-  intervals: [false, true, false],
+  tooltipFormatter: (value: number) => value.toLocaleString(),
+  intervals: [false, true, false, true, false],
 };
 
 const rsList = createRangeSlider(selector, options);

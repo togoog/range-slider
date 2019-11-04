@@ -10,37 +10,38 @@ export type RangeSliderError = {
   desc: string;
 };
 
-// coordinate system origin
-// is used to set position of absolute positioned elements
-export type Origin = 'left' | 'right' | 'top' | 'bottom';
-
-// real value user wants
-export type RealValue = number;
-// relative position inside range slider
-export type RelativePos = number;
-
-export type ValueId = string;
-export type HandleId = string;
-export type TooltipId = string;
-export type IntervalId = string;
+export type Orientation = 'horizontal' | 'vertical';
 
 //
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
 
-export type Orientation = 'horizontal' | 'vertical';
 export type Formatter = (value: number) => string;
 
+// for user convenience
 export type Options = {
   value: number | number[];
   min: number;
   max: number;
   step: number;
   orientation: Orientation;
+  cssClass: string;
   tooltips: boolean | boolean[];
   tooltipFormatter: Formatter;
   intervals: boolean | boolean[];
+};
+
+// for internal use
+export type OptimizedOptions = {
+  value: number[];
+  min: number;
+  max: number;
+  step: number;
+  orientation: Orientation;
   cssClass: string;
+  tooltips: boolean[];
+  tooltipFormatter: Formatter;
+  intervals: boolean[];
 };
 
 export type OptionsKey = keyof Options;
@@ -58,60 +59,26 @@ export type RangeSliderModel = {
   propose(change: Partial<Proposal>): void;
 };
 
-export type Handle = {
-  id: HandleId;
-  valueId: ValueId;
-  orientation: Orientation;
-  position: Position;
-  cssClass: string;
-  isActive: boolean;
-};
-
-export type Tooltip = {
-  id: TooltipId;
-  valueId: ValueId[];
-  orientation: Orientation;
-  position: RelativePos;
-  content: string;
-  cssClass: string;
-  isVisible: boolean;
-  hasCollisions: boolean;
-  role: string;
-};
-
-export type Interval = {
-  id: IntervalId;
-  valueId: ValueId[];
-  orientation: Orientation;
-  from: RelativePos;
-  to: RelativePos;
-  isVisible: boolean;
-  cssClass: string;
-  role: string;
-};
-
-export type Track = {
-  orientation: Orientation;
-  cssClass: string;
-};
+// real value user interested in
+export type RealValue = number;
 
 export type Data = {
-  values: { [valueId: string]: RealValue };
-  valueIds: ValueId[];
   min: number;
   max: number;
   step: number;
   orientation: Orientation;
   cssClass: string;
-  handles: { [handleId: string]: Handle };
+  /** HANDLES */
+  handles: { [handleId: string]: RealValue };
   handleIds: HandleId[];
-  tooltips: { [tooltipId: string]: Tooltip };
+  activeHandleId: HandleId | null;
+  /** TOOLTIPS */
+  tooltips: { [tooltipId: string]: boolean };
   tooltipIds: TooltipId[];
   tooltipFormatter: Formatter;
-  // array of tooltipId groups
-  // each group contain ids of overlapping tooltips
-  tooltipCollisions: TooltipId[][];
-  intervals: { [intervalId: string]: Interval };
+  tooltipCollisions: TooltipId[][]; // groups overlapping tooltips
+  /** INTERVALS */
+  intervals: { [intervalId: string]: boolean };
   intervalIds: IntervalId[];
 };
 
@@ -119,6 +86,60 @@ export type DataKey = keyof Data;
 
 export type Proposal = {
   [key in keyof Data]: (data: Data) => Data[key];
+};
+
+//
+// ─── STATE ──────────────────────────────────────────────────────────────────────
+//
+
+export type Origin = 'left' | 'right' | 'top' | 'bottom';
+
+// relative value for display purposes
+export type RelativePos = number;
+
+export type HandleId = string;
+
+export type Handle = {
+  id: HandleId;
+  orientation: Orientation;
+  position: RelativePos;
+  cssClass: string;
+  isActive: boolean;
+  role: 'handle';
+};
+
+export type TooltipId = string;
+
+export type Tooltip = {
+  id: TooltipId;
+  // merged tooltip can display value of many handles
+  handleIds: HandleId[];
+  orientation: Orientation;
+  position: RelativePos;
+  content: string;
+  cssClass: string;
+  isVisible: boolean;
+  hasCollisions: boolean;
+  role: 'tooltip' | 'tooltip-merged';
+};
+
+export type IntervalId = string;
+
+export type Interval = {
+  id: IntervalId;
+  // interval have only 2 handles (at the beginning & at the end)
+  handleIds: [HandleId, HandleId];
+  orientation: Orientation;
+  from: RelativePos;
+  to: RelativePos;
+  cssClass: string;
+  isVisible: boolean;
+  role: 'interval';
+};
+
+export type Track = {
+  orientation: Orientation;
+  cssClass: string;
 };
 
 //

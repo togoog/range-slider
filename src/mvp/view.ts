@@ -1,15 +1,10 @@
-import { propEq, aperture } from 'ramda';
+import { aperture } from 'ramda';
+import { isNotEmpty } from 'ramda-adjunct';
 import { EventEmitter } from 'events';
-import { render, html, TemplateResult } from 'lit-html';
+import { render, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
-import {
-  RangeSliderView,
-  State,
-  Position,
-  Coordinates,
-  Tooltip,
-} from '../types';
-import { $, detectRectCollision } from '../helpers';
+import { RangeSliderView, State, TooltipId, HandleId } from '../types';
+import { $, detectRectCollision, makeId } from '../helpers';
 import {
   trackView,
   intervalView,
@@ -19,9 +14,9 @@ import {
 
 class View extends EventEmitter implements RangeSliderView {
   // TODO: rename EVENT_HANDLE... to EVENT_...
-  static EVENT_HANDLE_DRAG_START = 'View/Handle/dragStart';
-  static EVENT_HANDLE_DRAG_END = 'View/Handle/dragEnd';
-  static EVENT_HANDLE_DRAG = 'View/Handle/drag';
+  static EVENT_HANDLE_MOVE_START = 'View/Handle/moveStart';
+  static EVENT_HANDLE_MOVE_END = 'View/Handle/moveEnd';
+  static EVENT_HANDLE_MOVE = 'View/Handle/move';
   static EVENT_TOOLTIP_COLLISIONS = 'View/TooltipCollisions';
 
   // mouse pointer offset coords for Handle when dragging
@@ -64,12 +59,10 @@ class View extends EventEmitter implements RangeSliderView {
   render(state: State): void {
     const track = trackView(state.track);
 
-    const intervals = state.intervals
-      .filter(propEq('isVisible', true))
-      .map(intervalView);
+    const intervals = state.intervals.map(intervalView);
 
-    const handles = state.handles.map(state =>
-      handleView(state, {
+    const handles = state.handles.map(handleState =>
+      handleView(handleState, {
         onMouseDown: this.onHandleMouseDown,
       }),
     );
@@ -89,7 +82,7 @@ class View extends EventEmitter implements RangeSliderView {
     render(template, this.el);
   }
 
-  onHandleMouseDown(position: Position, e: MouseEvent): void {
+  onHandleMouseDown(handleId: HandleId, e: MouseEvent): void {
     e.preventDefault();
 
     document.addEventListener('mousemove', this.onHandleMove);
@@ -101,7 +94,7 @@ class View extends EventEmitter implements RangeSliderView {
     this.handleWidth = rect.width;
     this.handleHeight = rect.height;
 
-    this.emit(View.EVENT_HANDLE_DRAG_START, position);
+    this.emit(View.EVENT_HANDLE_MOVE_START, handleId);
   }
 
   onHandleMouseUp(e: MouseEvent): void {
@@ -115,33 +108,46 @@ class View extends EventEmitter implements RangeSliderView {
     document.removeEventListener('mousemove', this.onHandleMove);
     document.removeEventListener('mouseup', this.onHandleMouseUp);
 
-    this.emit(View.EVENT_HANDLE_DRAG_END);
+    this.emit(View.EVENT_HANDLE_MOVE_END);
   }
 
   onHandleMove(e: MouseEvent): void {
     e.preventDefault();
 
     // Handle center coordinates
-    const handleCoords: Coordinates = {
+    const handleCoords = {
       x: e.clientX - this.handleShiftX + this.handleWidth / 2,
       y: e.clientY - this.handleShiftY + this.handleHeight / 2,
     };
 
     const rangeSliderRect = this.el.getBoundingClientRect();
 
-    this.emit(View.EVENT_HANDLE_DRAG, handleCoords, rangeSliderRect);
+    this.emit(View.EVENT_HANDLE_MOVE, handleCoords, rangeSliderRect);
   }
 
   private detectTooltipsCollisions(): void {
     const tooltipCoordsList = $('[data-role="tooltip"]', this.el)
       .orDefault([])
-      .map(tooltip => tooltip.getBoundingClientRect() as DOMRect);
+      .map((tooltip, idx): [TooltipId, DOMRect] => [
+        tooltip.getAttribute('data-tooltip-id') || makeId('tooltip', idx),
+        tooltip.getBoundingClientRect() as DOMRect,
+      ]);
 
     // if there are more then 1 tooltip -> try to find collisions
     if (tooltipCoordsList.length > 1) {
-      const collisions = aperture(2, tooltipCoordsList).flatMap(rects => {
-        return detectRectCollision(...rects);
-      });
+      const collisions = aperture(2, tooltipCoordsList)
+        .flatMap(adjacentTooltips => {
+          const firstId = adjacentTooltips[0][0];
+          const firstRect = adjacentTooltips[0][1];
+
+          const secondId = adjacentTooltips[1][0];
+          const secondRect = adjacentTooltips[1][1];
+
+          const haveCollision = detectRectCollision(firstRect, secondRect);
+
+          return haveCollision ? [firstId, secondId] : [];
+        })
+        .filter(isNotEmpty);
 
       this.emit(View.EVENT_TOOLTIP_COLLISIONS, collisions);
     }
@@ -168,7 +174,10 @@ class View extends EventEmitter implements RangeSliderView {
           const attribute = mutation.attributeName;
 
           // if style is changed for tooltip - check if collisions occur
-          if (attribute === 'style' && el.dataset['role'] === 'tooltip') {
+          if (
+            attribute === 'style' &&
+            el.getAttribute('data-role') === 'tooltip'
+          ) {
             viewInstance.detectTooltipsCollisions();
           }
           break;

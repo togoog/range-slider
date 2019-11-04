@@ -1,6 +1,6 @@
-import { Data, Proposal, Spot } from '../types';
+import { Data, Proposal } from '../types';
 import { Right } from 'purify-ts/Either';
-import { not, multiply, add, subtract, evolve, identity } from 'ramda';
+import { multiply, add, subtract, fromPairs } from 'ramda';
 import {
   Model,
   // errors
@@ -12,21 +12,25 @@ import {
   errIntervalsCount,
 } from '../mvp/model';
 
-const tooltipsFormatter = (value: number) => value.toLocaleString();
+const tooltipFormatter = (value: number) => value.toLocaleString();
 
 describe('Model.checkDataIntegrity', () => {
   test('should contain errMinMax', () => {
     const data: Data = {
-      spots: [{ id: 'value_0', value: 30 }],
-      activeSpotIds: [],
+      handles: { handle_0: 30 },
+      handleIds: ['handle_0'],
+      activeHandleId: null,
       min: 100,
       max: 0,
       step: 500,
       orientation: 'horizontal',
-      tooltips: [true],
-      tooltipFormatter: tooltipsFormatter,
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true },
+      tooltipIds: ['tooltip_0'],
+      tooltipFormatter,
       tooltipCollisions: [],
-      intervals: [true, false],
+      intervals: { interval_0: true, interval_1: false },
+      intervalIds: ['interval_0', 'interval_1'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errMinMax())]),
@@ -35,32 +39,40 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain errValueNotInRange', () => {
     let data: Data = {
-      spots: [{ id: 'value_0', value: -30 }],
-      activeSpotIds: [],
+      handles: { handle_0: -30 },
+      handleIds: ['handle_0'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
-      tooltips: [true],
-      tooltipFormatter: tooltipsFormatter,
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true },
+      tooltipIds: ['tooltip_0'],
+      tooltipFormatter: tooltipFormatter,
       tooltipCollisions: [],
-      intervals: [true, false],
+      intervals: { interval_0: true, interval_1: false },
+      intervalIds: ['interval_0', 'interval_1'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
     );
 
     data = {
-      spots: [{ id: 'value_0', value: 300 }],
-      activeSpotIds: [],
+      handles: { handle_0: 300 },
+      handleIds: ['handle_0'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
-      tooltips: [true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true },
+      tooltipIds: ['tooltip_0'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [true, false],
+      tooltipFormatter,
+      intervals: { interval_0: true, interval_1: false },
+      intervalIds: ['interval_0', 'interval_1'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
@@ -69,32 +81,40 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain errStepNotInRange', () => {
     let data: Data = {
-      spots: [{ id: 'value_0', value: 30 }],
-      activeSpotIds: [],
+      handles: { handle_0: 30 },
+      handleIds: ['handle_0'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 200,
       orientation: 'horizontal',
-      tooltips: [true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true },
+      tooltipIds: ['tooltip_0'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [true, false],
+      tooltipFormatter,
+      intervals: { interval_0: true, interval_1: false },
+      intervalIds: ['interval_0', 'interval_1'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
     );
 
     data = {
-      spots: [{ id: 'value_0', value: 30 }],
-      activeSpotIds: [],
+      handles: { handle_0: 30 },
+      handleIds: ['handle_0'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: -5,
       orientation: 'horizontal',
-      tooltips: [true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true },
+      tooltipIds: ['tooltip_0'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [true, false],
+      tooltipFormatter,
+      intervals: { interval_0: true, interval_1: false },
+      intervalIds: ['interval_0', 'interval_1'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
@@ -103,16 +123,20 @@ describe('Model.checkDataIntegrity', () => {
 
   test(`should contain errTooltipsCount`, () => {
     const data: Data = {
-      spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
-      activeSpotIds: [],
+      handles: { handle_0: 30, handle_1: 60 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
-      tooltips: [true, true, false],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: true, tooltip_2: false },
+      tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [false, true, false],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errTooltipsCount())]),
@@ -121,16 +145,25 @@ describe('Model.checkDataIntegrity', () => {
 
   test(`should contain errIntervalsCount`, () => {
     const data: Data = {
-      spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
-      activeSpotIds: [],
+      handles: { handle_0: 30, handle_1: 60 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
-      tooltips: [true, true, false],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: true, tooltip_2: false },
+      tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [false, true, false, true],
+      tooltipFormatter,
+      intervals: {
+        interval_0: false,
+        interval_1: true,
+        interval_2: false,
+        interval_3: true,
+      },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2', 'interval_3'],
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errIntervalsCount())]),
@@ -139,16 +172,20 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should return Right(data)', () => {
     const data: Data = {
-      spots: [{ id: 'value_0', value: 30 }, { id: 'value_1', value: 60 }],
-      activeSpotIds: [],
+      handles: { handle_0: 30, handle_1: 60 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
-      tooltips: [true, true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [false, true, false],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     };
     expect(Model.validate(data)).toEqual(Right(data));
   });
@@ -156,38 +193,31 @@ describe('Model.checkDataIntegrity', () => {
 
 describe('Model.propose', () => {
   const currentData: Data = {
-    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-    activeSpotIds: [],
+    handles: { handle_0: 20, handle_1: 40 },
+    handleIds: ['handle_0', 'handle_1'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 5,
     orientation: 'horizontal',
-    tooltips: [true, true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [false, true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
   };
 
   test('should change spots', () => {
     const proposal: Partial<Proposal> = {
-      spots: (data: Data) =>
-        data.spots.map(
-          evolve({
-            id: identity,
-            value: multiply(2),
-          }),
-        ) as Spot[],
+      handles: (data: Data) =>
+        fromPairs(data.handleIds.map(id => [id, data.handles[id] * 2])),
     };
     const model = new Model(currentData);
-    expect(model.get('spots')).toEqual([
-      { id: 'value_0', value: 20 },
-      { id: 'value_1', value: 40 },
-    ]);
+    expect(model.get('handles')).toEqual({ handle_0: 20, handle_1: 40 });
     model.propose(proposal);
-    expect(model.get('spots')).toEqual([
-      { id: 'value_0', value: 40 },
-      { id: 'value_1', value: 80 },
-    ]);
+    expect(model.get('handles')).toEqual({ handle_0: 40, handle_1: 80 });
   });
 
   test('should change min', () => {
@@ -233,23 +263,22 @@ describe('Model.propose', () => {
 
   test('should change tooltips', () => {
     const proposal: Partial<Proposal> = {
-      tooltips: (data: Data) => data.tooltips.map(not),
+      tooltips: (data: Data) =>
+        fromPairs(data.tooltipIds.map(id => [id, !data.tooltips[id]])),
     };
     const model = new Model(currentData);
-    expect(model.get('tooltips')).toEqual([true, true]);
+    expect(model.get('tooltips')).toEqual({ tooltip_0: true, tooltip_1: true });
     model.propose(proposal);
-    expect(model.get('tooltips')).toEqual([false, false]);
+    expect(model.get('tooltips')).toEqual({
+      tooltip_0: false,
+      tooltip_1: false,
+    });
   });
 
   test('should emit update event', () => {
     const proposal: Partial<Proposal> = {
-      spots: (data: Data) =>
-        data.spots.map(
-          evolve({
-            id: identity,
-            value: add(1),
-          }),
-        ) as Spot[],
+      handles: (data: Data) =>
+        fromPairs(data.handleIds.map(id => [id, data.handles[id] + 1])),
       min: (data: Data) => subtract(data.min, 10),
       step: (data: Data) => multiply(data.step, 2),
     };
@@ -258,31 +287,39 @@ describe('Model.propose', () => {
     model.on(Model.EVENT_UPDATE, updateListener);
     model.propose(proposal);
     expect(updateListener).toHaveBeenCalledWith({
-      spots: [{ id: 'value_0', value: 21 }, { id: 'value_1', value: 41 }],
-      activeSpotIds: [],
+      handles: { handle_0: 21, handle_1: 41 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: -10,
       max: 100,
       step: 10,
       orientation: 'horizontal',
-      tooltips: [true, true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipsFormatter,
-      intervals: [false, true, false],
+      tooltipFormatter,
+      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     });
   });
 
   test('should emit validationErrors event when errors can not be fixed', () => {
     const data: Data = {
-      spots: [{ id: 'value_0', value: 40 }, { id: 'value_1', value: 70 }],
-      activeSpotIds: [],
+      handles: { handle_0: 40, handle_1: 70 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 5,
       orientation: 'horizontal',
-      tooltips: [true, true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [false, true, false],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     };
     const model = new Model(data);
 
@@ -290,68 +327,67 @@ describe('Model.propose', () => {
     model.on(Model.EVENT_VALIDATION_ERRORS, modelListener);
 
     const proposal: Partial<Proposal> = {
-      spots: (data: Data) => [
-        { id: 'value_0', value: 60 },
-        { id: 'value_1', value: 30 },
-      ],
+      min: (data: Data) => 200,
     };
 
     model.propose(proposal);
 
-    expect(modelListener).toBeCalledWith([errValueOrder()]);
+    expect(modelListener).toBeCalledWith([errMinMax()]);
   });
 });
 
 describe('Model.get', () => {
   const currentData: Data = {
-    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-    activeSpotIds: [],
+    handles: { handle_0: 20, handle_1: 40 },
+    handleIds: ['handle_0', 'handle_1'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 5,
     orientation: 'horizontal',
-    tooltips: [true, true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [false, true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
   };
 
   test('should return ModelData value by key', () => {
     const model = new Model(currentData);
-    expect(model.get('spots')).toEqual([
-      { id: 'value_0', value: 20 },
-      { id: 'value_1', value: 40 },
-    ]);
+    expect(model.get('handles')).toEqual({ handle_0: 20, handle_1: 40 });
     expect(model.get('min')).toEqual(0);
     expect(model.get('max')).toEqual(100);
     expect(model.get('step')).toEqual(5);
     expect(model.get('orientation')).toEqual('horizontal');
-    expect(model.get('tooltips')).toEqual([true, true]);
+    expect(model.get('tooltips')).toEqual({ tooltip_0: true, tooltip_1: true });
   });
 });
 
 describe('Model.set', () => {
   const currentData: Data = {
-    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-    activeSpotIds: [],
+    handles: { handle_0: 20, handle_1: 40 },
+    handleIds: ['handle_0', 'handle_1'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 5,
     orientation: 'horizontal',
-    tooltips: [true, true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [false, true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
   };
 
   test('should change ModelData value by key', () => {
     const model = new Model(currentData);
-    const newSpots = [
-      { id: 'value_0', value: 35 },
-      { id: 'value_1', value: 45 },
-    ];
-    model.set('spots', newSpots);
-    expect(model.get('spots')).toEqual(newSpots);
+    const newHandles = { handle_0: 35, handle_1: 45 };
+    model.set('handles', newHandles);
+    expect(model.get('handles')).toEqual(newHandles);
   });
 
   test('should emit update event', () => {
@@ -360,16 +396,20 @@ describe('Model.set', () => {
     model.on(Model.EVENT_UPDATE, updateListener);
     model.set('step', 20);
     expect(updateListener).toBeCalledWith({
-      spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-      activeSpotIds: [],
+      handles: { handle_0: 20, handle_1: 40 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 20,
       orientation: 'horizontal',
-      tooltips: [true, true],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipsFormatter,
-      intervals: [false, true, false],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     });
   });
 
@@ -384,16 +424,20 @@ describe('Model.set', () => {
 
 describe('Model.getAll', () => {
   const currentData: Data = {
-    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-    activeSpotIds: [],
+    handles: { handle_0: 20, handle_1: 40 },
+    handleIds: ['handle_0', 'handle_1'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 5,
     orientation: 'horizontal',
-    tooltips: [true, true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [false, true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
   };
 
   test('should return ModelData object', () => {
@@ -404,31 +448,39 @@ describe('Model.getAll', () => {
 
 describe('Model.setAll', () => {
   const currentData: Data = {
-    spots: [{ id: 'value_0', value: 20 }, { id: 'value_1', value: 40 }],
-    activeSpotIds: [],
+    handles: { handle_0: 20, handle_1: 40 },
+    handleIds: ['handle_0', 'handle_1'],
+    activeHandleId: null,
     min: 0,
     max: 100,
     step: 5,
     orientation: 'horizontal',
-    tooltips: [true, true],
+    cssClass: 'range-slider',
+    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipsFormatter,
-    intervals: [false, true, false],
+    tooltipFormatter: tooltipFormatter,
+    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
   };
 
   test('should change ModelData', () => {
     const model = new Model(currentData);
     const newData: Data = {
-      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
-      activeSpotIds: [],
+      handles: { handle_0: 50, handle_1: 70 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 3,
       orientation: 'vertical',
-      tooltips: [true, false],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: false },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [true, false, true],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: true, interval_1: false, interval_2: true },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     };
     model.setAll(newData);
     expect(model.getAll()).toEqual(newData);
@@ -439,16 +491,20 @@ describe('Model.setAll', () => {
     const updateListener = jest.fn();
     model.on(Model.EVENT_UPDATE, updateListener);
     const newData: Data = {
-      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
-      activeSpotIds: [],
+      handles: { handle_0: 50, handle_1: 70 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 3,
       orientation: 'vertical',
-      tooltips: [true, false],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: false },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [true, false, true],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: true, interval_1: false, interval_2: true },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     };
     model.setAll(newData);
     expect(updateListener).toBeCalledWith(newData);
@@ -459,16 +515,20 @@ describe('Model.setAll', () => {
     const errorListener = jest.fn();
     model.on(Model.EVENT_VALIDATION_ERRORS, errorListener);
     const newData: Data = {
-      spots: [{ id: 'value_0', value: 50 }, { id: 'value_1', value: 70 }],
-      activeSpotIds: [],
+      handles: { handle_0: 50, handle_1: 70 },
+      handleIds: ['handle_0', 'handle_1'],
+      activeHandleId: null,
       min: 0,
       max: 100,
       step: 300,
       orientation: 'vertical',
-      tooltips: [true, false],
+      cssClass: 'range-slider',
+      tooltips: { tooltip_0: true, tooltip_1: false },
+      tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipsFormatter,
-      intervals: [true, false, true],
+      tooltipFormatter: tooltipFormatter,
+      intervals: { interval_0: true, interval_1: false, interval_2: true },
+      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     };
     model.setAll(newData);
     expect(errorListener).toBeCalledWith([errStepNotInRange()]);

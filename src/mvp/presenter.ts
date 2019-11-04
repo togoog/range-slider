@@ -1,15 +1,15 @@
-import { pipe, not, clamp } from 'ramda';
+import { pipe, clamp, fromPairs } from 'ramda';
 import {
   RangeSliderModel,
   RangeSliderView,
   RangeSliderPresenter,
-  Proposal,
-  Data,
-  Position,
-  Coordinates,
+  RealValue,
+  HandleId,
+  TooltipId,
 } from '../types';
 import { Model, View } from './index';
-import { convertDataToState, closestToStep, arraysMatch } from '../helpers';
+import { closestToStep } from '../helpers';
+import { convertDataToState, convertOrientationToOrigin } from '../converters';
 
 class Presenter implements RangeSliderPresenter {
   constructor(private model: RangeSliderModel, private view: RangeSliderView) {
@@ -38,44 +38,47 @@ class Presenter implements RangeSliderPresenter {
 
   private processViewEvents(): void {
     // Bind event handlers to preserve context of Presenter
-    const onHandleDragStart = this.onHandleDragStart.bind(this);
-    const onHandleDragEnd = this.onHandleDragEnd.bind(this);
-    const onHandleDrag = this.onHandleDrag.bind(this);
+    const onHandleMoveStart = this.onHandleMoveStart.bind(this);
+    const onHandleMoveEnd = this.onHandleMoveEnd.bind(this);
+    const onHandleMove = this.onHandleMove.bind(this);
     const onTooltipCollisions = this.onTooltipCollisions.bind(this);
 
-    this.view.on(View.EVENT_HANDLE_DRAG_START, onHandleDragStart);
-    this.view.on(View.EVENT_HANDLE_DRAG_END, onHandleDragEnd);
-    this.view.on(View.EVENT_HANDLE_DRAG, onHandleDrag);
+    this.view.on(View.EVENT_HANDLE_MOVE_START, onHandleMoveStart);
+    this.view.on(View.EVENT_HANDLE_MOVE_END, onHandleMoveEnd);
+    this.view.on(View.EVENT_HANDLE_MOVE, onHandleMove);
     this.view.on(View.EVENT_TOOLTIP_COLLISIONS, onTooltipCollisions);
   }
 
-  private onHandleDragStart(position: Position): void {
+  private onHandleMoveStart(handleId: HandleId): void {
     this.model.propose({
-      activeSpotIds: () => [position.id],
+      activeHandleId: () => handleId,
     });
   }
 
-  private onHandleDragEnd(): void {
+  private onHandleMoveEnd(): void {
     this.model.propose({
-      activeSpotIds: () => [],
+      activeHandleId: () => null,
     });
   }
 
-  private onHandleDrag(
-    handleCoords: Coordinates,
-    rangeSliderRect: ClientRect,
+  private onHandleMove(
+    handleCoords: { x: number; y: number },
+    rangeSliderRect: DOMRect,
   ): void {
     this.model.propose({
-      spots: data => {
+      handles: data => {
         // eslint-disable-next-line complexity
-        return data.spots.map(spot => {
-          if (not(data.activeSpotIds.includes(spot.id))) {
-            return { ...spot };
+        const handlePairs = data.handleIds.map((handleId): [
+          HandleId,
+          RealValue,
+        ] => {
+          if (data.activeHandleId !== handleId) {
+            return [handleId, data.handles[handleId]];
           }
 
-          // calculate new value for active spot
+          // calculate new value for active handle
           const axis = data.orientation === 'horizontal' ? 'x' : 'y';
-          const origin = data.orientation === 'horizontal' ? 'left' : 'top';
+          const origin = convertOrientationToOrigin(data.orientation);
           const dimension =
             data.orientation === 'horizontal' ? 'width' : 'height';
 
@@ -83,21 +86,21 @@ class Presenter implements RangeSliderPresenter {
           const relPos = absPos / rangeSliderRect[dimension];
           const absVal = data.min + (data.max - data.min) * relPos;
 
-          return {
-            ...spot,
-            value: clamp(data.min, data.max, closestToStep(data.step, absVal)),
-          };
+          return [
+            handleId,
+            clamp(data.min, data.max, closestToStep(data.step, absVal)),
+          ];
         });
+
+        return fromPairs(handlePairs);
       },
     });
   }
 
-  private onTooltipCollisions(collisions: boolean[]): void {
-    if (!arraysMatch(collisions, this.model.get('tooltipCollisions'))) {
-      this.model.propose({
-        tooltipCollisions: () => [...collisions],
-      });
-    }
+  private onTooltipCollisions(collisions: [TooltipId, TooltipId][]): void {
+    this.model.propose({
+      tooltipCollisions: () => [...collisions],
+    });
   }
 }
 
