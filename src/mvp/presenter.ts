@@ -39,12 +39,10 @@ class Presenter implements RangeSliderPresenter {
   private processViewEvents(): void {
     // Bind event handlers to preserve context of Presenter
     const onHandleMoveStart = this.onHandleMoveStart.bind(this);
-    const onHandleMoveEnd = this.onHandleMoveEnd.bind(this);
     const onHandleMove = this.onHandleMove.bind(this);
     const onTooltipCollisions = this.onTooltipCollisions.bind(this);
 
     this.view.on(View.EVENT_HANDLE_MOVE_START, onHandleMoveStart);
-    this.view.on(View.EVENT_HANDLE_MOVE_END, onHandleMoveEnd);
     this.view.on(View.EVENT_HANDLE_MOVE, onHandleMove);
     this.view.on(View.EVENT_TOOLTIP_COLLISIONS, onTooltipCollisions);
   }
@@ -52,12 +50,6 @@ class Presenter implements RangeSliderPresenter {
   private onHandleMoveStart(handleId: HandleId): void {
     this.model.propose({
       activeHandleId: () => handleId,
-    });
-  }
-
-  private onHandleMoveEnd(): void {
-    this.model.propose({
-      activeHandleId: () => null,
     });
   }
 

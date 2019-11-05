@@ -31,6 +31,11 @@
     height: 40px;
     background-color: #8736bd;
 
+    &_is-active {
+      border: 2px solid black;
+      z-index: 1;
+    }
+
     &_horizontal {
     }
   }
