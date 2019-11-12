@@ -53,6 +53,7 @@ const defaultOptions: Options = {
   tooltips: true,
   tooltipFormatter: (value: number) => value.toLocaleString(),
   intervals: [true, false],
+  grid: false,
 };
 
 class RangeSlider implements Plugin {

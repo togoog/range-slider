@@ -1,5 +1,6 @@
 import { Options } from '../types';
 import { RangeSlider, createRangeSlider } from '../range-slider';
+import * as defaults from '../defaults';
 
 const tooltipFormatter = (value: number) => value.toLocaleString();
 
@@ -17,6 +18,7 @@ describe('RangeSlider.get', () => {
       tooltips: true,
       tooltipFormatter,
       intervals: [true, false],
+      grid: false,
     };
     const rs = new RangeSlider($el, options);
     expect(rs.get('value')).toEqual([50]);
@@ -45,6 +47,7 @@ describe('RangeSlider.set', () => {
       tooltips: true,
       tooltipFormatter,
       intervals: [true, false],
+      grid: false,
     };
     const rs = new RangeSlider($el, options);
 
@@ -92,6 +95,7 @@ describe('RangeSlider.getAll', () => {
       tooltips: true,
       tooltipFormatter,
       intervals: [true, false],
+      grid: { isVisible: true, numCells: [4, 5] },
     };
     const rs = new RangeSlider($el, options);
     expect(rs.getAll()).toEqual({
@@ -104,6 +108,7 @@ describe('RangeSlider.getAll', () => {
       tooltips: [true],
       tooltipFormatter,
       intervals: [true, false],
+      grid: { isVisible: true, numCells: [4, 5] },
     });
   });
 });
@@ -122,6 +127,7 @@ describe('RangeSlider.setAll', () => {
       tooltips: true,
       tooltipFormatter,
       intervals: [true, false],
+      grid: false,
     };
     const rs = new RangeSlider($el, options);
 
@@ -135,6 +141,7 @@ describe('RangeSlider.setAll', () => {
       tooltips: true,
       tooltipFormatter,
       intervals: false,
+      grid: false,
     };
 
     rs.setAll(newOptions);
@@ -149,6 +156,7 @@ describe('RangeSlider.setAll', () => {
       tooltips: [true, true],
       tooltipFormatter,
       intervals: [false, false, false],
+      grid: { isVisible: false, numCells: defaults.gridNumCells },
     });
   });
 });

@@ -11,6 +11,7 @@ import {
   errTooltipsCount,
   errIntervalsCount,
 } from '../mvp/model';
+import * as defaults from '../defaults';
 
 const tooltipFormatter = (value: number) => value.toLocaleString();
 
@@ -31,6 +32,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipCollisions: [],
       intervals: { interval_0: true, interval_1: false },
       intervalIds: ['interval_0', 'interval_1'],
+      grid: { isVisible: false, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errMinMax())]),
@@ -53,6 +55,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipCollisions: [],
       intervals: { interval_0: true, interval_1: false },
       intervalIds: ['interval_0', 'interval_1'],
+      grid: { isVisible: true, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
@@ -73,6 +76,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipFormatter,
       intervals: { interval_0: true, interval_1: false },
       intervalIds: ['interval_0', 'interval_1'],
+      grid: { isVisible: false, numCells: [2, 3, 4] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
@@ -95,6 +99,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipFormatter,
       intervals: { interval_0: true, interval_1: false },
       intervalIds: ['interval_0', 'interval_1'],
+      grid: { isVisible: true, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
@@ -115,6 +120,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipFormatter,
       intervals: { interval_0: true, interval_1: false },
       intervalIds: ['interval_0', 'interval_1'],
+      grid: { isVisible: true, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errStepNotInRange())]),
@@ -137,6 +143,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: false, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errTooltipsCount())]),
@@ -164,6 +171,7 @@ describe('Model.checkDataIntegrity', () => {
         interval_3: true,
       },
       intervalIds: ['interval_0', 'interval_1', 'interval_2', 'interval_3'],
+      grid: { isVisible: true, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
       expect.arrayContaining([expect.objectContaining(errIntervalsCount())]),
@@ -186,6 +194,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: true, numCells: [2, 3, 4] },
     };
     expect(Model.validate(data)).toEqual(Right(data));
   });
@@ -207,6 +216,7 @@ describe('Model.propose', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: false, numCells: [2, 3, 4] },
   };
 
   test('should change spots', () => {
@@ -301,6 +311,7 @@ describe('Model.propose', () => {
       tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: false, numCells: [2, 3, 4] },
     });
   });
 
@@ -320,6 +331,7 @@ describe('Model.propose', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: true, numCells: [2, 3] },
     };
     const model = new Model(data);
 
@@ -352,6 +364,7 @@ describe('Model.get', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: true, numCells: [4, 5] },
   };
 
   test('should return ModelData value by key', () => {
@@ -362,6 +375,7 @@ describe('Model.get', () => {
     expect(model.get('step')).toEqual(5);
     expect(model.get('orientation')).toEqual('horizontal');
     expect(model.get('tooltips')).toEqual({ tooltip_0: true, tooltip_1: true });
+    expect(model.get('grid')).toEqual({ isVisible: true, numCells: [4, 5] });
   });
 });
 
@@ -381,6 +395,7 @@ describe('Model.set', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: false, numCells: [3, 4] },
   };
 
   test('should change ModelData value by key', () => {
@@ -410,6 +425,7 @@ describe('Model.set', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: false, numCells: [3, 4] },
     });
   });
 
@@ -438,6 +454,7 @@ describe('Model.getAll', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: true, numCells: [3, 4] },
   };
 
   test('should return ModelData object', () => {
@@ -462,6 +479,7 @@ describe('Model.setAll', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: false, numCells: [3, 4] },
   };
 
   test('should change ModelData', () => {
@@ -481,6 +499,7 @@ describe('Model.setAll', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: true, interval_1: false, interval_2: true },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: true, numCells: [5, 6] },
     };
     model.setAll(newData);
     expect(model.getAll()).toEqual(newData);
@@ -505,6 +524,7 @@ describe('Model.setAll', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: true, interval_1: false, interval_2: true },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: true, numCells: [2, 5] },
     };
     model.setAll(newData);
     expect(updateListener).toBeCalledWith(newData);
@@ -529,6 +549,7 @@ describe('Model.setAll', () => {
       tooltipFormatter: tooltipFormatter,
       intervals: { interval_0: true, interval_1: false, interval_2: true },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+      grid: { isVisible: true, numCells: [5, 6] },
     };
     model.setAll(newData);
     expect(errorListener).toBeCalledWith([errStepNotInRange()]);

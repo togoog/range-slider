@@ -4,6 +4,7 @@ import {
   convertDataToOptions,
   convertDataToState,
 } from '../converters';
+import * as defaults from '../defaults';
 
 const tooltipFormatter = (value: number) => value.toLocaleString();
 
@@ -18,6 +19,7 @@ test('convertOptionsToData', () => {
     tooltips: true,
     tooltipFormatter,
     intervals: true,
+    grid: false,
   };
 
   const data: Data = {
@@ -35,6 +37,7 @@ test('convertOptionsToData', () => {
     tooltipCollisions: [],
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
+    grid: { isVisible: false, numCells: defaults.gridNumCells },
   };
 
   expect(convertOptionsToData(options)).toEqual(data);
@@ -49,6 +52,7 @@ test('convertOptionsToData', () => {
     tooltips: true,
     tooltipFormatter,
     intervals: false,
+    grid: { isVisible: true, numCells: [2, 3] },
   };
 
   const data_1: Data = {
@@ -83,6 +87,7 @@ test('convertOptionsToData', () => {
       'interval_3',
       'interval_4',
     ],
+    grid: { isVisible: true, numCells: [2, 3] },
   };
 
   expect(convertOptionsToData(options_1)).toEqual(data_1);
@@ -106,6 +111,7 @@ test('convertDataToOptions', () => {
     tooltipCollisions: [],
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
+    grid: { isVisible: false, numCells: [5] },
   };
 
   const options: Options = {
@@ -118,6 +124,7 @@ test('convertDataToOptions', () => {
     tooltips: [true],
     tooltipFormatter,
     intervals: [true, false],
+    grid: { isVisible: false, numCells: [5] },
   };
 
   expect(convertDataToOptions(data)).toEqual(options);
@@ -154,6 +161,7 @@ test('convertDataToOptions', () => {
       'interval_3',
       'interval_4',
     ],
+    grid: { isVisible: true, numCells: [3, 4, 5] },
   };
 
   const options_1: Options = {
@@ -166,6 +174,7 @@ test('convertDataToOptions', () => {
     tooltips: [true, true, true, true],
     tooltipFormatter,
     intervals: [false, false, false, false, false],
+    grid: { isVisible: true, numCells: [3, 4, 5] },
   };
 
   expect(convertDataToOptions(data_1)).toEqual(options_1);
@@ -187,6 +196,7 @@ test('convertDataToState', () => {
     tooltipCollisions: [],
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
+    grid: { isVisible: true, numCells: [2, 3, 4] },
   };
 
   const state: State = {
@@ -240,6 +250,14 @@ test('convertDataToState', () => {
       cssClass: 'range-slider__track',
       orientation: 'horizontal',
     },
+    grid: {
+      isVisible: true,
+      cssClass: 'range-slider__grid',
+      orientation: 'horizontal',
+      numCells: [2, 3, 4],
+      min: data.min,
+      max: data.max,
+    },
   };
 
   expect(convertDataToState(data)).toEqual(state);
@@ -259,6 +277,7 @@ test('convertDataToState', () => {
     tooltipCollisions: [],
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: true, numCells: [2, 3] },
   };
 
   const state_1: State = {
@@ -340,6 +359,14 @@ test('convertDataToState', () => {
     track: {
       cssClass: 'range-slider__track',
       orientation: 'vertical',
+    },
+    grid: {
+      isVisible: true,
+      cssClass: 'range-slider__grid',
+      orientation: 'vertical',
+      numCells: [2, 3],
+      min: data_1.min,
+      max: data_1.max,
     },
   };
 

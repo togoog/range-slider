@@ -1,6 +1,12 @@
 import { Options, RangeSliderError } from './types';
-import { all, allPass, anyPass } from 'ramda';
-import { isNotObject, isArray, isFunction, isString } from 'ramda-adjunct';
+import { all, allPass, anyPass, where } from 'ramda';
+import {
+  isObject,
+  isNotObject,
+  isArray,
+  isFunction,
+  isString,
+} from 'ramda-adjunct';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
 
@@ -38,6 +44,7 @@ const ErrorNotValidOrientation = `${errorPrefix}/ErrorNotValidOrientation`;
 const ErrorNotValidTooltips = `${errorPrefix}/ErrorNotValidTooltips`;
 const ErrorNotValidTooltipsFormatter = `${errorPrefix}/ErrorNotValidTooltipsFormatter`;
 const ErrorNotValidIntervals = `${errorPrefix}/ErrorNotValidIntervals`;
+const ErrorNotValidGrid = `${errorPrefix}/ErrorNotValidGrid`;
 const ErrorNotValidCSSClass = `${errorPrefix}/ErrorNotValidCSSClass`;
 const ErrorOptionsIsNotAnObject = `${errorPrefix}/ErrorOptionsIsNotAnObject`;
 
@@ -94,6 +101,17 @@ function errNotValidIntervals(): RangeSliderError {
   return {
     id: ErrorNotValidIntervals,
     desc: `(intervals should be boolean or array of booleans)`,
+  };
+}
+
+function errNotValidGrid(): RangeSliderError {
+  return {
+    id: ErrorNotValidGrid,
+    desc: `(
+      grid value should be a boolean or object with shape: {
+        isVisible: boolean, numCells: number[]
+      }
+    )`,
   };
 }
 
@@ -157,6 +175,21 @@ function checkIntervals(v: unknown): Maybe<RangeSliderError> {
     : Just(errNotValidIntervals());
 }
 
+function checkGrid(v: unknown): Maybe<RangeSliderError> {
+  const isValid = anyPass([
+    isBoolean,
+    allPass([
+      isObject,
+      where({
+        isVisible: isBoolean,
+        numCells: isArrayOfNumbers,
+      }),
+    ]),
+  ])(v);
+
+  return isValid ? Nothing : Just(errNotValidGrid());
+}
+
 function checkCSSClass(v: unknown): Maybe<RangeSliderError> {
   return isString(v) && /^[a-zA-Z]{1}[a-zA-Z0-9\-_]*/g.test(v)
     ? Nothing
@@ -182,6 +215,7 @@ function checkRangeSliderOptions(
   validationResults.push(checkTooltips(options.tooltips));
   validationResults.push(checkTooltipsFormatter(options.tooltipFormatter));
   validationResults.push(checkIntervals(options.intervals));
+  validationResults.push(checkGrid(options.grid));
   validationResults.push(checkCSSClass(options.cssClass));
 
   const errors = Maybe.catMaybes(validationResults);
@@ -199,6 +233,7 @@ export {
   errNotValidTooltips,
   errNotValidTooltipsFormatter,
   errNotValidIntervals,
+  errNotValidGrid,
   errNotValidCSSClass,
   errOptionsIsNotAnObject,
   // validators
@@ -210,6 +245,7 @@ export {
   checkTooltips,
   checkTooltipsFormatter,
   checkIntervals,
+  checkGrid,
   checkCSSClass,
   checkRangeSliderOptions,
 };

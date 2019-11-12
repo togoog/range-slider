@@ -1,3 +1,5 @@
+// TODO: split into modules
+
 .range-slider {
   position: relative;
 
@@ -8,6 +10,58 @@
     &_horizontal {
       height: 10px;
       width: 100%;
+    }
+  }
+
+  &__grid {
+    position: relative;
+    border-top: 1px solid gray;
+
+    &_horizontal {
+      width: 100%;
+      top: 30px;
+    }
+
+    &_vertical {
+      height: 100%;
+      width: 0;
+    }
+  }
+
+  &__grid-cell {
+    $grid-cell: &;
+
+    position: absolute;
+
+    &_horizontal {
+      top: -1px;
+      transform: translateX(-50%);
+
+      &::after {
+        top: 110%;
+        transform: translateX(-50%);
+      }
+
+      &#{$grid-cell}_level-1 {
+        height: 15px;
+        border-left: 2px solid black;
+      }
+
+      &#{$grid-cell}_level-2 {
+        height: 10px;
+        border-left: 1px solid black;
+      }
+
+      &#{$grid-cell}_level-3 {
+        height: 5px;
+        border-left: 1px solid black;
+      }
+    }
+
+    &::after {
+      content: attr(data-label);
+      position: absolute;
+      font-size: 0.9em;
     }
   }
 
@@ -32,7 +86,7 @@
     background-color: #8736bd;
 
     &_is-active {
-      border: 2px solid black;
+      border: 1px solid black;
       z-index: 1;
     }
 

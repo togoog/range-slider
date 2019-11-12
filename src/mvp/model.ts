@@ -146,6 +146,8 @@ const defaultData: Data = {
   /** INTERVALS */
   intervals: { interval_0: true, interval_1: false },
   intervalIds: ['interval_0', 'interval_1'],
+  /** GRID */
+  grid: { isVisible: false, numCells: defaults.gridNumCells },
 };
 
 class Model extends EventEmitter implements RangeSliderModel {

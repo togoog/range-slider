@@ -7,6 +7,7 @@ import {
   props,
   aperture,
 } from 'ramda';
+import { isBoolean } from 'ramda-adjunct';
 import {
   RelativePos,
   Orientation,
@@ -32,7 +33,6 @@ import {
   fillArrayWith,
 } from './helpers';
 import * as defaults from './defaults';
-import { numberLiteralTypeAnnotation } from '@babel/types';
 
 //
 // ─── ORIENTATION TO ORIGIN ──────────────────────────────────────────────────────
@@ -69,6 +69,10 @@ function modifyOptionsForInternalUse(options: Options): OptimizedOptions {
         defaults.intervalValue,
         toArray(op.intervals),
       ),
+    grid: op =>
+      isBoolean(op.grid)
+        ? { isVisible: op.grid, numCells: defaults.gridNumCells }
+        : op.grid,
   };
 
   return applySpec(transformations)(options) as OptimizedOptions;
@@ -119,6 +123,9 @@ function convertOptionsToData(options: Options): Data {
         ]),
       ),
     intervalIds: op => op.intervals.map((_, idx) => makeId('interval', idx)),
+
+    /** GRID */
+    grid: op => op.grid,
   };
 
   return applySpec(transformations)(optimizedOptions) as Data;
@@ -139,6 +146,7 @@ function convertDataToOptions(data: Data): Options {
     tooltips: (d: Data) => d.tooltipIds.map(id => d.tooltips[id]),
     tooltipFormatter: (d: Data) => d.tooltipFormatter,
     intervals: (d: Data) => d.intervalIds.map(id => d.intervals[id]),
+    grid: (d: Data) => d.grid,
   };
 
   return applySpec(transformations)(data) as Options;
@@ -313,6 +321,14 @@ function convertDataToState(data: Data): State {
     track: {
       orientation: data.orientation,
       cssClass: `${data.cssClass}__track`,
+    },
+    grid: {
+      isVisible: data.grid.isVisible,
+      orientation: data.orientation,
+      cssClass: `${data.cssClass}__grid`,
+      numCells: data.grid.numCells,
+      min: data.min,
+      max: data.max,
     },
     intervals: makeIntervals(data),
     handles: makeHandles(data),

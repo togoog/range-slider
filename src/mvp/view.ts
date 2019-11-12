@@ -7,6 +7,7 @@ import { RangeSliderView, State, TooltipId, HandleId } from '../types';
 import { $, detectRectCollision, makeId } from '../helpers';
 import {
   trackView,
+  gridView,
   intervalView,
   handleView,
   tooltipView,
@@ -58,6 +59,7 @@ class View extends EventEmitter implements RangeSliderView {
 
   render(state: State): void {
     const track = trackView(state.track);
+    const grid = gridView(state.grid);
 
     const intervals = state.intervals.map(intervalView);
 
@@ -75,7 +77,7 @@ class View extends EventEmitter implements RangeSliderView {
 
     const template = html`
       <div class=${classMap(cssClasses)} data-role="range-slider">
-        ${track} ${intervals} ${handles} ${tooltips}
+        ${track} ${grid} ${intervals} ${handles} ${tooltips}
       </div>
     `;
 

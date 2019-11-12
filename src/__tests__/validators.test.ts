@@ -9,6 +9,7 @@ import {
   errNotValidTooltips,
   errNotValidTooltipsFormatter,
   errNotValidIntervals,
+  errNotValidGrid,
   errNotValidCSSClass,
   errOptionsIsNotAnObject,
   // validators
@@ -20,6 +21,7 @@ import {
   checkTooltips,
   checkTooltipsFormatter,
   checkIntervals,
+  checkGrid,
   checkCSSClass,
   checkRangeSliderOptions,
 } from '../validators';
@@ -208,6 +210,46 @@ describe('checkIntervals', () => {
     expect(checkIntervals({ foo: true })).toEqual(Just(errNotValidIntervals()));
     expect(checkIntervals([true, 1])).toEqual(Just(errNotValidIntervals()));
     expect(checkIntervals([true, 'a'])).toEqual(Just(errNotValidIntervals()));
+  });
+});
+
+describe('checkGrid', () => {
+  test('boolean values are valid', () => {
+    expect(checkGrid(true)).toEqual(Nothing);
+    expect(checkGrid(false)).toEqual(Nothing);
+  });
+
+  test('object with GridOptions shape is valid', () => {
+    expect(checkGrid({ isVisible: true, numCells: [2, 3, 4] })).toEqual(
+      Nothing,
+    );
+    expect(checkGrid({ isVisible: false, numCells: [2, 3] })).toEqual(Nothing);
+    expect(checkGrid({ isVisible: false, numCells: [2] })).toEqual(Nothing);
+    expect(checkGrid({ isVisible: false, numCells: [] })).toEqual(Nothing);
+    expect(checkGrid({ isVisible: 'foo', numCells: [] })).toEqual(
+      Just(errNotValidGrid()),
+    );
+    expect(checkGrid({ isVisible: 'foo', numCells: 5 })).toEqual(
+      Just(errNotValidGrid()),
+    );
+    expect(checkGrid({ isVisible: true, numCells: null })).toEqual(
+      Just(errNotValidGrid()),
+    );
+    expect(checkGrid({ isVisible: true, numCells: undefined })).toEqual(
+      Just(errNotValidGrid()),
+    );
+    expect(checkGrid({ isVisible: undefined, numCells: undefined })).toEqual(
+      Just(errNotValidGrid()),
+    );
+    expect(checkGrid({})).toEqual(Just(errNotValidGrid()));
+  });
+
+  test('non boolean and non object values are not valid', () => {
+    expect(checkGrid([2, 3, 5])).toEqual(Just(errNotValidGrid()));
+    expect(checkGrid('foo')).toEqual(Just(errNotValidGrid()));
+    expect(checkGrid(5)).toEqual(Just(errNotValidGrid()));
+    expect(checkGrid(null)).toEqual(Just(errNotValidGrid()));
+    expect(checkGrid(undefined)).toEqual(Just(errNotValidGrid()));
   });
 });
 

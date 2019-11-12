@@ -1,9 +1,11 @@
 import { View } from '../mvp/view';
 import { State, Data } from '../types';
 import { fireEvent } from '@testing-library/dom';
+import * as defaults from '../defaults';
 
 const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;
+const gridCSSClass = `${cssClass}__grid`;
 const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
@@ -26,6 +28,7 @@ describe('View.render', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
+    grid: { isVisible: true, numCells: [2, 3] },
   };
 
   const state: State = {
@@ -105,6 +108,14 @@ describe('View.render', () => {
         role: 'tooltip',
       },
     ],
+    grid: {
+      cssClass: 'range-slider__grid',
+      isVisible: true,
+      numCells: [2, 3],
+      orientation: 'horizontal',
+      min: data.min,
+      max: data.max,
+    },
   };
 
   test('should render track', () => {
@@ -116,6 +127,17 @@ describe('View.render', () => {
     view.render(state);
     $interval = document.getElementsByClassName(trackCSSClass);
     expect($interval).toHaveLength(1);
+  });
+
+  test('should render grid', () => {
+    document.body.innerHTML = '<div id="root"></div>';
+    const $el = document.querySelector('#root');
+    const view = new View($el as HTMLElement);
+    let $grid = document.getElementsByClassName(gridCSSClass);
+    expect($grid).toHaveLength(0);
+    view.render(state);
+    $grid = document.getElementsByClassName(gridCSSClass);
+    expect($grid).toHaveLength(1);
   });
 
   test('interval should be hidden if isVisible = false', () => {
@@ -186,6 +208,7 @@ describe('View.render', () => {
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: tooltipFormatter,
+      grid: { isVisible: false, numCells: [4, 5] },
     };
 
     const state: State = {
@@ -265,6 +288,14 @@ describe('View.render', () => {
           role: 'tooltip',
         },
       ],
+      grid: {
+        cssClass: 'range-slider__grid',
+        orientation: 'vertical',
+        isVisible: false,
+        numCells: [3, 4],
+        min: data.min,
+        max: data.max,
+      },
     };
 
     document.body.innerHTML = '<div id="root"></div>';
@@ -297,6 +328,7 @@ describe('Handle', () => {
     tooltipFormatter: tooltipFormatter,
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
+    grid: { isVisible: false, numCells: [3, 4] },
   };
 
   const state: State = {
@@ -347,6 +379,14 @@ describe('Handle', () => {
         role: 'tooltip',
       },
     ],
+    grid: {
+      cssClass: 'range-slider__grid',
+      orientation: 'vertical',
+      isVisible: false,
+      numCells: [3, 4],
+      min: data.min,
+      max: data.max,
+    },
   };
 
   test(`View should emit ${View.EVENT_HANDLE_MOVE_START} on Handle mouseDown`, () => {

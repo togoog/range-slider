@@ -18,6 +18,13 @@ export type Orientation = 'horizontal' | 'vertical';
 
 export type Formatter = (value: number) => string;
 
+export type GridOptions = {
+  isVisible: boolean;
+  // Number of cells on each level (from biggest to smallest)
+  // e.g.: [3, 4, 5] -> 3 big cells, 4 medium cells, 5 small cells
+  numCells: number[];
+};
+
 // for user convenience
 export type Options = {
   value: number | number[];
@@ -29,6 +36,7 @@ export type Options = {
   tooltips: boolean | boolean[];
   tooltipFormatter: Formatter;
   intervals: boolean | boolean[];
+  grid: boolean | GridOptions;
 };
 
 // for internal use
@@ -42,6 +50,7 @@ export type OptimizedOptions = {
   tooltips: boolean[];
   tooltipFormatter: Formatter;
   intervals: boolean[];
+  grid: GridOptions;
 };
 
 export type OptionsKey = keyof Options;
@@ -80,6 +89,8 @@ export type Data = {
   /** INTERVALS */
   intervals: { [intervalId: string]: boolean };
   intervalIds: IntervalId[];
+  /** GRID */
+  grid: GridOptions;
 };
 
 export type DataKey = keyof Data;
@@ -142,6 +153,26 @@ export type Track = {
   cssClass: string;
 };
 
+export type Grid = {
+  isVisible: boolean;
+  orientation: Orientation;
+  cssClass: string;
+  numCells: number[];
+  min: number;
+  max: number;
+};
+
+export type GridCell = {
+  // real value this cell represents
+  label: string;
+  isVisibleLabel: boolean;
+  level: number;
+  // relative position
+  position: number;
+  cssClass: string;
+  orientation: Orientation;
+};
+
 //
 // ─── STATE ──────────────────────────────────────────────────────────────────────
 //
@@ -150,6 +181,7 @@ export type Track = {
 export type State = {
   cssClass: string;
   track: Track;
+  grid: Grid;
   handles: Handle[];
   tooltips: Tooltip[];
   intervals: Interval[];
