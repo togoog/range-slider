@@ -1,9 +1,23 @@
-@mixin tooltip($name) {
+@mixin tooltip(
+  $name,
+  $padding,
+  $offset,
+  $bg,
+  $border-width,
+  $border-color,
+  $border-radius,
+  $font-size,
+  $font-weight
+) {
   @include element($name) {
     position: absolute;
-    padding: 10px;
-    bottom: 30px;
-    border: 1px solid #2e2e2e;
+    padding: $padding;
+    background: $bg;
+    bottom: $offset;
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
+    font-size: $font-size;
+    font-weight: $font-weight;
 
     @include modifier('horizontal') {
       transform: translateX(-50%);

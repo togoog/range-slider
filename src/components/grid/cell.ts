@@ -21,7 +21,7 @@ function cellView({
   const cssClasses: ClassInfo = {
     [cssClass]: true,
     [`${cssClass}_${orientation}`]: true,
-    [`${cssClass}_level-${level}`]: true,
+    [`${cssClass}_${orientation}-level-${level}`]: true,
   };
 
   return html`

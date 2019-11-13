@@ -1,10 +1,19 @@
-@mixin track($name) {
+@mixin track(
+  $name,
+  $thickness,
+  $bg,
+  $border-width,
+  $border-color,
+  $border-radius
+) {
   @include element($name) {
     position: absolute;
-    background-color: #b43838;
+    background: $bg;
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
 
     @include modifier(horizontal) {
-      height: 10px;
+      height: $thickness;
       width: 100%;
     }
   }

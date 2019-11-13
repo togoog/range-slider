@@ -2,20 +2,62 @@
 @import '../components';
 
 .range-slider {
-  /// TODO: add params to components (width, height, colors...)
-  $track: 'track';
-  $grid: 'grid';
-  $grid-cell: 'grid-cell';
-  $interval: 'interval';
-  $handle: 'handle';
-  $tooltip: 'tooltip';
-
   position: relative;
 
-  @include track($track);
-  @include grid($grid);
-  @include cell($grid-cell);
-  @include interval($interval);
-  @include handle($handle);
-  @include tooltip($tooltip);
+  @include track(
+    $name: 'track',
+    $thickness: 5px,
+    $bg: #551e75,
+    $border-width: 0,
+    $border-color: black,
+    $border-radius: 5px
+  );
+
+  @include grid(
+    $name: 'grid',
+    $offset: 25px,
+    $line-thickness: 1px,
+    $line-style: solid,
+    $line-color: black,
+    $label-offset: 20%,
+    $label-font-size: 14px,
+    $pip-max-size: 12px,
+    $pip-max-thickness: 2px,
+    $pip-color: black
+  );
+
+  @include interval(
+    $name: 'interval',
+    $thickness: 10px,
+    $bg: #139b6e,
+    $border-width: 0,
+    $border-color: black,
+    $border-radius: 5px
+  );
+
+  @include handle(
+    $name: 'handle',
+    $width: 20px,
+    $height: 20px,
+    $bg: #920e0e,
+    $border-width: 1px,
+    $border-color: black,
+    $border-radius: 50%,
+    $offset: -8px,
+    $active-border-width: 2px,
+    $active-border-color: black,
+    $active-scale-factor: 1.05
+  );
+
+  @include tooltip(
+    $name: 'tooltip',
+    $padding: 10px 20px,
+    $offset: 20px,
+    $bg: #cacaca,
+    $border-width: 1px,
+    $border-color: #2e2e2e,
+    $border-radius: 5px,
+    $font-size: 16px,
+    $font-weight: normal
+  );
 }

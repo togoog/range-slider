@@ -1,15 +1,32 @@
-@mixin handle($name) {
+@mixin handle(
+  $name,
+  $offset,
+  $width,
+  $height,
+  $bg,
+  $border-width,
+  $border-color,
+  $border-radius,
+  $active-border-width,
+  $active-border-color,
+  $active-scale-factor
+) {
   @include element($name) {
     position: absolute;
-    top: -15px;
+    top: $offset;
+    width: $width;
+    height: $height;
+    background: $bg;
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
     transform: translateX(-50%);
-    opacity: 0.7;
-    width: 40px;
-    height: 40px;
-    background-color: #8736bd;
 
     @include modifier(is-active) {
-      border: 1px solid black;
+      border: $active-border-width solid $active-border-color;
+      top: $offset - $active-border-width / 2;
+      transform-origin: center;
+      transform: scale($active-scale-factor)
+        translateX(calc(-50% - $active-border-width));
       z-index: 1;
     }
   }

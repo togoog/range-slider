@@ -1,16 +1,75 @@
-@mixin grid($name) {
-  @include element($name) {
+@mixin grid(
+  $name,
+  $offset,
+  $line-thickness,
+  $line-style,
+  $line-color,
+  $label-offset,
+  $label-font-size,
+  $pip-max-size,
+  $pip-max-thickness,
+  $pip-color
+) {
+  $grid-name: $name;
+  $cell-name: #{$name}-cell;
+
+  @include element($grid-name) {
     position: relative;
-    border-top: 1px solid gray;
+    border-top: $line-thickness $line-style $line-color;
 
     @include modifier(horizontal) {
       width: 100%;
-      top: 30px;
+      top: $offset;
     }
 
     @include modifier(vertical) {
       height: 100%;
       width: 0;
+    }
+  }
+
+  @include element($cell-name) {
+    position: absolute;
+
+    // label
+    &::after {
+      content: attr(data-label);
+      position: absolute;
+      font-size: $label-font-size;
+    }
+
+    @include modifier(horizontal) {
+      transform: translateX(-50%);
+
+      &-level-1 {
+        height: $pip-max-size;
+        border-left: $pip-max-thickness solid $pip-color;
+
+        // move first pip inline with grid line
+        &:first-child {
+          transform: translateX(0px);
+        }
+
+        // move last pip inline with grid line
+        &:last-child {
+          transform: translateX(-$pip-max-thickness);
+        }
+      }
+
+      &-level-2 {
+        height: $pip-max-size - round($pip-max-size / 3);
+        border-left: ceil($pip-max-thickness / 2) solid $pip-color;
+      }
+
+      &-level-3 {
+        height: ceil($pip-max-size / 3);
+        border-left: ceil($pip-max-thickness / 3) solid $pip-color;
+      }
+
+      &::after {
+        top: 100% + $label-offset;
+        transform: translateX(-50%);
+      }
     }
   }
 }

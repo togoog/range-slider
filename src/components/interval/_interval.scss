@@ -1,12 +1,20 @@
-@mixin interval($name) {
+@mixin interval(
+  $name,
+  $thickness,
+  $bg,
+  $border-width,
+  $border-color,
+  $border-radius
+) {
   @include element($name) {
     position: absolute;
-    background-color: #1f6d1c;
-    opacity: 0.7;
+    background: $bg;
+    border: $border-width solid $border-color;
+    border-radius: $border-radius;
 
     @include modifier(horizontal) {
-      height: 20px;
-      top: -5px;
+      height: $thickness;
+      top: -$thickness / 4;
     }
   }
 }
