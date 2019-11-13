@@ -9,7 +9,6 @@
 /// Block Modifier
 /// @param {String} $modifier - Modifier's name
 @mixin modifier($modifier) {
-  /// TODO: change _ to --
   &_#{$modifier} {
     @content;
   }
