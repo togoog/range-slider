@@ -1,0 +1,21 @@
+@import './mixins';
+@import '../components';
+
+.range-slider {
+  /// TODO: add params to components (width, height, colors...)
+  $track: 'track';
+  $grid: 'grid';
+  $grid-cell: 'grid-cell';
+  $interval: 'interval';
+  $handle: 'handle';
+  $tooltip: 'tooltip';
+
+  position: relative;
+
+  @include track($track);
+  @include grid($grid);
+  @include grid-cell($grid-cell);
+  @include interval($interval);
+  @include handle($handle);
+  @include tooltip($tooltip);
+}

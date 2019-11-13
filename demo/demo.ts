@@ -12,6 +12,7 @@ const options: Options = {
   tooltips: true,
   tooltipFormatter: (value: number) => value.toLocaleString(),
   intervals: [false, true, false, true, false],
+  grid: true,
 };
 
 const rsList = createRangeSlider(selector, options);

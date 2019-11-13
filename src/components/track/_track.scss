@@ -1,0 +1,11 @@
+@mixin track($name) {
+  @include element($name) {
+    position: absolute;
+    background-color: #b43838;
+
+    @include modifier(horizontal) {
+      height: 10px;
+      width: 100%;
+    }
+  }
+}

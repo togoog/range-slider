@@ -1,0 +1,16 @@
+@mixin grid($name) {
+  @include element($name) {
+    position: relative;
+    border-top: 1px solid gray;
+
+    @include modifier(horizontal) {
+      width: 100%;
+      top: 30px;
+    }
+
+    @include modifier(vertical) {
+      height: 100%;
+      width: 0;
+    }
+  }
+}

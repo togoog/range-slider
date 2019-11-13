@@ -1,0 +1,17 @@
+@mixin tooltip($name) {
+  @include element($name) {
+    position: absolute;
+    padding: 10px;
+    bottom: 30px;
+    border: 1px solid #2e2e2e;
+
+    @include modifier('horizontal') {
+      transform: translateX(-50%);
+    }
+
+    @include modifier('has-collisions') {
+      opacity: 0;
+      z-index: -10;
+    }
+  }
+}
