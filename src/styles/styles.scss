@@ -14,7 +14,7 @@
 
   @include track($track);
   @include grid($grid);
-  @include grid-cell($grid-cell);
+  @include cell($grid-cell);
   @include interval($interval);
   @include handle($handle);
   @include tooltip($tooltip);

@@ -1,4 +1,4 @@
-@mixin grid-cell($name) {
+@mixin cell($name) {
   @include element($name) {
     $selector: &;
 
