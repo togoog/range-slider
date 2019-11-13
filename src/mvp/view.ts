@@ -14,7 +14,6 @@ import {
 } from '../components';
 
 class View extends EventEmitter implements RangeSliderView {
-  // TODO: rename EVENT_HANDLE... to EVENT_...
   static EVENT_HANDLE_MOVE_START = 'View/Handle/moveStart';
   static EVENT_HANDLE_MOVE_END = 'View/Handle/moveEnd';
   static EVENT_HANDLE_MOVE = 'View/Handle/move';
