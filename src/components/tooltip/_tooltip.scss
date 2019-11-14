@@ -1,7 +1,17 @@
+/// Tooltip component - label showing handle value
+/// @param $name class name to add as a block suffix to parent class
+/// @param $offset position relative to track
+/// @param $padding
+/// @param $bg tooltip background
+/// @param $border-width
+/// @param $border-color
+/// @param $border-radius
+/// @param $font-size
+/// @param $font-weight
 @mixin tooltip(
   $name,
-  $padding,
   $offset,
+  $padding,
   $bg,
   $border-width,
   $border-color,

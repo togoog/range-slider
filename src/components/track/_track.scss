@@ -1,3 +1,10 @@
+/// Track component - range slider main line
+/// @param $name class name to add as a block suffix to parent class
+/// @param $thickness track line thickness
+/// @param $bg track background
+/// @param $border-width
+/// @param $border-color
+/// @param $border-radius
 @mixin track(
   $name,
   $thickness,

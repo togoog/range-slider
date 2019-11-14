@@ -1,3 +1,15 @@
+/// Handle component - is used to select new value(s) by dragging
+/// @param $name class name to add as a block suffix to parent class
+/// @param $offset position relative to track
+/// @param $width
+/// @param $height
+/// @param $bg handle background
+/// @param $border-width
+/// @param $border-color
+/// @param $border-radius
+/// @param $active-border-width
+/// @param $active-border-color
+/// @param $active-scale-factor - how much to scale active handle
 @mixin handle(
   $name,
   $offset,
@@ -26,7 +38,7 @@
       top: $offset - $active-border-width / 2;
       transform-origin: center;
       transform: scale($active-scale-factor)
-        translateX(calc(-50% - $active-border-width));
+        translateX(calc(-50% + #{$active-border-width / 2}));
       z-index: 1;
     }
   }

@@ -1,3 +1,16 @@
+/// Grid component - ruler with labels
+/// @param $name class name to add as a block suffix to parent class
+/// @param $offset position relative to track
+/// @param $line-thickness main line thickness
+/// @param $line-style main line style (all border styles are valid: solid, dashed, dotted ...)
+/// @param $line-color main line color
+/// @param $label-offset position of labels relative to grid
+/// @param $label-font-size
+/// @param $pip-max-size maximum size a pip can have
+/// @param $pip-max-thickness maximum thickness a pip can have
+/// @param $pip-color
+///
+/// pip - mark on a grid showing position of certain value
 @mixin grid(
   $name,
   $offset,

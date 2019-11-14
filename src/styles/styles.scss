@@ -28,6 +28,7 @@
 
   @include interval(
     $name: 'interval',
+    $offset: 0px,
     $thickness: 10px,
     $bg: #139b6e,
     $border-width: 0,
@@ -37,13 +38,13 @@
 
   @include handle(
     $name: 'handle',
+    $offset: -8px,
     $width: 20px,
     $height: 20px,
     $bg: #920e0e,
     $border-width: 1px,
     $border-color: black,
     $border-radius: 50%,
-    $offset: -8px,
     $active-border-width: 2px,
     $active-border-color: black,
     $active-scale-factor: 1.05
