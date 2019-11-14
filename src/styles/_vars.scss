@@ -1,0 +1,52 @@
+// Track component
+$track-name: 'track' !default;
+$track-thickness: 5px !default;
+$track-bg: #551e75 !default;
+$track-border-width: 0 !default;
+$track-border-color: black !default;
+$track-border-radius: 5px !default;
+
+// Grid component
+$grid-name: 'grid' !default;
+$grid-offset: 25px !default;
+$grid-line-thickness: 1px !default;
+$grid-line-style: solid !default;
+$grid-line-color: black !default;
+$grid-label-offset: 20% !default;
+$grid-label-font-size: 14px !default;
+$grid-pip-max-size: 12px !default;
+$grid-pip-max-thickness: 2px !default;
+$grid-pip-color: black !default;
+
+// Interval component
+$interval-name: 'interval' !default;
+$interval-offset: 0px !default;
+$interval-thickness: 10px !default;
+$interval-bg: #139b6e !default;
+$interval-border-width: 0 !default;
+$interval-border-color: black !default;
+$interval-border-radius: 5px !default;
+
+// Handle component
+$handle-name: 'handle' !default;
+$handle-offset: -8px !default;
+$handle-width: 20px !default;
+$handle-height: 20px !default;
+$handle-bg: #920e0e !default;
+$handle-border-width: 1px !default;
+$handle-border-color: black !default;
+$handle-border-radius: 50% !default;
+$handle-active-border-width: 2px !default;
+$handle-active-border-color: black !default;
+$handle-active-scale-factor: 1.05 !default;
+
+// Tooltip component
+$tooltip-name: 'tooltip' !default;
+$tooltip-padding: 10px 20px !default;
+$tooltip-offset: 20px !default;
+$tooltip-bg: #cacaca !default;
+$tooltip-border-width: 1px !default;
+$tooltip-border-color: #2e2e2e !default;
+$tooltip-border-radius: 5px !default;
+$tooltip-font-size: 16px !default;
+$tooltip-font-weight: normal !default;
