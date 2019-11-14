@@ -1,6 +1,5 @@
 /// Grid component - ruler with labels
 /// @param $name class name to add as a block suffix to parent class
-/// @param $offset position relative to track
 /// @param $line-thickness main line thickness
 /// @param $line-style main line style (all border styles are valid: solid, dashed, dotted ...)
 /// @param $line-color main line color
@@ -9,11 +8,11 @@
 /// @param $pip-max-size maximum size a pip can have
 /// @param $pip-max-thickness maximum thickness a pip can have
 /// @param $pip-color
+/// @param $offset position relative to track
 ///
 /// pip - mark on a grid showing position of certain value
 @mixin grid(
   $name,
-  $offset,
   $line-thickness,
   $line-style,
   $line-color,
@@ -21,7 +20,8 @@
   $label-font-size,
   $pip-max-size,
   $pip-max-thickness,
-  $pip-color
+  $pip-color,
+  $offset
 ) {
   $grid-name: $name;
   $cell-name: #{$name}-cell;
@@ -70,17 +70,17 @@
       }
 
       &-level-2 {
-        height: $pip-max-size - round($pip-max-size / 3);
+        height: $pip-max-size - $pip-max-size / 3;
         border-left: ceil($pip-max-thickness / 2) solid $pip-color;
       }
 
       &-level-3 {
-        height: ceil($pip-max-size / 3);
+        height: $pip-max-size / 3;
         border-left: ceil($pip-max-thickness / 3) solid $pip-color;
       }
 
       &::after {
-        top: 100% + $label-offset;
+        top: calc(100% + #{$label-offset});
         transform: translateX(-50%);
       }
     }

@@ -1,6 +1,5 @@
 /// Tooltip component - label showing handle value
 /// @param $name class name to add as a block suffix to parent class
-/// @param $offset position relative to track
 /// @param $padding
 /// @param $bg tooltip background
 /// @param $border-width
@@ -8,16 +7,17 @@
 /// @param $border-radius
 /// @param $font-size
 /// @param $font-weight
+/// @param $offset position relative to track
 @mixin tooltip(
   $name,
-  $offset,
   $padding,
   $bg,
   $border-width,
   $border-color,
   $border-radius,
   $font-size,
-  $font-weight
+  $font-weight,
+  $offset
 ) {
   @include element($name) {
     position: absolute;

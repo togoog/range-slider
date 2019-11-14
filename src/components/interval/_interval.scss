@@ -1,19 +1,19 @@
 /// Interval component - range of selected values
 /// @param $name class name to add as a block suffix to parent class
-/// @param $offset position relative to track
 /// @param $thickness interval thickness
 /// @param $bg interval background
 /// @param $border-width
 /// @param $border-color
 /// @param $border-radius
+/// @param $offset position relative to track
 @mixin interval(
   $name,
-  $offset,
   $thickness,
   $bg,
   $border-width,
   $border-color,
-  $border-radius
+  $border-radius,
+  $offset
 ) {
   @include element($name) {
     position: absolute;
