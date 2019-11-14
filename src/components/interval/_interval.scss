@@ -5,15 +5,13 @@
 /// @param $border-width
 /// @param $border-color
 /// @param $border-radius
-/// @param $offset position relative to track
 @mixin interval(
   $name,
   $thickness,
   $bg,
   $border-width,
   $border-color,
-  $border-radius,
-  $offset
+  $border-radius
 ) {
   @include element($name) {
     position: absolute;
@@ -23,7 +21,6 @@
 
     @include modifier(horizontal) {
       height: $thickness;
-      top: calc(#{$offset} - #{$thickness / 4});
     }
   }
 }
