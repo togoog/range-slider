@@ -57,7 +57,11 @@ class View extends EventEmitter implements RangeSliderView {
   }
 
   render(state: State): void {
+    const { cssClass } = state;
+    const { orientation } = state.track;
+
     const track = trackView(state.track);
+
     const grid = gridView(state.grid);
 
     const intervals = state.intervals.map(intervalView);
@@ -71,7 +75,8 @@ class View extends EventEmitter implements RangeSliderView {
     const tooltips = state.tooltips.map(tooltipView);
 
     const cssClasses: ClassInfo = {
-      [state.cssClass]: true,
+      [cssClass]: true,
+      [`${cssClass}_${orientation}`]: true,
     };
 
     const template = html`
