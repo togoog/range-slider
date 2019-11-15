@@ -74,7 +74,10 @@ class Presenter implements RangeSliderPresenter {
           const dimension =
             data.orientation === 'horizontal' ? 'width' : 'height';
 
-          const absPos = handleCoords[axis] - rangeSliderRect[origin];
+          const absPos =
+            origin === 'left'
+              ? handleCoords[axis] - rangeSliderRect[origin]
+              : rangeSliderRect[origin] - handleCoords[axis];
           const relPos = absPos / rangeSliderRect[dimension];
           const absVal = data.min + (data.max - data.min) * relPos;
 
