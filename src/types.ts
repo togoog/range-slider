@@ -18,6 +18,18 @@ export type Orientation = 'horizontal' | 'vertical';
 
 export type Formatter = (value: number) => string;
 
+// TODO: add props
+// mode =
+//  'count'         - divide track into parts according to numCells (default)
+//  | 'positions'   - position tick marks at relative positions from values prop
+//  | 'values'      - position tick marks at absolute positions from values prop
+//
+// alignToStep = boolean  - align all tick marks (pips) to nearest step position
+//
+// values = number[]      - relative percent values if mode = 'positions'
+//                        - absolute values if mode = 'values'
+// NOTE: prop names should be more organic
+
 export type GridOptions = {
   isVisible: boolean;
   // Number of cells on each level (from biggest to smallest)
