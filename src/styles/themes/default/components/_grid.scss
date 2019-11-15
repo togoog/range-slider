@@ -1,0 +1,98 @@
+/// Grid component - ruler with labels
+
+@include element('grid') {
+  position: absolute;
+  background: $color-primary-dark;
+
+  @include modifier(horizontal) {
+    width: 100%;
+    top: $base-size * 1.3;
+    height: $base-size / 15;
+  }
+
+  @include modifier(vertical) {
+    height: 100%;
+    width: $base-size / 15;
+    transform: translateX($base-size * 1.5);
+  }
+}
+
+@include element('grid-cell') {
+  // pip - mark on a grid showing position of certain value
+  $pip-max-size: $base-size * 0.9;
+  $pip-max-thickness: 2px;
+
+  position: absolute;
+  background: $color-primary-dark;
+
+  @include modifier('horizontal') {
+    transform: translateX(-50%);
+
+    &-level-1 {
+      width: $pip-max-thickness;
+      height: $pip-max-size;
+
+      // move first pip inline with grid line
+      &:first-child {
+        transform: translateX(0px);
+      }
+
+      // move last pip inline with grid line
+      &:last-child {
+        transform: translateX(-$pip-max-thickness);
+      }
+    }
+
+    &-level-2 {
+      width: ceil($pip-max-thickness / 2);
+      height: $pip-max-size - $pip-max-size / 3;
+    }
+
+    &-level-3 {
+      width: ceil($pip-max-thickness / 3);
+      height: $pip-max-size / 3;
+    }
+  }
+
+  @include modifier('vertical') {
+    &-level-1 {
+      width: $pip-max-size;
+      height: $pip-max-thickness;
+
+      // move first pip inline with grid line
+      &:first-child {
+        transform: translateY(0px);
+      }
+
+      // move last pip inline with grid line
+      &:last-child {
+        transform: translateY($pip-max-thickness);
+      }
+    }
+
+    &-level-2 {
+      width: $pip-max-size - $pip-max-size / 3;
+      height: ceil($pip-max-thickness / 2);
+    }
+
+    &-level-3 {
+      width: $pip-max-size / 3;
+      height: ceil($pip-max-thickness / 3);
+    }
+  }
+}
+
+@include element('grid-cell-label') {
+  position: absolute;
+  font-size: $base-size * 0.9;
+
+  @include modifier('horizontal') {
+    top: calc(100% + #{$base-size * 0.3});
+    transform: translateX(-50%);
+  }
+
+  @include modifier('vertical') {
+    left: calc(100% + #{$base-size * 0.3});
+    transform: translateY(-50%);
+  }
+}

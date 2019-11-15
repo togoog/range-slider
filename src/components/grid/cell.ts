@@ -18,18 +18,28 @@ function cellView({
     [origin]: `${position}%`,
   };
 
-  const cssClasses: ClassInfo = {
+  const cellCSSClasses: ClassInfo = {
     [cssClass]: true,
     [`${cssClass}_${orientation}`]: true,
     [`${cssClass}_${orientation}-level-${level}`]: true,
   };
 
+  const labelCSSClasses: ClassInfo = {
+    [`${cssClass}-label`]: true,
+    [`${cssClass}-label_${orientation}`]: true,
+    [`${cssClass}-label_${orientation}-level-${level}`]: true,
+  };
+
+  const labelHTML = isVisibleLabel
+    ? html`
+        <span class=${classMap(labelCSSClasses)}>${label}</span>
+      `
+    : null;
+
   return html`
-    <div
-      class=${classMap(cssClasses)}
-      style=${styleMap(styles)}
-      data-label=${isVisibleLabel ? label : ''}
-    ></div>
+    <div class=${classMap(cellCSSClasses)} style=${styleMap(styles)}>
+      ${labelHTML}
+    </div>
   `;
 }
 

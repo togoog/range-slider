@@ -1,8 +1,6 @@
 import { createRangeSlider } from '../src/range-slider';
-import { Options } from '../src/types';
 
-const selector = '.range-slider-demo';
-const options: Options = {
+const rsHorizontal = createRangeSlider('#range-slider-horizontal', {
   value: [52, 160, 200, 345],
   min: -100,
   max: 500,
@@ -12,7 +10,18 @@ const options: Options = {
   tooltips: true,
   tooltipFormatter: (value: number) => value.toLocaleString(),
   intervals: [false, true, false, true, false],
-  grid: true,
-};
+  grid: { isVisible: true, numCells: [5, 4, 3] },
+});
 
-const rsList = createRangeSlider(selector, options);
+const rsVertical = createRangeSlider('#range-slider-vertical', {
+  value: [52, 160, 200, 345],
+  min: -100,
+  max: 500,
+  step: 5,
+  cssClass: 'range-slider',
+  orientation: 'vertical',
+  tooltips: true,
+  tooltipFormatter: (value: number) => value.toLocaleString(),
+  intervals: [false, true, false, true, false],
+  grid: { isVisible: true, numCells: [5, 4, 3] },
+});

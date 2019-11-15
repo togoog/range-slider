@@ -1,0 +1,19 @@
+@import './themes/default/vars';
+@import './mixins';
+
+.range-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  @include modifier('horizontal') {
+    width: 100%;
+  }
+
+  @include modifier('vertical') {
+    height: 100%;
+    flex-direction: column;
+  }
+
+  @import './themes/default/components';
+}

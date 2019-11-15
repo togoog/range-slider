@@ -22,6 +22,7 @@ function handleView(
     [cssClass]: true,
     [`${cssClass}_${orientation}`]: true,
     [`${cssClass}_is-active`]: isActive,
+    [`${cssClass}_is-active-${orientation}`]: isActive,
   };
 
   return html`
