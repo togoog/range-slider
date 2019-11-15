@@ -1,0 +1,16 @@
+/// Track component - range slider main line
+
+@include element('track') {
+  position: absolute;
+  background: $color-primary;
+
+  @include modifier('horizontal') {
+    height: $base-size / 3;
+    width: 100%;
+  }
+
+  @include modifier('vertical') {
+    height: 100%;
+    width: $base-size / 3;
+  }
+}

@@ -1,0 +1,24 @@
+/// Tooltip component - label showing handle value
+
+@include element('tooltip') {
+  position: absolute;
+  padding: $base-size * 0.5 $base-size * 1.1;
+  background: $color-secondary;
+  bottom: $base-size * 1.2;
+  border-radius: $base-size / 3;
+  font-size: $base-size;
+  text-color: $color-secondary-text;
+
+  @include modifier('horizontal') {
+    transform: translateX(-50%) translateY(-$base-size);
+  }
+
+  @include modifier('vertical') {
+    transform: translateY(50%) translateX(calc(#{- $base-size * 2.3} - 50%));
+  }
+
+  @include modifier('has-collisions') {
+    opacity: 0;
+    z-index: -10;
+  }
+}

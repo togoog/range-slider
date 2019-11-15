@@ -1,0 +1,35 @@
+/// Handle component - is used to select new value(s) by dragging
+
+@include element('handle') {
+  position: absolute;
+  width: 0;
+  height: 0;
+
+  @include modifier('horizontal') {
+    transform: translateX(-50%) translateY(-$base-size * 1.5);
+    border-left: $base-size * 0.7 solid transparent;
+    border-top: $base-size solid $color-primary;
+    border-right: $base-size * 0.7 solid transparent;
+  }
+
+  @include modifier('vertical') {
+    transform: translateY(50%) translateX(-$base-size * 1.5);
+    border-top: $base-size * 0.7 solid transparent;
+    border-left: $base-size solid $color-primary;
+    border-bottom: $base-size * 0.7 solid transparent;
+  }
+
+  @include modifier('is-active') {
+    z-index: 1;
+
+    &-horizontal {
+      transform-origin: center;
+      transform: translateX(-50%) translateY(-$base-size * 1.5) scale(1.15);
+    }
+
+    &-vertical {
+      transform-origin: left;
+      transform: translateY(50%) translateX(-$base-size * 1.5) scale(1.15);
+    }
+  }
+}
