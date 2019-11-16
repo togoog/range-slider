@@ -43,4 +43,4 @@ function cellView({
   `;
 }
 
-export { cellView };
+export default cellView;

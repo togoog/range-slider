@@ -2,7 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { Grid, GridCell, Orientation } from '../../types';
-import { cellView } from './cell';
+import cellView from './cell';
 
 // TODO: Make it recursive to create cells inside big cell and cells inside medium cell
 // eslint-disable-next-line complexity
@@ -30,7 +30,7 @@ function createCells(
         if (cells[position] === undefined) {
           cells[position] = {
             label: `${parseFloat(value.toFixed(2))}`,
-            isVisibleLabel: i === 0 ? true : false,
+            isVisibleLabel: i === 0,
             level: i + 1,
             orientation,
             cssClass,
@@ -78,4 +78,5 @@ function gridView({
   `;
 }
 
-export { gridView, createCells };
+export default gridView;
+export { createCells };

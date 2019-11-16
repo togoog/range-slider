@@ -1,7 +1,6 @@
-import { View } from '../mvp/view';
-import { State, Data } from '../types';
 import { fireEvent } from '@testing-library/dom';
-import * as defaults from '../defaults';
+import View from '../mvp/view';
+import { State, Data } from '../types';
 
 const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;
@@ -25,7 +24,7 @@ describe('View.render', () => {
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: true, numCells: [2, 3] },
@@ -89,7 +88,7 @@ describe('View.render', () => {
         id: 'tooltip_0',
         handleIds: ['handle_0'],
         position: 20,
-        content: data.tooltipFormatter(data.handles['handle_0']),
+        content: data.tooltipFormatter(data.handles.handle_0),
         orientation: 'horizontal',
         cssClass: tooltipCSSClass,
         isVisible: true,
@@ -100,7 +99,7 @@ describe('View.render', () => {
         id: 'tooltip_1',
         handleIds: ['handle_1'],
         position: 40,
-        content: data.tooltipFormatter(data.handles['handle_1']),
+        content: data.tooltipFormatter(data.handles.handle_1),
         orientation: 'horizontal',
         cssClass: tooltipCSSClass,
         isVisible: true,
@@ -193,6 +192,7 @@ describe('View.render', () => {
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
+    // eslint-disable-next-line no-shadow
     const data: Data = {
       handles: { handle_0: 20, handle_1: 40 },
       handleIds: ['handle_0', 'handle_1'],
@@ -207,10 +207,11 @@ describe('View.render', () => {
       tooltips: { tooltip_0: true, tooltip_1: true },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       grid: { isVisible: false, numCells: [4, 5] },
     };
 
+    // eslint-disable-next-line no-shadow
     const state: State = {
       cssClass,
       track: { orientation: 'vertical', cssClass: trackCSSClass },
@@ -269,7 +270,7 @@ describe('View.render', () => {
           id: 'tooltip_0',
           handleIds: ['handle_0'],
           position: 20,
-          content: data.tooltipFormatter(data.handles['handle_0']),
+          content: data.tooltipFormatter(data.handles.handle_0),
           orientation: 'vertical',
           cssClass: tooltipCSSClass,
           isVisible: true,
@@ -280,7 +281,7 @@ describe('View.render', () => {
           id: 'tooltip_1',
           handleIds: ['handle_1'],
           position: 40,
-          content: data.tooltipFormatter(data.handles['handle_1']),
+          content: data.tooltipFormatter(data.handles.handle_1),
           orientation: 'vertical',
           cssClass: tooltipCSSClass,
           isVisible: true,
@@ -325,7 +326,7 @@ describe('Handle', () => {
     tooltips: { tooltip_0: true },
     tooltipIds: ['tooltip_0'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
     grid: { isVisible: false, numCells: [3, 4] },
@@ -371,7 +372,7 @@ describe('Handle', () => {
         id: 'tooltip_0',
         handleIds: ['handle_0'],
         position: 50,
-        content: data.tooltipFormatter(data.handles['handle_0']),
+        content: data.tooltipFormatter(data.handles.handle_0),
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
         isVisible: true,

@@ -13,4 +13,4 @@ function trackView({ cssClass, orientation }: Track): TemplateResult {
   `;
 }
 
-export { trackView };
+export default trackView;

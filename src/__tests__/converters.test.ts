@@ -94,8 +94,6 @@ test('convertOptionsToData', () => {
 });
 
 test('convertDataToOptions', () => {
-  const tooltipFormatter = (value: number) => value.toLocaleString();
-
   const data: Data = {
     handles: { handle_0: 50 },
     handleIds: ['handle_0'],

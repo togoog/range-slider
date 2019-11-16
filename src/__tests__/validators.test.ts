@@ -1,6 +1,8 @@
 import * as fc from 'fast-check';
+import { Just, Nothing } from 'purify-ts/Maybe';
+import { Left, Right } from 'purify-ts/Either';
 import {
-  //errors
+  // errors
   errNotValidValue,
   errNotValidMin,
   errNotValidMax,
@@ -25,8 +27,6 @@ import {
   checkCSSClass,
   checkRangeSliderOptions,
 } from '../validators';
-import { Just, Nothing } from 'purify-ts/Maybe';
-import { Left, Right } from 'purify-ts/Either';
 
 describe('checkValue', () => {
   test('numbers are valid', () => {

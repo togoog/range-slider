@@ -1,19 +1,4 @@
-import { Options, Data, State } from '../types';
-import {
-  $,
-  detectRectCollision,
-  isSortedArray,
-  closestToStep,
-  fillArrayWith,
-} from '../helpers';
-
-const cssClass = 'range-slider';
-const trackCSSClass = `${cssClass}__track`;
-const intervalCSSClass = `${cssClass}__interval`;
-const handleCSSClass = `${cssClass}__handle`;
-const tooltipCSSClass = `${cssClass}__tooltip`;
-
-const tooltipsFormatter = (value: number) => value.toLocaleString();
+import { $, haveCollisions, isSortedArray, fillArrayWith } from '../helpers';
 
 describe('$', () => {
   test('Should find existing elements', () => {
@@ -62,7 +47,7 @@ describe('$', () => {
   });
 });
 
-describe('detectRectCollision', () => {
+describe('haveCollisions', () => {
   test('should return true if 2 elements overlap', () => {
     // overlap a.right & b.left sides
     const rectA: DOMRect = {
@@ -88,7 +73,7 @@ describe('detectRectCollision', () => {
       toJSON: () => '',
     };
 
-    expect(detectRectCollision(rectA, rectB)).toBe(true);
+    expect(haveCollisions(rectA, rectB)).toBe(true);
   });
 
   test('should return false if 2 elements do not overlap', () => {
@@ -116,7 +101,7 @@ describe('detectRectCollision', () => {
       toJSON: () => '',
     };
 
-    expect(detectRectCollision(rectA, rectB)).toBe(false);
+    expect(haveCollisions(rectA, rectB)).toBe(false);
   });
 });
 

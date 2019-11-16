@@ -1,3 +1,5 @@
-export { Model } from './model';
-export { View } from './view';
-export { Presenter } from './presenter';
+import { Model } from './model';
+import View from './view';
+import Presenter from './presenter';
+
+export { Model, View, Presenter };

@@ -1,17 +1,15 @@
-import { Data, Proposal } from '../types';
 import { Right } from 'purify-ts/Either';
 import { multiply, add, subtract, fromPairs } from 'ramda';
+import { Data, Proposal } from '../types';
 import {
   Model,
   // errors
-  errValueNotInRange,
-  errValueOrder,
+  errHandlesNotInRange,
   errStepNotInRange,
   errMinMax,
   errTooltipsCount,
   errIntervalsCount,
 } from '../mvp/model';
-import * as defaults from '../defaults';
 
 const tooltipFormatter = (value: number) => value.toLocaleString();
 
@@ -51,14 +49,14 @@ describe('Model.checkDataIntegrity', () => {
       cssClass: 'range-slider',
       tooltips: { tooltip_0: true },
       tooltipIds: ['tooltip_0'],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       tooltipCollisions: [],
       intervals: { interval_0: true, interval_1: false },
       intervalIds: ['interval_0', 'interval_1'],
       grid: { isVisible: true, numCells: [2, 3] },
     };
     expect(Model.validate(data).extract()).toEqual(
-      expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
+      expect.arrayContaining([expect.objectContaining(errHandlesNotInRange())]),
     );
 
     data = {
@@ -79,7 +77,7 @@ describe('Model.checkDataIntegrity', () => {
       grid: { isVisible: false, numCells: [2, 3, 4] },
     };
     expect(Model.validate(data).extract()).toEqual(
-      expect.arrayContaining([expect.objectContaining(errValueNotInRange())]),
+      expect.arrayContaining([expect.objectContaining(errHandlesNotInRange())]),
     );
   });
 
@@ -140,7 +138,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: { tooltip_0: true, tooltip_1: true, tooltip_2: false },
       tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: false, numCells: [2, 3] },
@@ -191,7 +189,7 @@ describe('Model.checkDataIntegrity', () => {
       tooltips: { tooltip_0: true, tooltip_1: true },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [2, 3, 4] },
@@ -213,7 +211,7 @@ describe('Model.propose', () => {
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: false, numCells: [2, 3, 4] },
@@ -263,7 +261,7 @@ describe('Model.propose', () => {
   test('should change orientation', () => {
     const proposal: Partial<Proposal> = {
       orientation: (data: Data) =>
-        data.orientation == 'horizontal' ? 'vertical' : 'horizontal',
+        data.orientation === 'horizontal' ? 'vertical' : 'horizontal',
     };
     const model = new Model(currentData);
     expect(model.get('orientation')).toEqual('horizontal');
@@ -328,7 +326,7 @@ describe('Model.propose', () => {
       tooltips: { tooltip_0: true, tooltip_1: true },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [2, 3] },
@@ -339,7 +337,7 @@ describe('Model.propose', () => {
     model.on(Model.EVENT_VALIDATION_ERRORS, modelListener);
 
     const proposal: Partial<Proposal> = {
-      min: (data: Data) => 200,
+      min: () => 200,
     };
 
     model.propose(proposal);
@@ -361,7 +359,7 @@ describe('Model.get', () => {
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: true, numCells: [4, 5] },
@@ -392,7 +390,7 @@ describe('Model.set', () => {
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: false, numCells: [3, 4] },
@@ -422,7 +420,7 @@ describe('Model.set', () => {
       tooltips: { tooltip_0: true, tooltip_1: true },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: false, interval_1: true, interval_2: false },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: false, numCells: [3, 4] },
@@ -451,7 +449,7 @@ describe('Model.getAll', () => {
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: true, numCells: [3, 4] },
@@ -476,7 +474,7 @@ describe('Model.setAll', () => {
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
-    tooltipFormatter: tooltipFormatter,
+    tooltipFormatter,
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: false, numCells: [3, 4] },
@@ -496,7 +494,7 @@ describe('Model.setAll', () => {
       tooltips: { tooltip_0: true, tooltip_1: false },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: true, interval_1: false, interval_2: true },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [5, 6] },
@@ -521,7 +519,7 @@ describe('Model.setAll', () => {
       tooltips: { tooltip_0: true, tooltip_1: false },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: true, interval_1: false, interval_2: true },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [2, 5] },
@@ -546,7 +544,7 @@ describe('Model.setAll', () => {
       tooltips: { tooltip_0: true, tooltip_1: false },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
-      tooltipFormatter: tooltipFormatter,
+      tooltipFormatter,
       intervals: { interval_0: true, interval_1: false, interval_2: true },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [5, 6] },

@@ -39,4 +39,4 @@ function tooltipView({
   `;
 }
 
-export { tooltipView };
+export default tooltipView;

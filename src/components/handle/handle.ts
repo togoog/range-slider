@@ -37,4 +37,4 @@ function handleView(
   `;
 }
 
-export { handleView, Actions };
+export default handleView;

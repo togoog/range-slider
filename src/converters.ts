@@ -46,7 +46,7 @@ function convertOrientationToOrigin(orientation: Orientation): Origin {
 // ─── OPTIONS TO DATA ────────────────────────────────────────────────────────────
 //
 
-function modifyOptionsForInternalUse(options: Options): OptimizedOptions {
+function prepareOptionsForInternalUse(options: Options): OptimizedOptions {
   const valuesLength = toArray(options.value).length;
 
   const transformations: {
@@ -79,7 +79,7 @@ function modifyOptionsForInternalUse(options: Options): OptimizedOptions {
 }
 
 function convertOptionsToData(options: Options): Data {
-  const optimizedOptions = modifyOptionsForInternalUse(options);
+  const optimizedOptions = prepareOptionsForInternalUse(options);
 
   const transformations: {
     [key in DataKey]: (op: OptimizedOptions) => Data[DataKey];
@@ -189,18 +189,15 @@ function getMergedTooltipsContent(
       handleIdx: data.handleIds.findIndex(id => id === handleId),
       value: data.handles[handleId],
     }))
-    .reduce(
-      (acc, cur, idx, arr): { handleIdx: number; value: number }[] => {
-        const nextVal = arr[idx + 1] ? arr[idx + 1].value : null;
+    .reduce((acc, cur, idx, arr): { handleIdx: number; value: number }[] => {
+      const nextVal = arr[idx + 1] ? arr[idx + 1].value : null;
 
-        if (nextVal !== cur.value) {
-          acc.push(cur);
-        }
+      if (nextVal !== cur.value) {
+        acc.push(cur);
+      }
 
-        return acc;
-      },
-      [] as { handleIdx: number; value: number }[],
-    )
+      return acc;
+    }, [] as { handleIdx: number; value: number }[])
     .flatMap(({ handleIdx, value }) => {
       const intervalId = data.intervalIds[handleIdx + 1];
       const formatedValue = data.tooltipFormatter(value);

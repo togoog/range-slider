@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { render, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { RangeSliderView, State, TooltipId, HandleId } from '../types';
-import { $, detectRectCollision, createId } from '../helpers';
+import { $, haveCollisions, createId } from '../helpers';
 import {
   trackView,
   gridView,
@@ -15,16 +15,21 @@ import {
 
 class View extends EventEmitter implements RangeSliderView {
   static EVENT_HANDLE_MOVE_START = 'View/Handle/moveStart';
+
   static EVENT_HANDLE_MOVE_END = 'View/Handle/moveEnd';
+
   static EVENT_HANDLE_MOVE = 'View/Handle/move';
+
   static EVENT_TOOLTIP_COLLISIONS = 'View/TooltipCollisions';
 
   // mouse pointer offset coords for Handle when dragging
   private handleShiftX = 0;
+
   private handleShiftY = 0;
 
   // handle width and height
   private handleWidth = 0;
+
   private handleHeight = 0;
 
   // DOM changes observer
@@ -42,17 +47,13 @@ class View extends EventEmitter implements RangeSliderView {
     const { orientation } = state.track;
 
     const track = trackView(state.track);
-
     const grid = gridView(state.grid);
-
     const intervals = state.intervals.map(intervalView);
-
     const handles = state.handles.map(handleState =>
       handleView(handleState, {
         onMouseDown: this.onHandleMouseDown,
       }),
     );
-
     const tooltips = state.tooltips.map(tooltipView);
 
     const cssClasses: ClassInfo = {
@@ -143,34 +144,28 @@ class View extends EventEmitter implements RangeSliderView {
     if (tooltipCoordsList.length > 1) {
       const collisions = aperture(2, tooltipCoordsList)
         .map(adjacentTooltips => {
-          const firstId = adjacentTooltips[0][0];
-          const firstRect = adjacentTooltips[0][1];
+          const [firstId, firstRect] = adjacentTooltips[0];
+          const [secondId, secondRect] = adjacentTooltips[1];
 
-          const secondId = adjacentTooltips[1][0];
-          const secondRect = adjacentTooltips[1][1];
-
-          const haveCollision = detectRectCollision(firstRect, secondRect);
-
-          return haveCollision ? [firstId, secondId] : [];
+          return haveCollisions(firstRect, secondRect)
+            ? [firstId, secondId]
+            : [];
         })
         .filter(isNotEmpty)
-        .reduce(
-          (acc, cur): TooltipId[][] => {
-            const prevGroup = acc[acc.length - 1];
-            const prevTooltipId = prevGroup
-              ? prevGroup[prevGroup.length - 1]
-              : null;
+        .reduce((acc, cur): TooltipId[][] => {
+          const prevGroup = acc[acc.length - 1];
+          const prevTooltipId = prevGroup
+            ? prevGroup[prevGroup.length - 1]
+            : null;
 
-            if (prevTooltipId === cur[0]) {
-              prevGroup.push(cur[1]);
-            } else {
-              acc.push(cur);
-            }
+          if (prevTooltipId === cur[0]) {
+            prevGroup.push(cur[1]);
+          } else {
+            acc.push(cur);
+          }
 
-            return acc;
-          },
-          [] as TooltipId[][],
-        );
+          return acc;
+        }, [] as TooltipId[][]);
 
       this.emit(View.EVENT_TOOLTIP_COLLISIONS, collisions);
     }
@@ -182,31 +177,29 @@ class View extends EventEmitter implements RangeSliderView {
 
     // eslint-disable-next-line complexity
     mutations.forEach(mutation => {
-      switch (mutation.type) {
-        case 'childList':
-          if (
-            // there should be more then 1 node in the view
-            // lit-html adds special nodes. We have to skip them
-            mutation.addedNodes.length > 1
-          ) {
-            viewInstance.detectTooltipsCollisions();
-          }
-          break;
-        case 'attributes':
-          const el = mutation.target as HTMLElement;
-          const attribute = mutation.attributeName;
+      if (mutation.type === 'childList') {
+        if (
+          // there should be more then 1 node in the view
+          // lit-html adds special nodes. We have to skip them
+          mutation.addedNodes.length > 1
+        ) {
+          viewInstance.detectTooltipsCollisions();
+        }
+      }
 
-          // if style is changed for tooltip - check if collisions occur
-          if (
-            attribute === 'style' &&
-            el.getAttribute('data-role') === 'tooltip'
-          ) {
-            viewInstance.detectTooltipsCollisions();
-          }
-          break;
+      if (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === 'style'
+      ) {
+        const el = mutation.target as HTMLElement;
+
+        // if style is changed for tooltip - check if collisions occur
+        if (el.getAttribute('data-role') === 'tooltip') {
+          viewInstance.detectTooltipsCollisions();
+        }
       }
     });
   }
 }
 
-export { View };
+export default View;

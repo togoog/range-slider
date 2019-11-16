@@ -1,4 +1,3 @@
-import { Options, RangeSliderError } from './types';
 import { all, allPass, anyPass, where } from 'ramda';
 import {
   isObject,
@@ -9,13 +8,14 @@ import {
 } from 'ramda-adjunct';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
+import { Options, RangeSliderError } from './types';
 
 //
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
 //
 
 function isNumber(v: unknown): v is number {
-  return typeof v === 'number' && !isNaN(v);
+  return typeof v === 'number' && !Number.isNaN(v);
 }
 
 function isBoolean(v: unknown): v is boolean {

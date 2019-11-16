@@ -1,6 +1,6 @@
-import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
 import { pipe, ifElse, always, aperture, all } from 'ramda';
 import { lengthEq } from 'ramda-adjunct';
+import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
 
 /**
  * Query dom elements
@@ -48,7 +48,7 @@ function closestToStep(step: number, value: number): number {
  * @param rectA DOMRect of element A
  * @param rectB DOMRect of element B
  */
-function detectRectCollision(rectA: DOMRect, rectB: DOMRect): boolean {
+function haveCollisions(rectA: DOMRect, rectB: DOMRect): boolean {
   return !(
     rectB.left >= rectA.right ||
     rectB.right <= rectA.left ||
@@ -98,7 +98,7 @@ function getRelativePosition(min: number, max: number, value: number): number {
 
 export {
   $,
-  detectRectCollision,
+  haveCollisions,
   // utils
   createId,
   isSortedArray,

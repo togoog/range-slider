@@ -1,3 +1,8 @@
+import { mergeAll, applySpec, all, fromPairs, inc, clamp, clone } from 'ramda';
+import { inRange } from 'ramda-adjunct';
+import { EventEmitter } from 'events';
+import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
+import { Either, Left, Right } from 'purify-ts/Either';
 import {
   RangeSliderError,
   RangeSliderModel,
@@ -9,16 +14,11 @@ import {
   TooltipId,
   IntervalId,
 } from '../types';
-import { EventEmitter } from 'events';
-import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
-import { Either, Left, Right } from 'purify-ts/Either';
-import { mergeAll, applySpec, all, fromPairs, inc, clamp, clone } from 'ramda';
-import { inRange } from 'ramda-adjunct';
 import { isSortedArray, createId } from '../helpers';
 import * as defaults from '../defaults';
 
 //
-// ─── ERRORS ─────────────────────────────────────────────────────────────────────
+// ─── ERROR IDS ──────────────────────────────────────────────────────────────────
 //
 
 const ErrorHandlesNotInRange = 'RangeSlider/Model/ErrorHandlesNotInRange';
@@ -27,6 +27,10 @@ const ErrorStepNotInRange = 'RangeSlider/Model/ErrorStepNotInRange';
 const ErrorMinMax = 'RangeSlider/Model/ErrorMinMax';
 const ErrorTooltipsCount = 'RangeSlider/Model/ErrorTooltipsCount';
 const ErrorIntervalsCount = 'RangeSlider/Model/ErrorIntervalsCount';
+
+//
+// ─── ERROR CONSTRUCTORS ─────────────────────────────────────────────────────────
+//
 
 function errHandlesNotInRange(): RangeSliderError {
   return {
@@ -65,6 +69,77 @@ function errIntervalsCount(): RangeSliderError {
     id: ErrorIntervalsCount,
     desc: `(intervals.length !== handles.length + 1)`,
   };
+}
+
+//
+// ─── ERROR FIXERS ───────────────────────────────────────────────────────────────
+//
+
+function fixErrorHandlesNotInRange(data: Data): Data {
+  const { min, max } = data;
+
+  if (min > max) {
+    // no point in checking handles if min > max
+    return { ...data };
+  }
+
+  const handles = fromPairs(
+    data.handleIds.map(id => [id, clamp(min, max, data.handles[id])]),
+  );
+
+  return { ...data, handles };
+}
+
+function fixErrorHandlesOrder(data: Data): Data {
+  // eslint-disable-next-line complexity
+  const handlePairs = data.handleIds.map((id, idx, arr): [
+    HandleId,
+    RealValue,
+  ] => {
+    const value = data.handles[id];
+    const nextValue = arr[idx + 1] ? data.handles[arr[idx + 1]] : data.max;
+    const prevValue = arr[idx - 1] ? data.handles[arr[idx - 1]] : data.min;
+    const isActiveHandle = data.activeHandleId === id;
+    const isBeyondBorders = value < prevValue || value > nextValue;
+
+    if (isActiveHandle && isBeyondBorders) {
+      return [id, clamp(prevValue, nextValue, value)];
+    }
+
+    return [id, value];
+  });
+
+  return { ...data, handles: fromPairs(handlePairs) };
+}
+
+function fixErrorStepNotInRange(data: Data): Data {
+  const step = clamp(0, Math.abs(data.max - data.min), data.step);
+  return { ...data, step };
+}
+
+function fixErrorTooltipsCount(data: Data): Data {
+  const tooltipPairs = data.handleIds.map((_, idx): [TooltipId, boolean] => [
+    data.tooltipIds[idx] || createId('tooltip', idx),
+    data.tooltips[idx] || defaults.tooltipValue,
+  ]);
+
+  const tooltipIds = tooltipPairs.map(pair => pair[0]);
+
+  return { ...data, tooltips: fromPairs(tooltipPairs), tooltipIds };
+}
+
+function fixErrorIntervalsCount(data: Data): Data {
+  const intervalPairs = [...Array(data.handleIds.length + 1)].map((_, idx): [
+    IntervalId,
+    boolean,
+  ] => [
+    data.intervalIds[idx] || createId('interval', idx),
+    data.intervals[idx] || defaults.intervalValue,
+  ]);
+
+  const intervalIds = intervalPairs.map(pair => pair[0]);
+
+  return { ...data, intervals: fromPairs(intervalPairs), intervalIds };
 }
 
 //
@@ -154,6 +229,7 @@ class Model extends EventEmitter implements RangeSliderModel {
   private data!: Data;
 
   static EVENT_UPDATE = 'Model/update';
+
   static EVENT_VALIDATION_ERRORS = 'Model/validationErrors';
 
   constructor(data: Partial<Data> = defaultData) {
@@ -165,6 +241,8 @@ class Model extends EventEmitter implements RangeSliderModel {
     // if data is not valid -> show message to user in console and exit
     const validationResults = Model.validate(mergedData);
     if (validationResults.isLeft()) {
+      // TODO: create logging service (do not use console.log directly)
+      // eslint-disable-next-line no-console
       console.error(validationResults.toJSON());
       return;
     }
@@ -236,19 +314,21 @@ class Model extends EventEmitter implements RangeSliderModel {
     errors.forEach(error => {
       switch (error.id) {
         case ErrorHandlesNotInRange:
-          dataToBeFixed = this.fixErrorHandlesNotInRange(dataToBeFixed);
+          dataToBeFixed = fixErrorHandlesNotInRange(dataToBeFixed);
           break;
         case ErrorHandlesOrder:
-          dataToBeFixed = this.fixErrorHandlesOrder(dataToBeFixed);
+          dataToBeFixed = fixErrorHandlesOrder(dataToBeFixed);
           break;
         case ErrorStepNotInRange:
-          dataToBeFixed = this.fixErrorStepNotInRange(dataToBeFixed);
+          dataToBeFixed = fixErrorStepNotInRange(dataToBeFixed);
           break;
         case ErrorTooltipsCount:
-          dataToBeFixed = this.fixErrorTooltipsCount(dataToBeFixed);
+          dataToBeFixed = fixErrorTooltipsCount(dataToBeFixed);
           break;
         case ErrorIntervalsCount:
-          dataToBeFixed = this.fixErrorIntervalsCount(dataToBeFixed);
+          dataToBeFixed = fixErrorIntervalsCount(dataToBeFixed);
+          break;
+        default:
           break;
       }
     });
@@ -260,80 +340,13 @@ class Model extends EventEmitter implements RangeSliderModel {
       this.updateData(dataToBeFixed);
     }
   }
-
-  private fixErrorHandlesNotInRange(data: Data): Data {
-    const { min, max } = data;
-
-    if (min > max) {
-      // no point in checking handles if min > max
-      return { ...data };
-    }
-
-    const handles = fromPairs(
-      data.handleIds.map(id => [id, clamp(min, max, data.handles[id])]),
-    );
-
-    return { ...data, handles };
-  }
-
-  private fixErrorHandlesOrder(data: Data): Data {
-    // eslint-disable-next-line complexity
-    const handlePairs = data.handleIds.map((id, idx, arr): [
-      HandleId,
-      RealValue,
-    ] => {
-      const value = data.handles[id];
-      const nextValue = arr[idx + 1] ? data.handles[arr[idx + 1]] : data.max;
-      const prevValue = arr[idx - 1] ? data.handles[arr[idx - 1]] : data.min;
-      const isActiveHandle = data.activeHandleId === id;
-      const isBeyondBorders = value < prevValue || value > nextValue;
-
-      if (isActiveHandle && isBeyondBorders) {
-        return [id, clamp(prevValue, nextValue, value)];
-      }
-
-      return [id, value];
-    });
-
-    return { ...data, handles: fromPairs(handlePairs) };
-  }
-
-  private fixErrorStepNotInRange(data: Data): Data {
-    const step = clamp(0, Math.abs(data.max - data.min), data.step);
-    return { ...data, step };
-  }
-
-  private fixErrorTooltipsCount(data: Data): Data {
-    const tooltipPairs = data.handleIds.map((_, idx): [TooltipId, boolean] => [
-      data.tooltipIds[idx] || createId('tooltip', idx),
-      data.tooltips[idx] || defaults.tooltipValue,
-    ]);
-
-    const tooltipIds = tooltipPairs.map(pair => pair[0]);
-
-    return { ...data, tooltips: fromPairs(tooltipPairs), tooltipIds };
-  }
-
-  private fixErrorIntervalsCount(data: Data): Data {
-    const intervalPairs = [...Array(data.handleIds.length + 1)].map((_, idx): [
-      IntervalId,
-      boolean,
-    ] => [
-      data.intervalIds[idx] || createId('interval', idx),
-      data.intervals[idx] || defaults.intervalValue,
-    ]);
-
-    const intervalIds = intervalPairs.map(pair => pair[0]);
-
-    return { ...data, intervals: fromPairs(intervalPairs), intervalIds };
-  }
 }
 
 export {
   Model,
   // errors
-  errHandlesNotInRange as errValueNotInRange,
-  errHandlesOrder as errValueOrder,
+  errHandlesNotInRange,
+  errHandlesOrder,
   errStepNotInRange,
   errMinMax,
   errTooltipsCount,

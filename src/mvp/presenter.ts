@@ -7,7 +7,8 @@ import {
   HandleId,
   Data,
 } from '../types';
-import { Model, View } from './index';
+import { Model } from './model';
+import View from './view';
 import { closestToStep } from '../helpers';
 import { convertDataToState, convertOrientationToOrigin } from '../converters';
 
@@ -27,13 +28,7 @@ class Presenter implements RangeSliderPresenter {
   private processModelEvents(): void {
     const renderView = this.view.render.bind(this.view);
 
-    this.model.on(
-      Model.EVENT_UPDATE,
-      pipe(
-        convertDataToState,
-        renderView,
-      ),
-    );
+    this.model.on(Model.EVENT_UPDATE, pipe(convertDataToState, renderView));
   }
 
   private processViewEvents(): void {
@@ -99,4 +94,4 @@ class Presenter implements RangeSliderPresenter {
   }
 }
 
-export { Presenter };
+export default Presenter;

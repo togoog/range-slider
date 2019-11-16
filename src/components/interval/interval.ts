@@ -42,4 +42,4 @@ function intervalView({
   `;
 }
 
-export { intervalView };
+export default intervalView;
