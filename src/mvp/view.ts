@@ -37,25 +37,6 @@ class View extends EventEmitter implements RangeSliderView {
     this.bindEvents();
   }
 
-  private listenForDOMChanges(): void {
-    this.mutationObserver = new MutationObserver(
-      this.observeRootElement.bind(this),
-    );
-
-    this.mutationObserver.observe(this.el, {
-      childList: true,
-      attributes: true,
-      subtree: true,
-      attributeFilter: ['style'],
-    });
-  }
-
-  private bindEvents(): void {
-    this.onHandleMouseDown = this.onHandleMouseDown.bind(this);
-    this.onHandleMouseUp = this.onHandleMouseUp.bind(this);
-    this.onHandleMove = this.onHandleMove.bind(this);
-  }
-
   render(state: State): void {
     const { cssClass } = state;
     const { orientation } = state.track;
@@ -129,6 +110,25 @@ class View extends EventEmitter implements RangeSliderView {
     const rangeSliderRect = this.el.getBoundingClientRect();
 
     this.emit(View.EVENT_HANDLE_MOVE, handleCoords, rangeSliderRect);
+  }
+
+  private listenForDOMChanges(): void {
+    this.mutationObserver = new MutationObserver(
+      this.observeRootElement.bind(this),
+    );
+
+    this.mutationObserver.observe(this.el, {
+      childList: true,
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['style'],
+    });
+  }
+
+  private bindEvents(): void {
+    this.onHandleMouseDown = this.onHandleMouseDown.bind(this);
+    this.onHandleMouseUp = this.onHandleMouseUp.bind(this);
+    this.onHandleMove = this.onHandleMove.bind(this);
   }
 
   private detectTooltipsCollisions(): void {
