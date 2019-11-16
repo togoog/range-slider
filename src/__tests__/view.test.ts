@@ -138,6 +138,17 @@ describe('View.render', () => {
     expect($grid).toHaveLength(1);
   });
 
+  test('should render only visible intervals (with isVisible = true)', () => {
+    document.body.innerHTML = '<div id="root"></div>';
+    const $el = document.querySelector('#root');
+    const view = new View($el as HTMLElement);
+    let intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(intervals).toHaveLength(0);
+    view.render(state);
+    intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(intervals).toHaveLength(1);
+  });
+
   test('should render handles', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const $el = document.querySelector('#root');

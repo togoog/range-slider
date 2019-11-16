@@ -1,4 +1,4 @@
-import { aperture } from 'ramda';
+import { aperture, prop } from 'ramda';
 import { isNotEmpty } from 'ramda-adjunct';
 import { EventEmitter } from 'events';
 import { render, html } from 'lit-html';
@@ -48,7 +48,9 @@ class View extends EventEmitter implements RangeSliderView {
 
     const track = trackView(state.track);
     const grid = gridView(state.grid);
-    const intervals = state.intervals.map(intervalView);
+    const intervals = state.intervals
+      .filter(prop('isVisible'))
+      .map(intervalView);
     const handles = state.handles.map(handleState =>
       handleView(handleState, {
         onMouseDown: this.onHandleMouseDown,
@@ -152,20 +154,23 @@ class View extends EventEmitter implements RangeSliderView {
             : [];
         })
         .filter(isNotEmpty)
-        .reduce((acc, cur): TooltipId[][] => {
-          const prevGroup = acc[acc.length - 1];
-          const prevTooltipId = prevGroup
-            ? prevGroup[prevGroup.length - 1]
-            : null;
+        .reduce(
+          (acc, cur): TooltipId[][] => {
+            const prevGroup = acc[acc.length - 1];
+            const prevTooltipId = prevGroup
+              ? prevGroup[prevGroup.length - 1]
+              : null;
 
-          if (prevTooltipId === cur[0]) {
-            prevGroup.push(cur[1]);
-          } else {
-            acc.push(cur);
-          }
+            if (prevTooltipId === cur[0]) {
+              prevGroup.push(cur[1]);
+            } else {
+              acc.push(cur);
+            }
 
-          return acc;
-        }, [] as TooltipId[][]);
+            return acc;
+          },
+          [] as TooltipId[][],
+        );
 
       this.emit(View.EVENT_TOOLTIP_COLLISIONS, collisions);
     }

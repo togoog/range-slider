@@ -122,10 +122,8 @@ describe('Interval', () => {
     expect($intervals).toHaveLength(0);
     view.render(state);
     $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect($intervals).toHaveLength(3);
-    expect(window.getComputedStyle($intervals[0]).display).toBe('none');
-    expect(window.getComputedStyle($intervals[1]).display).toBe('block');
-    expect(window.getComputedStyle($intervals[2]).display).toBe('none');
+    expect($intervals).toHaveLength(1);
+    expect(window.getComputedStyle($intervals[0]).display).toBe('block');
   });
 
   test('should position interval relative to beginning of track (horizontal)', () => {
@@ -134,12 +132,8 @@ describe('Interval', () => {
     const view = new View($el as HTMLElement);
     view.render(state);
     const $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect(window.getComputedStyle($intervals[0]).left).toBe('0%');
+    expect(window.getComputedStyle($intervals[0]).left).toBe('20%');
     expect(window.getComputedStyle($intervals[0]).width).toBe('20%');
-    expect(window.getComputedStyle($intervals[1]).left).toBe('20%');
-    expect(window.getComputedStyle($intervals[1]).width).toBe('20%');
-    expect(window.getComputedStyle($intervals[2]).left).toBe('40%');
-    expect(window.getComputedStyle($intervals[2]).width).toBe('60%');
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
@@ -255,11 +249,7 @@ describe('Interval', () => {
     const view = new View($el as HTMLElement);
     view.render(state);
     const $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect(window.getComputedStyle($intervals[0]).bottom).toBe('0%');
+    expect(window.getComputedStyle($intervals[0]).bottom).toBe('20%');
     expect(window.getComputedStyle($intervals[0]).height).toBe('20%');
-    expect(window.getComputedStyle($intervals[1]).bottom).toBe('20%');
-    expect(window.getComputedStyle($intervals[1]).height).toBe('20%');
-    expect(window.getComputedStyle($intervals[2]).bottom).toBe('40%');
-    expect(window.getComputedStyle($intervals[2]).height).toBe('60%');
   });
 });
