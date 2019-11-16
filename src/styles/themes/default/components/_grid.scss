@@ -4,13 +4,13 @@
   position: absolute;
   background: $color-primary-dark;
 
-  @include modifier(horizontal) {
+  @include modifier('horizontal') {
     width: 100%;
     top: $base-size * 1.3;
     height: $base-size / 15;
   }
 
-  @include modifier(vertical) {
+  @include modifier('vertical') {
     height: 100%;
     width: $base-size / 15;
     transform: translateX($base-size * 1.5);
