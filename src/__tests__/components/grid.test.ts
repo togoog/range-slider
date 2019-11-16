@@ -1,7 +1,7 @@
 import { createCells } from '../../components/grid/grid';
 
-describe.only('createCells', () => {
-  test('should create 1st level of tick marks', () => {
+describe('createCells', () => {
+  test('should create 1 level of tick marks', () => {
     expect(createCells(0, 100, 'horizontal', 'grid-cell', [])).toEqual([]);
     expect(createCells(0, 100, 'horizontal', 'grid-cell', [0])).toEqual([]);
     expect(createCells(0, 100, 'horizontal', 'grid-cell', [1])).toEqual([
