@@ -15,7 +15,7 @@
     transform: translateY(50%);
   }
 
-  @include modifier('is-active') {
+  @include modifier('active') {
     z-index: 1;
 
     &-horizontal {

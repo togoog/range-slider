@@ -19,7 +19,7 @@
     border-bottom: $base-size * 0.7 solid transparent;
   }
 
-  @include modifier('is-active') {
+  @include modifier('active') {
     z-index: 1;
 
     &-horizontal {

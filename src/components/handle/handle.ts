@@ -21,8 +21,8 @@ function handleView(
   const cssClasses: ClassInfo = {
     [cssClass]: true,
     [`${cssClass}_${orientation}`]: true,
-    [`${cssClass}_is-active`]: isActive,
-    [`${cssClass}_is-active-${orientation}`]: isActive,
+    [`${cssClass}_active`]: isActive,
+    [`${cssClass}_active-${orientation}`]: isActive,
   };
 
   return html`
