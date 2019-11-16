@@ -1,4 +1,4 @@
-import { Data, State } from '../../types';
+import { State } from '../../types';
 import { View } from '../../mvp';
 
 const cssClass = `range-slider`;
@@ -6,26 +6,6 @@ const trackCSSClass = `${cssClass}__track`;
 const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
-
-const tooltipFormatter = (value: number) => value.toLocaleString();
-
-const data: Data = {
-  handles: { handle_0: 20, handle_1: 40 },
-  handleIds: ['handle_0', 'handle_1'],
-  activeHandleId: null,
-  min: 0,
-  max: 100,
-  step: 1,
-  orientation: 'horizontal',
-  cssClass: 'range-slider',
-  tooltips: { tooltip_0: true, tooltip_1: true },
-  tooltipIds: ['tooltip_0', 'tooltip_1'],
-  tooltipCollisions: [],
-  tooltipFormatter,
-  intervals: { interval_0: false, interval_1: true, interval_2: false },
-  intervalIds: ['interval_0', 'interval_1', 'interval_2'],
-  grid: { isVisible: true, numCells: [2, 3] },
-};
 
 const state: State = {
   cssClass,
@@ -85,7 +65,7 @@ const state: State = {
       id: 'tooltip_0',
       handleIds: ['handle_0'],
       position: 20,
-      content: data.tooltipFormatter(data.handles.handle_0),
+      content: '20',
       orientation: 'horizontal',
       cssClass: tooltipCSSClass,
       isVisible: true,
@@ -96,7 +76,7 @@ const state: State = {
       id: 'tooltip_1',
       handleIds: ['handle_1'],
       position: 40,
-      content: data.tooltipFormatter(data.handles.handle_1),
+      content: '40',
       orientation: 'horizontal',
       cssClass: tooltipCSSClass,
       isVisible: true,
@@ -109,8 +89,8 @@ const state: State = {
     isVisible: true,
     numCells: [2, 3],
     orientation: 'horizontal',
-    min: data.min,
-    max: data.max,
+    min: 0,
+    max: 100,
   },
 };
 describe('Interval', () => {
@@ -137,25 +117,6 @@ describe('Interval', () => {
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
-    // eslint-disable-next-line no-shadow
-    const data: Data = {
-      handles: { handle_0: 20, handle_1: 40 },
-      handleIds: ['handle_0', 'handle_1'],
-      activeHandleId: null,
-      min: 0,
-      max: 100,
-      step: 1,
-      orientation: 'vertical',
-      cssClass,
-      intervals: { interval_0: false, interval_1: true, interval_2: false },
-      intervalIds: ['interval_0', 'interval_1', 'interval_2'],
-      tooltips: { tooltip_0: true, tooltip_1: true },
-      tooltipIds: ['tooltip_0', 'tooltip_1'],
-      tooltipCollisions: [],
-      tooltipFormatter,
-      grid: { isVisible: false, numCells: [4, 5] },
-    };
-
     // eslint-disable-next-line no-shadow
     const state: State = {
       cssClass,
@@ -215,7 +176,7 @@ describe('Interval', () => {
           id: 'tooltip_0',
           handleIds: ['handle_0'],
           position: 20,
-          content: data.tooltipFormatter(data.handles.handle_0),
+          content: '20',
           orientation: 'vertical',
           cssClass: tooltipCSSClass,
           isVisible: true,
@@ -226,7 +187,7 @@ describe('Interval', () => {
           id: 'tooltip_1',
           handleIds: ['handle_1'],
           position: 40,
-          content: data.tooltipFormatter(data.handles.handle_1),
+          content: '40',
           orientation: 'vertical',
           cssClass: tooltipCSSClass,
           isVisible: true,
@@ -239,8 +200,8 @@ describe('Interval', () => {
         orientation: 'vertical',
         isVisible: false,
         numCells: [3, 4],
-        min: data.min,
-        max: data.max,
+        min: 0,
+        max: 100,
       },
     };
 

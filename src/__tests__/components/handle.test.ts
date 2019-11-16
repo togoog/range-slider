@@ -1,5 +1,5 @@
 import { fireEvent } from '@testing-library/dom';
-import { Data, State } from '../../types';
+import { State } from '../../types';
 import { View } from '../../mvp';
 
 const cssClass = `range-slider`;
@@ -8,27 +8,7 @@ const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
 
-const tooltipFormatter = (value: number) => value.toLocaleString();
-
 describe('Handle', () => {
-  const data: Data = {
-    handles: { handle_0: 50 },
-    handleIds: ['handle_0'],
-    activeHandleId: null,
-    min: 0,
-    max: 100,
-    step: 1,
-    orientation: 'horizontal',
-    cssClass: 'range-slider',
-    tooltips: { tooltip_0: true },
-    tooltipIds: ['tooltip_0'],
-    tooltipCollisions: [],
-    tooltipFormatter,
-    intervals: { interval_0: true, interval_1: false },
-    intervalIds: ['interval_0', 'interval_1'],
-    grid: { isVisible: false, numCells: [3, 4] },
-  };
-
   const state: State = {
     cssClass,
     track: { orientation: 'horizontal', cssClass: trackCSSClass },
@@ -69,7 +49,7 @@ describe('Handle', () => {
         id: 'tooltip_0',
         handleIds: ['handle_0'],
         position: 50,
-        content: data.tooltipFormatter(data.handles.handle_0),
+        content: '50',
         cssClass: tooltipCSSClass,
         orientation: 'horizontal',
         isVisible: true,
@@ -82,8 +62,8 @@ describe('Handle', () => {
       orientation: 'vertical',
       isVisible: false,
       numCells: [3, 4],
-      min: data.min,
-      max: data.max,
+      min: 0,
+      max: 100,
     },
   };
 

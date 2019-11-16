@@ -1,5 +1,5 @@
 import View from '../mvp/view';
-import { State, Data } from '../types';
+import { State } from '../types';
 
 const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;
@@ -8,27 +8,7 @@ const intervalCSSClass = `${cssClass}__interval`;
 const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
 
-const tooltipFormatter = (value: number) => value.toLocaleString();
-
 describe('View.render', () => {
-  const data: Data = {
-    handles: { handle_0: 20, handle_1: 40 },
-    handleIds: ['handle_0', 'handle_1'],
-    activeHandleId: null,
-    min: 0,
-    max: 100,
-    step: 1,
-    orientation: 'horizontal',
-    cssClass: 'range-slider',
-    tooltips: { tooltip_0: true, tooltip_1: true },
-    tooltipIds: ['tooltip_0', 'tooltip_1'],
-    tooltipCollisions: [],
-    tooltipFormatter,
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
-    intervalIds: ['interval_0', 'interval_1', 'interval_2'],
-    grid: { isVisible: true, numCells: [2, 3] },
-  };
-
   const state: State = {
     cssClass,
     track: { orientation: 'horizontal', cssClass: trackCSSClass },
@@ -87,7 +67,7 @@ describe('View.render', () => {
         id: 'tooltip_0',
         handleIds: ['handle_0'],
         position: 20,
-        content: data.tooltipFormatter(data.handles.handle_0),
+        content: '20',
         orientation: 'horizontal',
         cssClass: tooltipCSSClass,
         isVisible: true,
@@ -98,7 +78,7 @@ describe('View.render', () => {
         id: 'tooltip_1',
         handleIds: ['handle_1'],
         position: 40,
-        content: data.tooltipFormatter(data.handles.handle_1),
+        content: '40',
         orientation: 'horizontal',
         cssClass: tooltipCSSClass,
         isVisible: true,
@@ -111,8 +91,8 @@ describe('View.render', () => {
       isVisible: true,
       numCells: [2, 3],
       orientation: 'horizontal',
-      min: data.min,
-      max: data.max,
+      min: 0,
+      max: 100,
     },
   };
 
