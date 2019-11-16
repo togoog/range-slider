@@ -69,7 +69,7 @@ function isSortedArray<T>(
   );
 }
 
-function makeId(entityName: string, idx: number): string {
+function createId(entityName: string, idx: number): string {
   return `${entityName.replace(/\s+/g, '')}_${idx}`;
 }
 
@@ -100,7 +100,7 @@ export {
   $,
   detectRectCollision,
   // utils
-  makeId,
+  createId,
   isSortedArray,
   toArray,
   fillArrayWith,

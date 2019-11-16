@@ -6,7 +6,7 @@ import { cellView } from './cell';
 
 // TODO: Make it recursive to create cells inside big cell and cells inside medium cell
 // eslint-disable-next-line complexity
-function makeCells(
+function createCells(
   min: number,
   max: number,
   orientation: Orientation,
@@ -63,7 +63,13 @@ function gridView({
     [`${cssClass}_${orientation}`]: true,
   };
 
-  const cells = makeCells(min, max, orientation, `${cssClass}-cell`, numCells);
+  const cells = createCells(
+    min,
+    max,
+    orientation,
+    `${cssClass}-cell`,
+    numCells,
+  );
 
   return html`
     <div class=${classMap(cssClasses)} style=${styleMap(styles)}>
@@ -72,4 +78,4 @@ function gridView({
   `;
 }
 
-export { gridView, makeCells };
+export { gridView, createCells };

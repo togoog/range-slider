@@ -27,7 +27,7 @@ import {
 } from './types';
 import {
   toArray,
-  makeId,
+  createId,
   closestToStep,
   getRelativePosition,
   fillArrayWith,
@@ -94,22 +94,22 @@ function convertOptionsToData(options: Options): Data {
     handles: op =>
       fromPairs(
         op.value.map((val, idx) => [
-          makeId('handle', idx),
+          createId('handle', idx),
           clamp(op.min, op.max, closestToStep(op.step, val)),
         ]),
       ),
-    handleIds: op => op.value.map((_, idx) => makeId('handle', idx)),
+    handleIds: op => op.value.map((_, idx) => createId('handle', idx)),
     activeHandleId: () => null,
 
     /** TOOLTIPS */
     tooltips: op =>
       fromPairs(
         op.tooltips.map((isVisible, idx) => [
-          makeId('tooltip', idx),
+          createId('tooltip', idx),
           isVisible,
         ]),
       ),
-    tooltipIds: op => op.tooltips.map((_, idx) => makeId('tooltip', idx)),
+    tooltipIds: op => op.tooltips.map((_, idx) => createId('tooltip', idx)),
     tooltipFormatter: op => op.tooltipFormatter,
     // collisions between tooltips can only be known after render
     tooltipCollisions: () => [],
@@ -118,11 +118,11 @@ function convertOptionsToData(options: Options): Data {
     intervals: op =>
       fromPairs(
         op.intervals.map((isVisible, idx): [IntervalId, boolean] => [
-          makeId('interval', idx),
+          createId('interval', idx),
           isVisible,
         ]),
       ),
-    intervalIds: op => op.intervals.map((_, idx) => makeId('interval', idx)),
+    intervalIds: op => op.intervals.map((_, idx) => createId('interval', idx)),
 
     /** GRID */
     grid: op => op.grid,
@@ -156,7 +156,7 @@ function convertDataToOptions(data: Data): Options {
 // ─── DATA TO STATE ──────────────────────────────────────────────────────────────
 //
 
-function makeHandles(data: Data): Handle[] {
+function createHandles(data: Data): Handle[] {
   const role = 'handle';
   const cssClass = `${data.cssClass}__${role}`;
 
@@ -228,7 +228,7 @@ function getMergedTooltipPosition(
   return (firstTooltipPosition + lastTooltipPosition) / 2;
 }
 
-function makeTooltips(data: Data): Tooltip[] {
+function createTooltips(data: Data): Tooltip[] {
   const role = 'tooltip';
   const cssClass = `${data.cssClass}__${role}`;
 
@@ -260,7 +260,7 @@ function makeTooltips(data: Data): Tooltip[] {
 
   const mergedTooltips = data.tooltipCollisions.map(
     (group, idx): Tooltip => ({
-      id: makeId('tooltip-merged', idx),
+      id: createId('tooltip-merged', idx),
       handleIds: group.reduce(
         (acc, tooltipId) => acc.concat(tooltipsMap[tooltipId].handleIds),
         [] as HandleId[],
@@ -278,7 +278,7 @@ function makeTooltips(data: Data): Tooltip[] {
   return Object.values(tooltipsMap).concat(mergedTooltips);
 }
 
-function makeIntervals(data: Data): Interval[] {
+function createIntervals(data: Data): Interval[] {
   const role = 'interval';
   const cssClass = `${data.cssClass}__${role}`;
 
@@ -330,9 +330,9 @@ function convertDataToState(data: Data): State {
       min: data.min,
       max: data.max,
     },
-    intervals: makeIntervals(data),
-    handles: makeHandles(data),
-    tooltips: makeTooltips(data),
+    intervals: createIntervals(data),
+    handles: createHandles(data),
+    tooltips: createTooltips(data),
   };
 }
 

@@ -1,10 +1,10 @@
-import { makeCells } from '../../components/grid/grid';
+import { createCells } from '../../components/grid/grid';
 
-describe.only('makeCells', () => {
-  test('should make 1st level of tick marks', () => {
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [])).toEqual([]);
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [0])).toEqual([]);
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [1])).toEqual([
+describe.only('createCells', () => {
+  test('should create 1st level of tick marks', () => {
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [])).toEqual([]);
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [0])).toEqual([]);
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [1])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -23,7 +23,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -50,7 +50,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [3])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [3])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -86,8 +86,8 @@ describe.only('makeCells', () => {
     ]);
   });
 
-  test('should make 2 levels of tick marks', () => {
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 0])).toEqual([
+  test('should create 2 levels of tick marks', () => {
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 0])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -114,7 +114,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 1])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 1])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -141,7 +141,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 2])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 2])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -184,7 +184,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 3])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 3])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -244,8 +244,8 @@ describe.only('makeCells', () => {
     ]);
   });
 
-  test('should make 3 levels of tick marks', () => {
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 0, 0])).toEqual([
+  test('should create 3 levels of tick marks', () => {
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 0, 0])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -272,7 +272,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 1, 0])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 1, 0])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -299,7 +299,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 1, 1])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 1, 1])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -326,7 +326,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 1, 2])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 1, 2])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,
@@ -369,7 +369,7 @@ describe.only('makeCells', () => {
       },
     ]);
 
-    expect(makeCells(0, 100, 'horizontal', 'grid-cell', [2, 2, 2])).toEqual([
+    expect(createCells(0, 100, 'horizontal', 'grid-cell', [2, 2, 2])).toEqual([
       {
         label: '0',
         isVisibleLabel: true,

@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { render, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
 import { RangeSliderView, State, TooltipId, HandleId } from '../types';
-import { $, detectRectCollision, makeId } from '../helpers';
+import { $, detectRectCollision, createId } from '../helpers';
 import {
   trackView,
   gridView,
@@ -135,7 +135,7 @@ class View extends EventEmitter implements RangeSliderView {
     const tooltipCoordsList = $('[data-role="tooltip"]', this.el)
       .orDefault([])
       .map((tooltip, idx): [TooltipId, DOMRect] => [
-        tooltip.getAttribute('data-tooltip-id') || makeId('tooltip', idx),
+        tooltip.getAttribute('data-tooltip-id') || createId('tooltip', idx),
         tooltip.getBoundingClientRect() as DOMRect,
       ]);
 

@@ -14,7 +14,7 @@ import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
 import { mergeAll, applySpec, all, fromPairs, inc, clamp, clone } from 'ramda';
 import { inRange } from 'ramda-adjunct';
-import { isSortedArray, makeId } from '../helpers';
+import { isSortedArray, createId } from '../helpers';
 import * as defaults from '../defaults';
 
 //
@@ -305,7 +305,7 @@ class Model extends EventEmitter implements RangeSliderModel {
 
   private fixErrorTooltipsCount(data: Data): Data {
     const tooltipPairs = data.handleIds.map((_, idx): [TooltipId, boolean] => [
-      data.tooltipIds[idx] || makeId('tooltip', idx),
+      data.tooltipIds[idx] || createId('tooltip', idx),
       data.tooltips[idx] || defaults.tooltipValue,
     ]);
 
@@ -319,7 +319,7 @@ class Model extends EventEmitter implements RangeSliderModel {
       IntervalId,
       boolean,
     ] => [
-      data.intervalIds[idx] || makeId('interval', idx),
+      data.intervalIds[idx] || createId('interval', idx),
       data.intervals[idx] || defaults.intervalValue,
     ]);
 
