@@ -12,20 +12,23 @@ function selectElements(
 ): Maybe<HTMLElement[]> {
   const element = typeof rootEl === 'undefined' ? document : rootEl;
 
-  // prettier-ignore
-  return Maybe
-    // if rootEl exists - restrict search only inside this element
-    // ref: https://developer.mozilla.org/ru/docs/Web/API/Document/querySelectorAll
-    .encase(() => element.querySelectorAll(`${rootEl ? ':scope' : ''} ${selector}`))
-    .chain<HTMLElement[]>(
-      ifElse(
-        lengthEq(0),
-        always(Nothing),
-        pipe(
-          Array.from,
-          Just,
+  return (
+    Maybe
+      // if rootEl exists - restrict search only inside this element
+      // ref: https://developer.mozilla.org/ru/docs/Web/API/Document/querySelectorAll
+      .encase(() =>
+        element.querySelectorAll(`${rootEl ? ':scope' : ''} ${selector}`),
+      )
+      .chain<HTMLElement[]>(
+        ifElse(
+          lengthEq(0),
+          always(Nothing),
+          pipe(
+            Array.from,
+            Just,
+          ),
         ),
-      ),
+      )
   );
 }
 
@@ -60,6 +63,9 @@ function haveCollisions(rectA: DOMRect, rectB: DOMRect): boolean {
   );
 }
 
+/**
+ * Check if array is sorted in specified order
+ */
 function isSortedArray<T>(
   arr: T[],
   order: 'ascending' | 'descending' = 'ascending',
@@ -72,6 +78,12 @@ function isSortedArray<T>(
   );
 }
 
+/**
+ * Construct id from name and number
+ * Is used to create ids for components (handles, tooltips, intervals ...)
+ * @param entityName string
+ * @param idx number
+ */
 function createId(entityName: string, idx: number): string {
   return `${entityName.replace(/\s+/g, '')}_${idx}`;
 }
@@ -95,6 +107,12 @@ function fillArrayWith<A, B>(
   return arr.concat(Array(neededLength - arr.length).fill(value));
 }
 
+/**
+ * Get relative position of value between min & max
+ * @param min minimum value
+ * @param max maximum value
+ * @param value current value
+ */
 function getRelativePosition(min: number, max: number, value: number): number {
   return ((value - min) / (max - min)) * 100;
 }

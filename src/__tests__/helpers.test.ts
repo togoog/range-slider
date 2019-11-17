@@ -52,6 +52,8 @@ describe('$', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('haveCollisions', () => {
   test('should return true if 2 elements overlap', () => {
     // overlap a.right & b.left sides
@@ -110,6 +112,8 @@ describe('haveCollisions', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('isSortedArray', () => {
   test('should return true for sorted array', () => {
     expect(isSortedArray([1, 2, 3, 4, 5])).toBe(true);
@@ -126,6 +130,8 @@ describe('isSortedArray', () => {
     expect(isSortedArray([2, 4], 'descending')).toBe(false);
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('fillArrayWith', () => {
   test('should fill remaining places in array with provided value', () => {
