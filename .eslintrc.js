@@ -26,6 +26,9 @@ module.exports = {
   rules: {
     semi: ['error', 'always'],
     complexity: ['error', 5],
+    'no-shadow': 0,
+    'array-callback-return': 0,
+    '@typescript-eslint/no-this-alias': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/camelcase': 0,
   },

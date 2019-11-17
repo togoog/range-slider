@@ -2,8 +2,6 @@ import { Options } from '../types';
 import { RangeSlider, createRangeSlider } from '../range-slider';
 import * as defaults from '../defaults';
 
-const tooltipFormatter = (value: number) => value.toLocaleString();
-
 describe('RangeSlider.get', () => {
   test('should return Option value by key', () => {
     document.body.innerHTML = '<div id="root"></div>';
@@ -16,7 +14,7 @@ describe('RangeSlider.get', () => {
       orientation: 'horizontal',
       cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: [true, false],
       grid: false,
     };
@@ -29,9 +27,15 @@ describe('RangeSlider.get', () => {
     expect(rs.get('tooltips')).toEqual([true]);
     expect(rs.get('intervals')).toEqual([true, false]);
     expect(rs.get('cssClass')).toEqual('range-slider');
-    expect(rs.get('tooltipFormatter')).toEqual(tooltipFormatter);
+    expect(rs.get('tooltipFormatter')).toEqual(defaults.tooltipFormatter);
+    expect(rs.get('grid')).toEqual({
+      isVisible: false,
+      numCells: defaults.gridNumCells,
+    });
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('RangeSlider.set', () => {
   test('should change Option value by key', () => {
@@ -45,7 +49,7 @@ describe('RangeSlider.set', () => {
       orientation: 'horizontal',
       cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: [true, false],
       grid: false,
     };
@@ -81,6 +85,8 @@ describe('RangeSlider.set', () => {
   });
 });
 
+// ────────────────────────────────────────────────────────────────────────────────
+
 describe('RangeSlider.getAll', () => {
   test('should return Options object', () => {
     document.body.innerHTML = '<div id="root"></div>';
@@ -93,7 +99,7 @@ describe('RangeSlider.getAll', () => {
       orientation: 'horizontal',
       cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: [true, false],
       grid: { isVisible: true, numCells: [4, 5] },
     };
@@ -106,12 +112,14 @@ describe('RangeSlider.getAll', () => {
       orientation: 'horizontal',
       cssClass: 'range-slider',
       tooltips: [true],
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: [true, false],
       grid: { isVisible: true, numCells: [4, 5] },
     });
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('RangeSlider.setAll', () => {
   test('should change all options', () => {
@@ -125,7 +133,7 @@ describe('RangeSlider.setAll', () => {
       orientation: 'horizontal',
       cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: [true, false],
       grid: false,
     };
@@ -139,7 +147,7 @@ describe('RangeSlider.setAll', () => {
       orientation: 'vertical',
       cssClass: 'range-slider',
       tooltips: true,
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: false,
       grid: false,
     };
@@ -154,12 +162,14 @@ describe('RangeSlider.setAll', () => {
       orientation: 'vertical',
       cssClass: 'range-slider',
       tooltips: [true, true],
-      tooltipFormatter,
+      tooltipFormatter: defaults.tooltipFormatter,
       intervals: [false, false, false],
       grid: { isVisible: false, numCells: defaults.gridNumCells },
     });
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 describe('createRangeSlider', () => {
   test('should create RangeSliders from valid css selector', () => {

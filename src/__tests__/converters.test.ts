@@ -6,8 +6,6 @@ import {
 } from '../converters';
 import * as defaults from '../defaults';
 
-const tooltipFormatter = (value: number) => value.toLocaleString();
-
 test('convertOptionsToData', () => {
   const options: Options = {
     value: 50,
@@ -17,7 +15,7 @@ test('convertOptionsToData', () => {
     cssClass: 'range-slider',
     orientation: 'horizontal',
     tooltips: true,
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     intervals: true,
     grid: false,
   };
@@ -33,7 +31,7 @@ test('convertOptionsToData', () => {
     orientation: 'horizontal',
     tooltips: { tooltip_0: true },
     tooltipIds: ['tooltip_0'],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
@@ -50,7 +48,7 @@ test('convertOptionsToData', () => {
     cssClass: 'range-slider',
     orientation: 'vertical',
     tooltips: true,
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     intervals: false,
     grid: { isVisible: true, numCells: [2, 3] },
   };
@@ -71,7 +69,7 @@ test('convertOptionsToData', () => {
       tooltip_3: true,
     },
     tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2', 'tooltip_3'],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
     intervals: {
       interval_0: false,
@@ -105,7 +103,7 @@ test('convertDataToOptions', () => {
     orientation: 'horizontal',
     tooltips: { tooltip_0: true },
     tooltipIds: ['tooltip_0'],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
@@ -120,7 +118,7 @@ test('convertDataToOptions', () => {
     cssClass: 'range-slider',
     orientation: 'horizontal',
     tooltips: [true],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     intervals: [true, false],
     grid: { isVisible: false, numCells: [5] },
   };
@@ -143,7 +141,7 @@ test('convertDataToOptions', () => {
       tooltip_3: true,
     },
     tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2', 'tooltip_3'],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
     intervals: {
       interval_0: false,
@@ -170,7 +168,7 @@ test('convertDataToOptions', () => {
     cssClass: 'range-slider',
     orientation: 'vertical',
     tooltips: [true, true, true, true],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     intervals: [false, false, false, false, false],
     grid: { isVisible: true, numCells: [3, 4, 5] },
   };
@@ -190,7 +188,7 @@ test('convertDataToState', () => {
     orientation: 'horizontal',
     tooltips: { tooltip_0: true },
     tooltipIds: ['tooltip_0'],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
     intervals: { interval_0: true, interval_1: false },
     intervalIds: ['interval_0', 'interval_1'],
@@ -213,7 +211,7 @@ test('convertDataToState', () => {
       {
         id: 'tooltip_0',
         handleIds: ['handle_0'],
-        content: tooltipFormatter(50),
+        content: defaults.tooltipFormatter(50),
         orientation: 'horizontal',
         cssClass: 'range-slider__tooltip',
         hasCollisions: false,
@@ -271,7 +269,7 @@ test('convertDataToState', () => {
     orientation: 'vertical',
     tooltips: { tooltip_0: true, tooltip_1: true },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
-    tooltipFormatter,
+    tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
     intervals: { interval_0: false, interval_1: true, interval_2: false },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
@@ -302,7 +300,7 @@ test('convertDataToState', () => {
       {
         id: 'tooltip_0',
         handleIds: ['handle_0'],
-        content: tooltipFormatter(-500),
+        content: defaults.tooltipFormatter(-500),
         orientation: 'vertical',
         cssClass: 'range-slider__tooltip',
         hasCollisions: false,
@@ -313,7 +311,7 @@ test('convertDataToState', () => {
       {
         id: 'tooltip_1',
         handleIds: ['handle_1'],
-        content: tooltipFormatter(500),
+        content: defaults.tooltipFormatter(500),
         orientation: 'vertical',
         cssClass: 'range-slider__tooltip',
         hasCollisions: false,

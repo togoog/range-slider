@@ -1,4 +1,4 @@
-import { map, mergeAll } from 'ramda';
+import { mergeAll } from 'ramda';
 import {
   Plugin,
   RangeSliderModel,
@@ -9,6 +9,7 @@ import {
 } from './types';
 import { Model, View, Presenter } from './mvp';
 import { $ } from './helpers';
+import { logError } from './services/logger';
 import { convertOptionsToData, convertDataToOptions } from './converters';
 import { checkRangeSliderOptions } from './validators';
 
@@ -33,22 +34,17 @@ class RangeSlider implements Plugin {
   private presenter!: RangeSliderPresenter;
 
   constructor(el: HTMLElement, options: Partial<Options> = defaultOptions) {
-    // add missing props
     const mergedOptions = mergeAll([defaultOptions, options]) as Options;
+    const rs = this;
 
-    // if options are not valid -> show message to user in console and exit
-    const validationResults = checkRangeSliderOptions(mergedOptions);
-    if (validationResults.isLeft()) {
-      // TODO: create logging service (do not use console.log directly)
-      // eslint-disable-next-line no-console
-      console.error(validationResults.unsafeCoerce());
-      return;
-    }
-
-    const data = convertOptionsToData(mergedOptions);
-    this.model = new Model(data);
-    this.view = new View(el);
-    this.presenter = new Presenter(this.model, this.view);
+    checkRangeSliderOptions(mergedOptions)
+      .mapLeft(err => logError('RangeSlider', err))
+      .map(options => {
+        const data = convertOptionsToData(options);
+        rs.model = new Model(data);
+        rs.view = new View(el);
+        rs.presenter = new Presenter(this.model, this.view);
+      });
   }
 
   get<T extends OptionsKey>(key: T): Options[T] {
@@ -75,16 +71,25 @@ class RangeSlider implements Plugin {
   }
 }
 
+// ────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * RangeSlider factory function
+ * @param source css selector, HTMLElement or array of HTMLElements
+ * @param options object with RangeSlider options
+ */
 function createRangeSlider(
   source: string | HTMLElement | HTMLElement[],
   options?: Partial<Options>,
 ): RangeSlider[] {
-  // if source is css selector
   if (typeof source === 'string') {
-    return $(source).caseOf({
-      Just: map(el => new RangeSlider(el, options)),
-      Nothing: () => [],
-    });
+    return $(source)
+      .ifNothing(() =>
+        logError('RangeSlider', `can't find elements by selector: ${source}`),
+      )
+      .map(elements => elements.map(el => new RangeSlider(el, options)))
+      .toList()
+      .flat();
   }
 
   if (Array.isArray(source)) {
@@ -94,6 +99,11 @@ function createRangeSlider(
   if (source instanceof HTMLElement) {
     return [new RangeSlider(source, options)];
   }
+
+  logError(
+    'RangeSlider',
+    'provided source is not a valid css selector, HTMLElement or array of HTMLElements',
+  );
 
   return [];
 }
