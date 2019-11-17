@@ -1,4 +1,9 @@
-import { $, haveCollisions, isSortedArray, fillArrayWith } from '../helpers';
+import {
+  selectElements,
+  haveCollisions,
+  isSortedArray,
+  fillArrayWith,
+} from '../helpers';
 
 describe('$', () => {
   test('Should find existing elements', () => {
@@ -8,7 +13,7 @@ describe('$', () => {
       <input type="range" class="range-slider" />
     `;
     const selector = '.range-slider';
-    const elements = $(selector);
+    const elements = selectElements(selector);
     expect(elements.isJust()).toBe(true);
     expect(elements.extract()).toHaveLength(3);
   });
@@ -18,7 +23,7 @@ describe('$', () => {
       <span>some random text ...</span>
     `;
     const selector = '.range-slider';
-    const elements = $(selector);
+    const elements = selectElements(selector);
     expect(elements.isNothing()).toBe(true);
   });
 
@@ -29,7 +34,7 @@ describe('$', () => {
       <input type="range" class="range-slider" />
     `;
     const selector = `..range-slider`;
-    const getElements = () => $(selector);
+    const getElements = () => selectElements(selector);
     expect(getElements).not.toThrow();
     expect(getElements().isNothing()).toBe(true);
   });
@@ -41,7 +46,7 @@ describe('$', () => {
       <input type="range" class="range-slider" />
     `;
     const selector = '';
-    const getElements = () => $(selector);
+    const getElements = () => selectElements(selector);
     expect(getElements).not.toThrow();
     expect(getElements().isNothing()).toBe(true);
   });

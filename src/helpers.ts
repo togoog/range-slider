@@ -6,7 +6,10 @@ import { Maybe, Nothing, Just } from 'purify-ts/Maybe';
  * Query dom elements
  * @param selector css selector
  */
-function $(selector: string, rootEl?: HTMLElement): Maybe<HTMLElement[]> {
+function selectElements(
+  selector: string,
+  rootEl?: HTMLElement,
+): Maybe<HTMLElement[]> {
   const element = typeof rootEl === 'undefined' ? document : rootEl;
 
   // prettier-ignore
@@ -97,7 +100,7 @@ function getRelativePosition(min: number, max: number, value: number): number {
 }
 
 export {
-  $,
+  selectElements,
   haveCollisions,
   // utils
   createId,

@@ -8,7 +8,7 @@ import {
   OptionsKey,
 } from './types';
 import { Model, View, Presenter } from './mvp';
-import { $ } from './helpers';
+import { selectElements } from './helpers';
 import { logError } from './services/logger';
 import { convertOptionsToData, convertDataToOptions } from './converters';
 import { checkRangeSliderOptions } from './validators';
@@ -83,7 +83,7 @@ function createRangeSlider(
   options?: Partial<Options>,
 ): RangeSlider[] {
   if (typeof source === 'string') {
-    return $(source)
+    return selectElements(source)
       .ifNothing(() =>
         logError('RangeSlider', `can't find elements by selector: ${source}`),
       )
