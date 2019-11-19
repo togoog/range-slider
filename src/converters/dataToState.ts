@@ -1,160 +1,15 @@
-import {
-  fromPairs,
-  clamp,
-  applySpec,
-  includes,
-  zip,
-  props,
-  aperture,
-} from 'ramda';
-import { isBoolean } from 'ramda-adjunct';
+import { fromPairs, includes, zip, props, aperture } from 'ramda';
 import {
   RelativePos,
-  Orientation,
-  Origin,
   Data,
-  DataKey,
-  Options,
-  OptionsKey,
-  OptimizedOptions,
   State,
   Handle,
   HandleId,
   Tooltip,
   Interval,
-  IntervalId,
   TooltipId,
-} from './types';
-import {
-  toArray,
-  createId,
-  closestToStep,
-  getRelativePosition,
-  fillArrayWith,
-} from './helpers';
-import * as defaults from './defaults';
-
-//
-// ─── ORIENTATION TO ORIGIN ──────────────────────────────────────────────────────
-//
-
-function convertOrientationToOrigin(orientation: Orientation): Origin {
-  return orientation === 'horizontal' ? 'left' : 'bottom';
-}
-
-//
-// ─── OPTIONS TO DATA ────────────────────────────────────────────────────────────
-//
-
-function prepareOptionsForInternalUse(options: Options): OptimizedOptions {
-  const valuesLength = toArray(options.value).length;
-
-  const transformations: {
-    [key in OptionsKey]: (op: Options) => Options[OptionsKey];
-  } = {
-    value: op => toArray(op.value),
-    min: op => op.min,
-    max: op => op.max,
-    step: op => op.step,
-    orientation: op => op.orientation,
-    cssClass: op => op.cssClass,
-    tooltips: op =>
-      // tooltips length should equal values length
-      fillArrayWith(valuesLength, defaults.tooltipValue, toArray(op.tooltips)),
-    tooltipFormatter: op => op.tooltipFormatter,
-    intervals: op =>
-      // intervals length should be greater then values length by 1
-      fillArrayWith(
-        valuesLength + 1,
-        defaults.intervalValue,
-        toArray(op.intervals),
-      ),
-    grid: op =>
-      isBoolean(op.grid)
-        ? { isVisible: op.grid, numCells: defaults.gridNumCells }
-        : op.grid,
-  };
-
-  return applySpec(transformations)(options) as OptimizedOptions;
-}
-
-function convertOptionsToData(options: Options): Data {
-  const optimizedOptions = prepareOptionsForInternalUse(options);
-
-  const transformations: {
-    [key in DataKey]: (op: OptimizedOptions) => Data[DataKey];
-  } = {
-    min: op => op.min,
-    max: op => op.max,
-    step: op => op.step,
-    orientation: op => op.orientation,
-    cssClass: op => op.cssClass,
-
-    /** HANDLES */
-    handles: op =>
-      fromPairs(
-        op.value.map((val, idx) => [
-          createId('handle', idx),
-          clamp(op.min, op.max, closestToStep(op.step, val)),
-        ]),
-      ),
-    handleIds: op => op.value.map((_, idx) => createId('handle', idx)),
-    activeHandleId: () => null,
-
-    /** TOOLTIPS */
-    tooltips: op =>
-      fromPairs(
-        op.tooltips.map((isVisible, idx) => [
-          createId('tooltip', idx),
-          isVisible,
-        ]),
-      ),
-    tooltipIds: op => op.tooltips.map((_, idx) => createId('tooltip', idx)),
-    tooltipFormatter: op => op.tooltipFormatter,
-    // collisions between tooltips can only be known after render
-    tooltipCollisions: () => [],
-
-    /** INTERVALS */
-    intervals: op =>
-      fromPairs(
-        op.intervals.map((isVisible, idx): [IntervalId, boolean] => [
-          createId('interval', idx),
-          isVisible,
-        ]),
-      ),
-    intervalIds: op => op.intervals.map((_, idx) => createId('interval', idx)),
-
-    /** GRID */
-    grid: op => op.grid,
-  };
-
-  return applySpec(transformations)(optimizedOptions) as Data;
-}
-
-//
-// ─── DATA TO OPTIONS ────────────────────────────────────────────────────────────
-//
-
-function convertDataToOptions(data: Data): Options {
-  const transformations: { [key in OptionsKey]: Function } = {
-    value: (d: Data) => d.handleIds.map(id => d.handles[id]),
-    min: (d: Data) => d.min,
-    max: (d: Data) => d.max,
-    step: (d: Data) => d.step,
-    orientation: (d: Data) => d.orientation,
-    cssClass: (d: Data) => d.cssClass,
-    tooltips: (d: Data) => d.tooltipIds.map(id => d.tooltips[id]),
-    tooltipFormatter: (d: Data) => d.tooltipFormatter,
-    intervals: (d: Data) => d.intervalIds.map(id => d.intervals[id]),
-    grid: (d: Data) => d.grid,
-  };
-
-  return applySpec(transformations)(data) as Options;
-}
-
-//
-// ─── DATA TO STATE ──────────────────────────────────────────────────────────────
-//
+} from '../types';
+import { createId, getRelativePosition } from '../helpers';
 
 function createHandles(data: Data): Handle[] {
   const role = 'handle';
@@ -333,9 +188,4 @@ function convertDataToState(data: Data): State {
   };
 }
 
-export {
-  convertOptionsToData,
-  convertDataToOptions,
-  convertDataToState,
-  convertOrientationToOrigin,
-};
+export default convertDataToState;

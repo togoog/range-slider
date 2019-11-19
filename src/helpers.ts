@@ -20,14 +20,7 @@ function selectElements(
         element.querySelectorAll(`${rootEl ? ':scope' : ''} ${selector}`),
       )
       .chain<HTMLElement[]>(
-        ifElse(
-          lengthEq(0),
-          always(Nothing),
-          pipe(
-            Array.from,
-            Just,
-          ),
-        ),
+        ifElse(lengthEq(0), always(Nothing), pipe(Array.from, Just)),
       )
   );
 }
