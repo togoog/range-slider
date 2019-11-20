@@ -37,7 +37,6 @@
     "eslint-plugin-react": "^7.16.0",
     "fast-check": "^1.18.1",
     "jest": "^24.9.0",
-    "mutation-observer": "^1.0.3",
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.19.1",
     "sass": "^1.23.6",
@@ -49,6 +48,7 @@
     "lit-html": "^1.1.2",
     "purify-ts": "^0.13.2",
     "ramda": "^0.26.1",
-    "ramda-adjunct": "^2.22.1"
+    "ramda-adjunct": "^2.22.1",
+    "mutation-observer": "^1.0.3"
   }
 }
