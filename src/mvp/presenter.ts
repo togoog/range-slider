@@ -1,10 +1,10 @@
-import { pipe, clamp, fromPairs } from 'ramda';
+import { pipe, clamp, indexBy, prop } from 'ramda';
 import {
   RangeSliderModel,
   RangeSliderView,
   RangeSliderPresenter,
-  RealValue,
   HandleId,
+  HandleData,
   Data,
 } from '../types';
 import { Model } from './model';
@@ -53,36 +53,41 @@ class Presenter implements RangeSliderPresenter {
     rangeSliderRect: DOMRect,
   ): void {
     this.model.propose({
-      handles: data => {
-        // eslint-disable-next-line complexity
-        const handlePairs = data.handleIds.map((handleId): [
-          HandleId,
-          RealValue,
-        ] => {
-          if (data.activeHandleId !== handleId) {
-            return [handleId, data.handles[handleId]];
-          }
+      handleDict: ({
+        min,
+        max,
+        step,
+        orientation,
+        handleDict,
+        handleIds,
+        activeHandleId,
+      }: Data) => {
+        const handles = handleIds.map(
+          (id): HandleData => {
+            if (activeHandleId !== id) {
+              return handleDict[id];
+            }
 
-          // calculate new value for active handle
-          const axis = data.orientation === 'horizontal' ? 'x' : 'y';
-          const origin = convertOrientationToOrigin(data.orientation);
-          const dimension =
-            data.orientation === 'horizontal' ? 'width' : 'height';
+            // calculate new value for active handle
+            const axis = orientation === 'horizontal' ? 'x' : 'y';
+            const origin = convertOrientationToOrigin(orientation);
+            const dimension = orientation === 'horizontal' ? 'width' : 'height';
 
-          const absPos =
-            origin === 'left'
-              ? handleCoords[axis] - rangeSliderRect[origin]
-              : rangeSliderRect[origin] - handleCoords[axis];
-          const relPos = absPos / rangeSliderRect[dimension];
-          const absVal = data.min + (data.max - data.min) * relPos;
+            const absPos =
+              origin === 'left'
+                ? handleCoords[axis] - rangeSliderRect[origin]
+                : rangeSliderRect[origin] - handleCoords[axis];
+            const relPos = absPos / rangeSliderRect[dimension];
+            const absVal = min + (max - min) * relPos;
 
-          return [
-            handleId,
-            clamp(data.min, data.max, closestToStep(data.step, absVal)),
-          ];
-        });
+            return {
+              ...handleDict[id],
+              value: clamp(min, max, closestToStep(step, absVal)),
+            };
+          },
+        );
 
-        return fromPairs(handlePairs);
+        return indexBy(prop('id'), handles);
       },
     });
   }

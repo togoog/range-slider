@@ -1,5 +1,5 @@
 import { Right } from 'purify-ts/Either';
-import { multiply, add, subtract, fromPairs } from 'ramda';
+import { multiply, add, subtract, fromPairs, indexBy, prop, map } from 'ramda';
 import { Data, Proposal } from '../types';
 import {
   Model,
@@ -15,7 +15,15 @@ import * as defaults from '../defaults';
 describe('Model.checkDataIntegrity', () => {
   test('should contain errMinMax', () => {
     const data: Data = {
-      handles: { handle_0: 30 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+      },
       handleIds: ['handle_0'],
       activeHandleId: null,
       min: 100,
@@ -23,11 +31,26 @@ describe('Model.checkDataIntegrity', () => {
       step: 500,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true },
+      tooltipDict: {
+        tooltip_0: { id: 'tooltip_0', isVisible: true, handleId: 'handle_0' },
+      },
       tooltipIds: ['tooltip_0'],
       tooltipFormatter: defaults.tooltipFormatter,
       tooltipCollisions: [],
-      intervals: { interval_0: true, interval_1: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1'],
       grid: { isVisible: false, numCells: [2, 3] },
     };
@@ -38,7 +61,15 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain errValueNotInRange', () => {
     let data: Data = {
-      handles: { handle_0: -30 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: -30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+      },
       handleIds: ['handle_0'],
       activeHandleId: null,
       min: 0,
@@ -46,11 +77,26 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true },
+      tooltipDict: {
+        tooltip_0: { id: 'tooltip_0', isVisible: true, handleId: 'handle_0' },
+      },
       tooltipIds: ['tooltip_0'],
       tooltipFormatter: defaults.tooltipFormatter,
       tooltipCollisions: [],
-      intervals: { interval_0: true, interval_1: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1'],
       grid: { isVisible: true, numCells: [2, 3] },
     };
@@ -59,7 +105,15 @@ describe('Model.checkDataIntegrity', () => {
     );
 
     data = {
-      handles: { handle_0: 300 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 300,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+      },
       handleIds: ['handle_0'],
       activeHandleId: null,
       min: 0,
@@ -67,11 +121,30 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+      },
       tooltipIds: ['tooltip_0'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: true, interval_1: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1'],
       grid: { isVisible: false, numCells: [2, 3, 4] },
     };
@@ -82,7 +155,15 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should contain errStepNotInRange', () => {
     let data: Data = {
-      handles: { handle_0: 30 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+      },
       handleIds: ['handle_0'],
       activeHandleId: null,
       min: 0,
@@ -90,11 +171,30 @@ describe('Model.checkDataIntegrity', () => {
       step: 200,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+      },
       tooltipIds: ['tooltip_0'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: true, interval_1: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1'],
       grid: { isVisible: true, numCells: [2, 3] },
     };
@@ -103,7 +203,15 @@ describe('Model.checkDataIntegrity', () => {
     );
 
     data = {
-      handles: { handle_0: 30 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+      },
       handleIds: ['handle_0'],
       activeHandleId: null,
       min: 0,
@@ -111,11 +219,30 @@ describe('Model.checkDataIntegrity', () => {
       step: -5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+      },
       tooltipIds: ['tooltip_0'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: true, interval_1: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1'],
       grid: { isVisible: true, numCells: [2, 3] },
     };
@@ -126,7 +253,22 @@ describe('Model.checkDataIntegrity', () => {
 
   test(`should contain errTooltipsCount`, () => {
     const data: Data = {
-      handles: { handle_0: 30, handle_1: 60 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 60,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -134,11 +276,41 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: true, tooltip_2: false },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: true,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: false,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: true,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: false,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: false, numCells: [2, 3] },
     };
@@ -149,7 +321,22 @@ describe('Model.checkDataIntegrity', () => {
 
   test(`should contain errIntervalsCount`, () => {
     const data: Data = {
-      handles: { handle_0: 30, handle_1: 60 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 60,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -157,15 +344,40 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: true, tooltip_2: false },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: true,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: {
-        interval_0: false,
-        interval_1: true,
-        interval_2: false,
-        interval_3: true,
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: false,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: true,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: false,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
       },
       intervalIds: ['interval_0', 'interval_1', 'interval_2', 'interval_3'],
       grid: { isVisible: true, numCells: [2, 3] },
@@ -177,7 +389,22 @@ describe('Model.checkDataIntegrity', () => {
 
   test('should return Right(data)', () => {
     const data: Data = {
-      handles: { handle_0: 30, handle_1: 60 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 30,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 60,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -185,11 +412,41 @@ describe('Model.checkDataIntegrity', () => {
       step: 5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: true,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: false,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: true,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: false,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [2, 3, 4] },
     };
@@ -199,7 +456,22 @@ describe('Model.checkDataIntegrity', () => {
 
 describe('Model.propose', () => {
   const currentData: Data = {
-    handles: { handle_0: 20, handle_1: 40 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    },
     handleIds: ['handle_0', 'handle_1'],
     activeHandleId: null,
     min: 0,
@@ -207,24 +479,84 @@ describe('Model.propose', () => {
     step: 5,
     orientation: 'horizontal',
     cssClass: 'range-slider',
-    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
     tooltipFormatter: defaults.tooltipFormatter,
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: true,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: false, numCells: [2, 3, 4] },
   };
 
   test('should change spots', () => {
     const proposal: Partial<Proposal> = {
-      handles: (data: Data) =>
-        fromPairs(data.handleIds.map(id => [id, data.handles[id] * 2])),
+      handleDict: (data: Data) =>
+        map(d => ({ ...d, value: d.value * 2 }), data.handleDict),
     };
     const model = new Model(currentData);
-    expect(model.get('handles')).toEqual({ handle_0: 20, handle_1: 40 });
+    expect(model.get('handleDict')).toEqual({
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    });
     model.propose(proposal);
-    expect(model.get('handles')).toEqual({ handle_0: 40, handle_1: 80 });
+    expect(model.get('handleDict')).toEqual({
+      handle_0: {
+        id: 'handle_0',
+        value: 40,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 80,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    });
   });
 
   test('should change min', () => {
@@ -270,22 +602,41 @@ describe('Model.propose', () => {
 
   test('should change tooltips', () => {
     const proposal: Partial<Proposal> = {
-      tooltips: (data: Data) =>
-        fromPairs(data.tooltipIds.map(id => [id, !data.tooltips[id]])),
+      tooltipDict: (data: Data) =>
+        map(d => ({ ...d, isVisible: !d.isVisible }), data.tooltipDict),
     };
     const model = new Model(currentData);
-    expect(model.get('tooltips')).toEqual({ tooltip_0: true, tooltip_1: true });
+    expect(model.get('tooltipDict')).toEqual({
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    });
     model.propose(proposal);
-    expect(model.get('tooltips')).toEqual({
-      tooltip_0: false,
-      tooltip_1: false,
+    expect(model.get('tooltipDict')).toEqual({
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: false,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: false,
+        handleId: 'handle_1',
+      },
     });
   });
 
   test('should emit update event', () => {
     const proposal: Partial<Proposal> = {
-      handles: (data: Data) =>
-        fromPairs(data.handleIds.map(id => [id, data.handles[id] + 1])),
+      handleDict: (data: Data) =>
+        map(d => ({ ...d, value: d.value + 1 }), data.handleDict),
       min: (data: Data) => subtract(data.min, 10),
       step: (data: Data) => multiply(data.step, 2),
     };
@@ -294,7 +645,22 @@ describe('Model.propose', () => {
     model.on(Model.EVENT_UPDATE, updateListener);
     model.propose(proposal);
     expect(updateListener).toHaveBeenCalledWith({
-      handles: { handle_0: 21, handle_1: 41 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 21,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 41,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: -10,
@@ -302,19 +668,64 @@ describe('Model.propose', () => {
       step: 10,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: true,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: false,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: true,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: false,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: false, numCells: [2, 3, 4] },
-    });
+    } as Data);
   });
 
   test('should emit validationErrors event when errors can not be fixed', () => {
     const data: Data = {
-      handles: { handle_0: 40, handle_1: 70 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 40,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 70,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -322,11 +733,41 @@ describe('Model.propose', () => {
       step: 5,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: true,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: false,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: true,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: false,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [2, 3] },
     };
@@ -347,7 +788,22 @@ describe('Model.propose', () => {
 
 describe('Model.get', () => {
   const currentData: Data = {
-    handles: { handle_0: 20, handle_1: 40 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    },
     handleIds: ['handle_0', 'handle_1'],
     activeHandleId: null,
     min: 0,
@@ -355,30 +811,101 @@ describe('Model.get', () => {
     step: 5,
     orientation: 'horizontal',
     cssClass: 'range-slider',
-    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
     tooltipFormatter: defaults.tooltipFormatter,
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: true,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: true, numCells: [4, 5] },
   };
 
   test('should return ModelData value by key', () => {
     const model = new Model(currentData);
-    expect(model.get('handles')).toEqual({ handle_0: 20, handle_1: 40 });
+    expect(model.get('handleDict')).toEqual({
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    });
     expect(model.get('min')).toEqual(0);
     expect(model.get('max')).toEqual(100);
     expect(model.get('step')).toEqual(5);
     expect(model.get('orientation')).toEqual('horizontal');
-    expect(model.get('tooltips')).toEqual({ tooltip_0: true, tooltip_1: true });
+    expect(model.get('tooltipDict')).toEqual({
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    });
     expect(model.get('grid')).toEqual({ isVisible: true, numCells: [4, 5] });
   });
 });
 
 describe('Model.set', () => {
   const currentData: Data = {
-    handles: { handle_0: 20, handle_1: 40 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    },
     handleIds: ['handle_0', 'handle_1'],
     activeHandleId: null,
     min: 0,
@@ -386,20 +913,65 @@ describe('Model.set', () => {
     step: 5,
     orientation: 'horizontal',
     cssClass: 'range-slider',
-    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
     tooltipFormatter: defaults.tooltipFormatter,
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: true,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: false, numCells: [3, 4] },
   };
 
   test('should change ModelData value by key', () => {
     const model = new Model(currentData);
-    const newHandles = { handle_0: 35, handle_1: 45 };
-    model.set('handles', newHandles);
-    expect(model.get('handles')).toEqual(newHandles);
+    const newHandles = {
+      handle_0: {
+        id: 'handle_0',
+        value: 35,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 45,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    };
+    model.set('handleDict', newHandles);
+    expect(model.get('handleDict')).toEqual(newHandles);
   });
 
   test('should emit update event', () => {
@@ -408,7 +980,22 @@ describe('Model.set', () => {
     model.on(Model.EVENT_UPDATE, updateListener);
     model.set('step', 20);
     expect(updateListener).toBeCalledWith({
-      handles: { handle_0: 20, handle_1: 40 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 20,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 40,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -416,14 +1003,44 @@ describe('Model.set', () => {
       step: 20,
       orientation: 'horizontal',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: true },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: true,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: false, interval_1: true, interval_2: false },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: false,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: true,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: false,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: false, numCells: [3, 4] },
-    });
+    } as Data);
   });
 
   test('should emit integrityError event', () => {
@@ -437,7 +1054,22 @@ describe('Model.set', () => {
 
 describe('Model.getAll', () => {
   const currentData: Data = {
-    handles: { handle_0: 20, handle_1: 40 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    },
     handleIds: ['handle_0', 'handle_1'],
     activeHandleId: null,
     min: 0,
@@ -445,11 +1077,41 @@ describe('Model.getAll', () => {
     step: 5,
     orientation: 'horizontal',
     cssClass: 'range-slider',
-    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
     tooltipFormatter: defaults.tooltipFormatter,
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: true,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: true, numCells: [3, 4] },
   };
@@ -462,7 +1124,22 @@ describe('Model.getAll', () => {
 
 describe('Model.setAll', () => {
   const currentData: Data = {
-    handles: { handle_0: 20, handle_1: 40 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 40,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    },
     handleIds: ['handle_0', 'handle_1'],
     activeHandleId: null,
     min: 0,
@@ -470,11 +1147,41 @@ describe('Model.setAll', () => {
     step: 5,
     orientation: 'horizontal',
     cssClass: 'range-slider',
-    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipCollisions: [],
     tooltipFormatter: defaults.tooltipFormatter,
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: true,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
     grid: { isVisible: false, numCells: [3, 4] },
   };
@@ -482,7 +1189,22 @@ describe('Model.setAll', () => {
   test('should change ModelData', () => {
     const model = new Model(currentData);
     const newData: Data = {
-      handles: { handle_0: 50, handle_1: 70 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 50,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 70,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -490,11 +1212,41 @@ describe('Model.setAll', () => {
       step: 3,
       orientation: 'vertical',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: false },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: false,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: true, interval_1: false, interval_2: true },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: true,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [5, 6] },
     };
@@ -507,7 +1259,22 @@ describe('Model.setAll', () => {
     const updateListener = jest.fn();
     model.on(Model.EVENT_UPDATE, updateListener);
     const newData: Data = {
-      handles: { handle_0: 50, handle_1: 70 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 50,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 70,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -515,11 +1282,41 @@ describe('Model.setAll', () => {
       step: 3,
       orientation: 'vertical',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: false },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: false,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: true, interval_1: false, interval_2: true },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: true,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [2, 5] },
     };
@@ -532,7 +1329,22 @@ describe('Model.setAll', () => {
     const errorListener = jest.fn();
     model.on(Model.EVENT_VALIDATION_ERRORS, errorListener);
     const newData: Data = {
-      handles: { handle_0: 50, handle_1: 70 },
+      handleDict: {
+        handle_0: {
+          id: 'handle_0',
+          value: 50,
+          tooltipId: 'tooltip_0',
+          lhsIntervalId: 'interval_0',
+          rhsIntervalId: 'interval_1',
+        },
+        handle_1: {
+          id: 'handle_1',
+          value: 70,
+          tooltipId: 'tooltip_1',
+          lhsIntervalId: 'interval_1',
+          rhsIntervalId: 'interval_2',
+        },
+      },
       handleIds: ['handle_0', 'handle_1'],
       activeHandleId: null,
       min: 0,
@@ -540,11 +1352,41 @@ describe('Model.setAll', () => {
       step: 300,
       orientation: 'vertical',
       cssClass: 'range-slider',
-      tooltips: { tooltip_0: true, tooltip_1: false },
+      tooltipDict: {
+        tooltip_0: {
+          id: 'tooltip_0',
+          isVisible: true,
+          handleId: 'handle_0',
+        },
+        tooltip_1: {
+          id: 'tooltip_1',
+          isVisible: false,
+          handleId: 'handle_1',
+        },
+      },
       tooltipIds: ['tooltip_0', 'tooltip_1'],
       tooltipCollisions: [],
       tooltipFormatter: defaults.tooltipFormatter,
-      intervals: { interval_0: true, interval_1: false, interval_2: true },
+      intervalDict: {
+        interval_0: {
+          id: 'interval_0',
+          isVisible: true,
+          lhsHandleId: null,
+          rhsHandleId: 'handle_0',
+        },
+        interval_1: {
+          id: 'interval_1',
+          isVisible: false,
+          lhsHandleId: 'handle_0',
+          rhsHandleId: 'handle_1',
+        },
+        interval_2: {
+          id: 'interval_2',
+          isVisible: true,
+          lhsHandleId: 'handle_1',
+          rhsHandleId: null,
+        },
+      },
       intervalIds: ['interval_0', 'interval_1', 'interval_2'],
       grid: { isVisible: true, numCells: [5, 6] },
     };

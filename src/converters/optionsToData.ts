@@ -1,99 +1,131 @@
-import { fromPairs, clamp, applySpec } from 'ramda';
+import { clamp, indexBy, prop, pluck } from 'ramda';
 import { isBoolean } from 'ramda-adjunct';
 import {
   Data,
-  DataKey,
   Options,
-  OptionsKey,
   OptimizedOptions,
-  IntervalId,
+  HandleData,
+  TooltipData,
+  IntervalData,
 } from '../types';
 import { toArray, createId, closestToStep, fillArrayWith } from '../helpers';
 import * as defaults from '../defaults';
 
-function prepareOptionsForInternalUse(options: Options): OptimizedOptions {
-  const valuesLength = toArray(options.value).length;
+/**
+ * Optimize options for better developer experience
+ * @param param0 user provided Options
+ */
+function prepareOptionsForInternalUse({
+  value,
+  min,
+  max,
+  step,
+  orientation,
+  cssClass,
+  tooltips,
+  tooltipFormatter,
+  intervals,
+  grid,
+}: Options): OptimizedOptions {
+  const valuesLength = toArray(value).length;
 
-  const transformations: {
-    [key in OptionsKey]: (op: Options) => Options[OptionsKey];
-  } = {
-    value: op => toArray(op.value),
-    min: op => op.min,
-    max: op => op.max,
-    step: op => op.step,
-    orientation: op => op.orientation,
-    cssClass: op => op.cssClass,
-    tooltips: op =>
-      // tooltips length should equal values length
-      fillArrayWith(valuesLength, defaults.tooltipValue, toArray(op.tooltips)),
-    tooltipFormatter: op => op.tooltipFormatter,
-    intervals: op =>
-      // intervals length should be greater then values length by 1
-      fillArrayWith(
-        valuesLength + 1,
-        defaults.intervalValue,
-        toArray(op.intervals),
-      ),
-    grid: op =>
-      isBoolean(op.grid)
-        ? { isVisible: op.grid, numCells: defaults.gridNumCells }
-        : op.grid,
+  return {
+    value: toArray(value),
+    min,
+    max,
+    step,
+    orientation,
+    cssClass,
+    // tooltips length should equal values length
+    tooltips: fillArrayWith(
+      valuesLength,
+      defaults.tooltipValue,
+      toArray(tooltips),
+    ),
+    tooltipFormatter,
+    // intervals length should be greater then values length by 1
+    intervals: fillArrayWith(
+      valuesLength + 1,
+      defaults.intervalValue,
+      toArray(intervals),
+    ),
+    grid: isBoolean(grid)
+      ? { isVisible: grid, numCells: defaults.gridNumCells }
+      : grid,
   };
-
-  return applySpec(transformations)(options) as OptimizedOptions;
 }
 
+/**
+ * Convert user provided Options to model Data
+ * @param options user provided Options
+ */
 function convertOptionsToData(options: Options): Data {
-  const optimizedOptions = prepareOptionsForInternalUse(options);
+  const {
+    value,
+    min,
+    max,
+    step,
+    orientation,
+    cssClass,
+    tooltips,
+    tooltipFormatter,
+    intervals,
+    grid,
+  } = prepareOptionsForInternalUse(options);
 
-  const transformations: {
-    [key in DataKey]: (op: OptimizedOptions) => Data[DataKey];
-  } = {
-    min: op => op.min,
-    max: op => op.max,
-    step: op => op.step,
-    orientation: op => op.orientation,
-    cssClass: op => op.cssClass,
+  const handlesList = value.map(
+    (val, idx): HandleData => ({
+      id: createId('handle', idx),
+      value: clamp(min, max, closestToStep(step, val)),
+      tooltipId: createId('tooltip', idx),
+      lhsIntervalId: createId('interval', idx),
+      rhsIntervalId: createId('interval', idx + 1),
+    }),
+  );
+
+  const tooltipsList = tooltips.map(
+    (val, idx): TooltipData => ({
+      id: createId('tooltip', idx),
+      isVisible: val,
+      handleId: createId('handle', idx),
+    }),
+  );
+
+  const intervalsList = intervals.map(
+    (val, idx): IntervalData => ({
+      id: createId('interval', idx),
+      isVisible: val,
+      lhsHandleId: idx > 0 ? createId('handle', idx - 1) : null,
+      rhsHandleId: idx < value.length ? createId('handle', idx) : null,
+    }),
+  );
+
+  return {
+    min,
+    max,
+    step,
+    orientation,
+    cssClass,
 
     /** HANDLES */
-    handles: op =>
-      fromPairs(
-        op.value.map((val, idx) => [
-          createId('handle', idx),
-          clamp(op.min, op.max, closestToStep(op.step, val)),
-        ]),
-      ),
-    handleIds: op => op.value.map((_, idx) => createId('handle', idx)),
-    activeHandleId: () => null,
+    handleDict: indexBy(prop('id'), handlesList),
+    handleIds: pluck('id', handlesList),
+    activeHandleId: null,
 
     /** TOOLTIPS */
-    tooltips: op =>
-      fromPairs(
-        op.tooltips.map((isVisible, idx) => [
-          createId('tooltip', idx),
-          isVisible,
-        ]),
-      ),
-    tooltipIds: op => op.tooltips.map((_, idx) => createId('tooltip', idx)),
-    tooltipFormatter: op => op.tooltipFormatter,
+    tooltipDict: indexBy(prop('id'), tooltipsList),
+    tooltipIds: pluck('id', tooltipsList),
+    tooltipFormatter,
     // collisions between tooltips can only be known after render
-    tooltipCollisions: () => [],
+    tooltipCollisions: [],
 
     /** INTERVALS */
-    intervals: op =>
-      fromPairs(
-        op.intervals.map((isVisible, idx): [IntervalId, boolean] => [
-          createId('interval', idx),
-          isVisible,
-        ]),
-      ),
-    intervalIds: op => op.intervals.map((_, idx) => createId('interval', idx)),
+    intervalDict: indexBy(prop('id'), intervalsList),
+    intervalIds: pluck('id', intervalsList),
 
     /** GRID */
-    grid: op => op.grid,
+    grid,
   };
-
-  return applySpec(transformations)(optimizedOptions) as Data;
 }
 
 export default convertOptionsToData;

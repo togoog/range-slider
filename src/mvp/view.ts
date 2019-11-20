@@ -22,12 +22,12 @@ class View extends EventEmitter implements RangeSliderView {
 
   static EVENT_TOOLTIP_COLLISIONS = 'View/TooltipCollisions';
 
-  // mouse pointer offset coords for Handle when dragging
+  // mouse pointer offset X coordinate for Handle when dragging
   private handleShiftX = 0;
 
+  // mouse pointer offset Y coordinate for Handle when dragging
   private handleShiftY = 0;
 
-  // handle width and height
   private handleWidth = 0;
 
   private handleHeight = 0;
@@ -104,15 +104,14 @@ class View extends EventEmitter implements RangeSliderView {
   onHandleMove(e: MouseEvent): void {
     e.preventDefault();
 
-    // Handle center coordinates
-    const handleCoords = {
+    const handleCenterCoords = {
       x: e.clientX - this.handleShiftX + this.handleWidth / 2,
       y: e.clientY - this.handleShiftY + this.handleHeight / 2,
     };
 
     const rangeSliderRect = this.el.getBoundingClientRect();
 
-    this.emit(View.EVENT_HANDLE_MOVE, handleCoords, rangeSliderRect);
+    this.emit(View.EVENT_HANDLE_MOVE, handleCenterCoords, rangeSliderRect);
   }
 
   private listenForDOMChanges(): void {
@@ -154,23 +153,20 @@ class View extends EventEmitter implements RangeSliderView {
             : [];
         })
         .filter(isNotEmpty)
-        .reduce(
-          (acc, cur): TooltipId[][] => {
-            const prevGroup = acc[acc.length - 1];
-            const prevTooltipId = prevGroup
-              ? prevGroup[prevGroup.length - 1]
-              : null;
+        .reduce((acc, cur): TooltipId[][] => {
+          const prevGroup = acc[acc.length - 1];
+          const prevTooltipId = prevGroup
+            ? prevGroup[prevGroup.length - 1]
+            : null;
 
-            if (prevTooltipId === cur[0]) {
-              prevGroup.push(cur[1]);
-            } else {
-              acc.push(cur);
-            }
+          if (prevTooltipId === cur[0]) {
+            prevGroup.push(cur[1]);
+          } else {
+            acc.push(cur);
+          }
 
-            return acc;
-          },
-          [] as TooltipId[][],
-        );
+          return acc;
+        }, [] as TooltipId[][]);
 
       this.emit(View.EVENT_TOOLTIP_COLLISIONS, collisions);
     }

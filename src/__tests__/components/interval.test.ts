@@ -9,11 +9,10 @@ const tooltipCSSClass = `${cssClass}__tooltip`;
 
 const state: State = {
   cssClass,
-  track: { orientation: 'horizontal', cssClass: trackCSSClass },
+  track: { orientation: 'horizontal', cssClass: trackCSSClass, role: 'track' },
   intervals: [
     {
       id: 'interval_0',
-      handleIds: ['first', 'handle_0'],
       from: 0,
       to: 20,
       cssClass: intervalCSSClass,
@@ -23,7 +22,6 @@ const state: State = {
     },
     {
       id: 'interval_1',
-      handleIds: ['handle_0', 'handle_1'],
       from: 20,
       to: 40,
       cssClass: intervalCSSClass,
@@ -33,7 +31,6 @@ const state: State = {
     },
     {
       id: 'interval_2',
-      handleIds: ['handle_1', 'last'],
       from: 40,
       to: 100,
       cssClass: intervalCSSClass,
@@ -63,7 +60,6 @@ const state: State = {
   tooltips: [
     {
       id: 'tooltip_0',
-      handleIds: ['handle_0'],
       position: 20,
       content: '20',
       orientation: 'horizontal',
@@ -74,7 +70,6 @@ const state: State = {
     },
     {
       id: 'tooltip_1',
-      handleIds: ['handle_1'],
       position: 40,
       content: '40',
       orientation: 'horizontal',
@@ -87,10 +82,11 @@ const state: State = {
   grid: {
     cssClass: 'range-slider__grid',
     isVisible: true,
-    numCells: [2, 3],
     orientation: 'horizontal',
+    cells: [],
     min: 0,
     max: 100,
+    role: 'grid',
   },
 };
 describe('Interval', () => {
@@ -120,11 +116,14 @@ describe('Interval', () => {
     // eslint-disable-next-line no-shadow
     const state: State = {
       cssClass,
-      track: { orientation: 'vertical', cssClass: trackCSSClass },
+      track: {
+        orientation: 'vertical',
+        cssClass: trackCSSClass,
+        role: 'track',
+      },
       intervals: [
         {
           id: 'interval_0',
-          handleIds: ['first', 'handle_0'],
           from: 0,
           to: 20,
           cssClass: intervalCSSClass,
@@ -134,7 +133,6 @@ describe('Interval', () => {
         },
         {
           id: 'interval_1',
-          handleIds: ['handle_0', 'handle_1'],
           from: 20,
           to: 40,
           cssClass: intervalCSSClass,
@@ -144,7 +142,6 @@ describe('Interval', () => {
         },
         {
           id: 'interval_2',
-          handleIds: ['handle_1', 'last'],
           from: 40,
           to: 100,
           cssClass: intervalCSSClass,
@@ -174,7 +171,6 @@ describe('Interval', () => {
       tooltips: [
         {
           id: 'tooltip_0',
-          handleIds: ['handle_0'],
           position: 20,
           content: '20',
           orientation: 'vertical',
@@ -185,7 +181,6 @@ describe('Interval', () => {
         },
         {
           id: 'tooltip_1',
-          handleIds: ['handle_1'],
           position: 40,
           content: '40',
           orientation: 'vertical',
@@ -199,9 +194,10 @@ describe('Interval', () => {
         cssClass: 'range-slider__grid',
         orientation: 'vertical',
         isVisible: false,
-        numCells: [3, 4],
+        cells: [],
         min: 0,
         max: 100,
+        role: 'grid',
       },
     };
 

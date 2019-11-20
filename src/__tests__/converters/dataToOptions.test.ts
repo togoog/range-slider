@@ -4,7 +4,15 @@ import * as defaults from '../../defaults';
 
 test('convertDataToOptions', () => {
   const data: Data = {
-    handles: { handle_0: 50 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 50,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+    },
     handleIds: ['handle_0'],
     activeHandleId: null,
     min: 0,
@@ -12,11 +20,26 @@ test('convertDataToOptions', () => {
     step: 1,
     cssClass: 'range-slider',
     orientation: 'horizontal',
-    tooltips: { tooltip_0: true },
+    tooltipDict: {
+      tooltip_0: { id: 'tooltip_0', isVisible: true, handleId: 'handle_0' },
+    },
     tooltipIds: ['tooltip_0'],
     tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
-    intervals: { interval_0: true, interval_1: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: true,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: false,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1'],
     grid: { isVisible: false, numCells: [5] },
   };
@@ -37,7 +60,36 @@ test('convertDataToOptions', () => {
   expect(convertDataToOptions(data)).toEqual(options);
 
   const data_1: Data = {
-    handles: { handle_0: -20, handle_1: 0, handle_2: 60, handle_3: 70 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: -20,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 0,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+      handle_2: {
+        id: 'handle_2',
+        value: 60,
+        tooltipId: 'tooltip_2',
+        lhsIntervalId: 'interval_2',
+        rhsIntervalId: 'interval_3',
+      },
+      handle_3: {
+        id: 'handle_3',
+        value: 70,
+        tooltipId: 'tooltip_3',
+        lhsIntervalId: 'interval_3',
+        rhsIntervalId: 'interval_4',
+      },
+    },
     handleIds: ['handle_0', 'handle_1', 'handle_2', 'handle_3'],
     activeHandleId: null,
     min: -100,
@@ -45,21 +97,62 @@ test('convertDataToOptions', () => {
     step: 5,
     cssClass: 'range-slider',
     orientation: 'vertical',
-    tooltips: {
-      tooltip_0: true,
-      tooltip_1: true,
-      tooltip_2: true,
-      tooltip_3: true,
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+      tooltip_2: {
+        id: 'tooltip_2',
+        isVisible: true,
+        handleId: 'handle_2',
+      },
+      tooltip_3: {
+        id: 'tooltip_3',
+        isVisible: true,
+        handleId: 'handle_3',
+      },
     },
     tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2', 'tooltip_3'],
     tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
-    intervals: {
-      interval_0: false,
-      interval_1: false,
-      interval_2: false,
-      interval_3: false,
-      interval_4: false,
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: false,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: 'handle_2',
+      },
+      interval_3: {
+        id: 'interval_3',
+        isVisible: false,
+        lhsHandleId: 'handle_2',
+        rhsHandleId: 'handle_3',
+      },
+      interval_4: {
+        id: 'interval_4',
+        isVisible: false,
+        lhsHandleId: 'handle_3',
+        rhsHandleId: null,
+      },
     },
     intervalIds: [
       'interval_0',

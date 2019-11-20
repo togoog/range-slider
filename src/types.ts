@@ -83,24 +83,58 @@ export type RangeSliderModel = {
 // real value user interested in
 export type RealValue = number;
 
+export type HandleId = string;
+export type HandleData = {
+  id: HandleId;
+  value: RealValue;
+  // Handle has relation with only 1 Tooltip
+  tooltipId: TooltipId;
+  // Handle has relation with 2 Intervals
+  lhsIntervalId: IntervalId;
+  rhsIntervalId: IntervalId;
+};
+
+export type TooltipId = string;
+export type TooltipData = {
+  id: TooltipId;
+  isVisible: boolean;
+  // Tooltip has relation with only 1 Handle
+  handleId: HandleId;
+};
+
+export type IntervalId = string;
+export type IntervalData = {
+  id: IntervalId;
+  isVisible: boolean;
+  // First interval does not have left Handle
+  lhsHandleId: HandleId | null;
+  // Last interval does not have right Handle
+  rhsHandleId: HandleId | null;
+};
+
 export type Data = {
   min: number;
   max: number;
   step: number;
   orientation: Orientation;
   cssClass: string;
+
   /** HANDLES */
-  handles: { [handleId: string]: RealValue };
+  handleDict: { [handleId: string]: HandleData };
   handleIds: HandleId[];
   activeHandleId: HandleId | null;
+
   /** TOOLTIPS */
-  tooltips: { [tooltipId: string]: boolean };
+  tooltipDict: { [tooltipId: string]: TooltipData };
   tooltipIds: TooltipId[];
   tooltipFormatter: Formatter;
-  tooltipCollisions: TooltipId[][]; // groups of overlapping tooltips
+  // groups of overlapping tooltips
+  tooltipCollisions: TooltipId[][];
+
   /** INTERVALS */
-  intervals: { [intervalId: string]: boolean };
+  intervalDict: { [intervalId: string]: IntervalData };
   intervalIds: IntervalId[];
+
   /** GRID */
   grid: GridOptions;
 };
@@ -120,8 +154,6 @@ export type Origin = 'left' | 'right' | 'top' | 'bottom';
 // relative value for display purposes
 export type RelativePos = number;
 
-export type HandleId = string;
-
 export type Handle = {
   id: HandleId;
   orientation: Orientation;
@@ -131,12 +163,8 @@ export type Handle = {
   role: 'handle';
 };
 
-export type TooltipId = string;
-
 export type Tooltip = {
   id: TooltipId;
-  // merged tooltip can display value of many handles
-  handleIds: HandleId[];
   orientation: Orientation;
   position: RelativePos;
   content: string;
@@ -146,12 +174,8 @@ export type Tooltip = {
   role: 'tooltip' | 'tooltip-merged';
 };
 
-export type IntervalId = string;
-
 export type Interval = {
   id: IntervalId;
-  // interval have only 2 handles (at the beginning & at the end)
-  handleIds: [HandleId, HandleId];
   orientation: Orientation;
   from: RelativePos;
   to: RelativePos;
@@ -163,19 +187,20 @@ export type Interval = {
 export type Track = {
   orientation: Orientation;
   cssClass: string;
+  role: 'track';
 };
 
 export type Grid = {
   isVisible: boolean;
   orientation: Orientation;
   cssClass: string;
-  numCells: number[];
+  cells: GridCell[];
   min: number;
   max: number;
+  role: 'grid';
 };
 
 export type GridCell = {
-  // real value this cell represents
   label: string;
   isVisibleLabel: boolean;
   level: number;
@@ -183,13 +208,10 @@ export type GridCell = {
   position: number;
   cssClass: string;
   orientation: Orientation;
+  role: 'grid-cell';
 };
 
-//
-// ─── STATE ──────────────────────────────────────────────────────────────────────
-//
-
-// State is a data prepared for view rendering
+// State is a model Data prepared for view rendering
 export type State = {
   cssClass: string;
   track: Track;

@@ -11,11 +11,14 @@ const tooltipCSSClass = `${cssClass}__tooltip`;
 describe('View.render', () => {
   const state: State = {
     cssClass,
-    track: { orientation: 'horizontal', cssClass: trackCSSClass },
+    track: {
+      orientation: 'horizontal',
+      cssClass: trackCSSClass,
+      role: 'track',
+    },
     intervals: [
       {
         id: 'interval_0',
-        handleIds: ['first', 'handle_0'],
         from: 0,
         to: 20,
         cssClass: intervalCSSClass,
@@ -25,7 +28,6 @@ describe('View.render', () => {
       },
       {
         id: 'interval_1',
-        handleIds: ['handle_0', 'handle_1'],
         from: 20,
         to: 40,
         cssClass: intervalCSSClass,
@@ -35,7 +37,6 @@ describe('View.render', () => {
       },
       {
         id: 'interval_2',
-        handleIds: ['handle_1', 'last'],
         from: 40,
         to: 100,
         cssClass: intervalCSSClass,
@@ -65,7 +66,6 @@ describe('View.render', () => {
     tooltips: [
       {
         id: 'tooltip_0',
-        handleIds: ['handle_0'],
         position: 20,
         content: '20',
         orientation: 'horizontal',
@@ -76,7 +76,6 @@ describe('View.render', () => {
       },
       {
         id: 'tooltip_1',
-        handleIds: ['handle_1'],
         position: 40,
         content: '40',
         orientation: 'horizontal',
@@ -89,10 +88,11 @@ describe('View.render', () => {
     grid: {
       cssClass: 'range-slider__grid',
       isVisible: true,
-      numCells: [2, 3],
       orientation: 'horizontal',
       min: 0,
       max: 100,
+      role: 'grid',
+      cells: [],
     },
   };
 

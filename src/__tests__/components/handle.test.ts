@@ -11,11 +11,14 @@ const tooltipCSSClass = `${cssClass}__tooltip`;
 describe('Handle', () => {
   const state: State = {
     cssClass,
-    track: { orientation: 'horizontal', cssClass: trackCSSClass },
+    track: {
+      orientation: 'horizontal',
+      cssClass: trackCSSClass,
+      role: 'track',
+    },
     intervals: [
       {
         id: 'interval_0',
-        handleIds: ['first', 'handle_0'],
         from: 0,
         to: 50,
         cssClass: intervalCSSClass,
@@ -25,7 +28,6 @@ describe('Handle', () => {
       },
       {
         id: 'interval_1',
-        handleIds: ['handle_0', 'last'],
         from: 50,
         to: 100,
         cssClass: intervalCSSClass,
@@ -47,7 +49,6 @@ describe('Handle', () => {
     tooltips: [
       {
         id: 'tooltip_0',
-        handleIds: ['handle_0'],
         position: 50,
         content: '50',
         cssClass: tooltipCSSClass,
@@ -61,9 +62,10 @@ describe('Handle', () => {
       cssClass: 'range-slider__grid',
       orientation: 'vertical',
       isVisible: false,
-      numCells: [3, 4],
+      cells: [],
       min: 0,
       max: 100,
+      role: 'grid',
     },
   };
 

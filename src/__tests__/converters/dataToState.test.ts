@@ -4,7 +4,15 @@ import * as defaults from '../../defaults';
 
 test('convertDataToState', () => {
   const data: Data = {
-    handles: { handle_0: 50 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: 50,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+    },
     handleIds: ['handle_0'],
     activeHandleId: null,
     min: 0,
@@ -12,13 +20,28 @@ test('convertDataToState', () => {
     step: 1,
     cssClass: 'range-slider',
     orientation: 'horizontal',
-    tooltips: { tooltip_0: true },
+    tooltipDict: {
+      tooltip_0: { id: 'tooltip_0', isVisible: true, handleId: 'handle_0' },
+    },
     tooltipIds: ['tooltip_0'],
     tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
-    intervals: { interval_0: true, interval_1: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: true,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: false,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1'],
-    grid: { isVisible: true, numCells: [2, 3, 4] },
+    grid: { isVisible: true, numCells: [2] },
   };
 
   const state: State = {
@@ -36,7 +59,6 @@ test('convertDataToState', () => {
     tooltips: [
       {
         id: 'tooltip_0',
-        handleIds: ['handle_0'],
         content: defaults.tooltipFormatter(50),
         orientation: 'horizontal',
         cssClass: 'range-slider__tooltip',
@@ -49,7 +71,6 @@ test('convertDataToState', () => {
     intervals: [
       {
         id: 'interval_0',
-        handleIds: ['first', 'handle_0'],
         from: 0,
         to: 50,
         cssClass: 'range-slider__interval',
@@ -59,7 +80,6 @@ test('convertDataToState', () => {
       },
       {
         id: 'interval_1',
-        handleIds: ['handle_0', 'last'],
         from: 50,
         to: 100,
         cssClass: 'range-slider__interval',
@@ -71,21 +91,66 @@ test('convertDataToState', () => {
     track: {
       cssClass: 'range-slider__track',
       orientation: 'horizontal',
+      role: 'track',
     },
     grid: {
       isVisible: true,
       cssClass: 'range-slider__grid',
       orientation: 'horizontal',
-      numCells: [2, 3, 4],
+      cells: [
+        {
+          cssClass: 'range-slider__grid-cell',
+          isVisibleLabel: true,
+          label: '0',
+          level: 1,
+          orientation: 'horizontal',
+          position: 0,
+          role: 'grid-cell',
+        },
+        {
+          cssClass: 'range-slider__grid-cell',
+          isVisibleLabel: true,
+          label: '50',
+          level: 1,
+          orientation: 'horizontal',
+          position: 50,
+          role: 'grid-cell',
+        },
+        {
+          cssClass: 'range-slider__grid-cell',
+          isVisibleLabel: true,
+          label: '100',
+          level: 1,
+          orientation: 'horizontal',
+          position: 100,
+          role: 'grid-cell',
+        },
+      ],
       min: data.min,
       max: data.max,
+      role: 'grid',
     },
   };
 
   expect(convertDataToState(data)).toEqual(state);
 
   const data_1: Data = {
-    handles: { handle_0: -500, handle_1: 500 },
+    handleDict: {
+      handle_0: {
+        id: 'handle_0',
+        value: -500,
+        tooltipId: 'tooltip_0',
+        lhsIntervalId: 'interval_0',
+        rhsIntervalId: 'interval_1',
+      },
+      handle_1: {
+        id: 'handle_1',
+        value: 500,
+        tooltipId: 'tooltip_1',
+        lhsIntervalId: 'interval_1',
+        rhsIntervalId: 'interval_2',
+      },
+    },
     handleIds: ['handle_0', 'handle_1'],
     activeHandleId: null,
     min: -1000,
@@ -93,13 +158,43 @@ test('convertDataToState', () => {
     step: 100,
     cssClass: 'range-slider',
     orientation: 'vertical',
-    tooltips: { tooltip_0: true, tooltip_1: true },
+    tooltipDict: {
+      tooltip_0: {
+        id: 'tooltip_0',
+        isVisible: true,
+        handleId: 'handle_0',
+      },
+      tooltip_1: {
+        id: 'tooltip_1',
+        isVisible: true,
+        handleId: 'handle_1',
+      },
+    },
     tooltipIds: ['tooltip_0', 'tooltip_1'],
     tooltipFormatter: defaults.tooltipFormatter,
     tooltipCollisions: [],
-    intervals: { interval_0: false, interval_1: true, interval_2: false },
+    intervalDict: {
+      interval_0: {
+        id: 'interval_0',
+        isVisible: false,
+        lhsHandleId: null,
+        rhsHandleId: 'handle_0',
+      },
+      interval_1: {
+        id: 'interval_1',
+        isVisible: true,
+        lhsHandleId: 'handle_0',
+        rhsHandleId: 'handle_1',
+      },
+      interval_2: {
+        id: 'interval_2',
+        isVisible: false,
+        lhsHandleId: 'handle_1',
+        rhsHandleId: null,
+      },
+    },
     intervalIds: ['interval_0', 'interval_1', 'interval_2'],
-    grid: { isVisible: true, numCells: [2, 3] },
+    grid: { isVisible: true, numCells: [2] },
   };
 
   const state_1: State = {
@@ -125,7 +220,6 @@ test('convertDataToState', () => {
     tooltips: [
       {
         id: 'tooltip_0',
-        handleIds: ['handle_0'],
         content: defaults.tooltipFormatter(-500),
         orientation: 'vertical',
         cssClass: 'range-slider__tooltip',
@@ -136,7 +230,6 @@ test('convertDataToState', () => {
       },
       {
         id: 'tooltip_1',
-        handleIds: ['handle_1'],
         content: defaults.tooltipFormatter(500),
         orientation: 'vertical',
         cssClass: 'range-slider__tooltip',
@@ -149,7 +242,6 @@ test('convertDataToState', () => {
     intervals: [
       {
         id: 'interval_0',
-        handleIds: ['first', 'handle_0'],
         from: 0,
         to: 25,
         cssClass: 'range-slider__interval',
@@ -159,7 +251,6 @@ test('convertDataToState', () => {
       },
       {
         id: 'interval_1',
-        handleIds: ['handle_0', 'handle_1'],
         from: 25,
         to: 75,
         cssClass: 'range-slider__interval',
@@ -169,7 +260,6 @@ test('convertDataToState', () => {
       },
       {
         id: 'interval_2',
-        handleIds: ['handle_1', 'last'],
         from: 75,
         to: 100,
         cssClass: 'range-slider__interval',
@@ -181,14 +271,44 @@ test('convertDataToState', () => {
     track: {
       cssClass: 'range-slider__track',
       orientation: 'vertical',
+      role: 'track',
     },
     grid: {
       isVisible: true,
       cssClass: 'range-slider__grid',
       orientation: 'vertical',
-      numCells: [2, 3],
+      cells: [
+        {
+          cssClass: 'range-slider__grid-cell',
+          isVisibleLabel: true,
+          label: '-1000',
+          level: 1,
+          orientation: 'vertical',
+          position: 0,
+          role: 'grid-cell',
+        },
+        {
+          cssClass: 'range-slider__grid-cell',
+          isVisibleLabel: true,
+          label: '0',
+          level: 1,
+          orientation: 'vertical',
+          position: 50,
+          role: 'grid-cell',
+        },
+        {
+          cssClass: 'range-slider__grid-cell',
+          isVisibleLabel: true,
+          label: '1000',
+          level: 1,
+          orientation: 'vertical',
+          position: 100,
+          role: 'grid-cell',
+        },
+      ],
       min: data_1.min,
       max: data_1.max,
+      role: 'grid',
     },
   };
 

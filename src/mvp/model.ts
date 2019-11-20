@@ -1,4 +1,14 @@
-import { mergeAll, applySpec, all, fromPairs, inc, clamp, clone } from 'ramda';
+import {
+  mergeAll,
+  applySpec,
+  all,
+  inc,
+  clamp,
+  clone,
+  indexBy,
+  prop,
+  pluck,
+} from 'ramda';
 import { inRange } from 'ramda-adjunct';
 import { EventEmitter } from 'events';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
@@ -9,10 +19,9 @@ import {
   Data,
   DataKey,
   Proposal,
-  RealValue,
-  HandleId,
-  TooltipId,
-  IntervalId,
+  HandleData,
+  TooltipData,
+  IntervalData,
 } from '../types';
 import { isSortedArray, createId } from '../helpers';
 import * as defaults from '../defaults';
@@ -76,70 +85,113 @@ function errIntervalsCount(): RangeSliderError {
 //
 
 function fixErrorHandlesNotInRange(data: Data): Data {
-  const { min, max } = data;
+  const { min, max, handleIds, handleDict } = data;
 
   if (min > max) {
     // no point in checking handles if min > max
     return { ...data };
   }
 
-  const handles = fromPairs(
-    data.handleIds.map(id => [id, clamp(min, max, data.handles[id])]),
-  );
+  const handles = handleIds.map(id => ({
+    ...handleDict[id],
+    value: clamp(min, max, handleDict[id].value),
+  }));
 
-  return { ...data, handles };
+  return {
+    ...data,
+    handleDict: indexBy(prop('id'), handles),
+    handleIds: pluck('id', handles),
+  };
 }
 
 function fixErrorHandlesOrder(data: Data): Data {
-  // eslint-disable-next-line complexity
-  const handlePairs = data.handleIds.map((id, idx, arr): [
-    HandleId,
-    RealValue,
-  ] => {
-    const value = data.handles[id];
-    const nextValue = arr[idx + 1] ? data.handles[arr[idx + 1]] : data.max;
-    const prevValue = arr[idx - 1] ? data.handles[arr[idx - 1]] : data.min;
-    const isActiveHandle = data.activeHandleId === id;
-    const isBeyondBorders = value < prevValue || value > nextValue;
+  const { min, max, handleIds, handleDict, activeHandleId } = data;
 
-    if (isActiveHandle && isBeyondBorders) {
-      return [id, clamp(prevValue, nextValue, value)];
-    }
+  const handles = handleIds.map(
+    // eslint-disable-next-line complexity
+    (id, idx, arr): HandleData => {
+      const { value } = data.handleDict[id];
+      const nextValue = arr[idx + 1] ? handleDict[arr[idx + 1]].value : max;
+      const prevValue = arr[idx - 1] ? handleDict[arr[idx - 1]].value : min;
+      const isActiveHandle = activeHandleId === id;
+      const isBeyondBorders = value < prevValue || value > nextValue;
 
-    return [id, value];
-  });
+      if (isActiveHandle && isBeyondBorders) {
+        return { ...handleDict[id], value: clamp(prevValue, nextValue, value) };
+      }
 
-  return { ...data, handles: fromPairs(handlePairs) };
+      return { ...handleDict[id] };
+    },
+  );
+
+  return {
+    ...data,
+    handleDict: indexBy(prop('id'), handles),
+    handleIds: pluck('id', handles),
+  };
 }
 
 function fixErrorStepNotInRange(data: Data): Data {
-  const step = clamp(0, Math.abs(data.max - data.min), data.step);
-  return { ...data, step };
+  const { min, max, step } = data;
+
+  return { ...data, step: clamp(0, Math.abs(max - min), step) };
 }
 
 function fixErrorTooltipsCount(data: Data): Data {
-  const tooltipPairs = data.handleIds.map((_, idx): [TooltipId, boolean] => [
-    data.tooltipIds[idx] || createId('tooltip', idx),
-    data.tooltips[idx] || defaults.tooltipValue,
-  ]);
+  const { tooltipIds, tooltipDict, handleIds } = data;
 
-  const tooltipIds = tooltipPairs.map(pair => pair[0]);
+  const tooltips = handleIds.map(
+    (handleId, idx): TooltipData => {
+      const tooltipId = tooltipIds[idx] || createId('tooltip', idx);
 
-  return { ...data, tooltips: fromPairs(tooltipPairs), tooltipIds };
+      return {
+        id: tooltipId,
+        isVisible: tooltipDict[tooltipId].isVisible || defaults.tooltipValue,
+        handleId,
+      };
+    },
+  );
+
+  return {
+    ...data,
+    tooltipDict: indexBy(prop('id'), tooltips),
+    tooltipIds: pluck('id', tooltips),
+  };
 }
 
 function fixErrorIntervalsCount(data: Data): Data {
-  const intervalPairs = [...Array(data.handleIds.length + 1)].map((_, idx): [
-    IntervalId,
-    boolean,
-  ] => [
-    data.intervalIds[idx] || createId('interval', idx),
-    data.intervals[idx] || defaults.intervalValue,
-  ]);
+  const { handleIds, intervalIds, intervalDict } = data;
 
-  const intervalIds = intervalPairs.map(pair => pair[0]);
+  const getId = (idx: number) => intervalIds[idx] || createId('interval', idx);
 
-  return { ...data, intervals: fromPairs(intervalPairs), intervalIds };
+  const getVisibility = (idx: number) =>
+    intervalDict[getId(idx)].isVisible || defaults.intervalValue;
+
+  const getLhsHandleId = (idx: number) =>
+    intervalDict[getId(idx)].lhsHandleId ||
+    (idx > 0 ? createId('handle', idx - 1) : null);
+
+  const getRhsHandleId = (idx: number) =>
+    intervalDict[getId(idx)].rhsHandleId ||
+    (idx < handleIds.length + 1 ? createId('handle', idx) : null);
+
+  const intervals: IntervalData[] = [];
+  for (let i = 0; i < handleIds.length + 1; i += 1) {
+    (idx => {
+      intervals.push({
+        id: getId(idx),
+        isVisible: getVisibility(idx),
+        lhsHandleId: getLhsHandleId(idx),
+        rhsHandleId: getRhsHandleId(idx),
+      });
+    })(i);
+  }
+
+  return {
+    ...data,
+    intervalDict: indexBy(prop('id'), intervals),
+    intervalIds: pluck('id', intervals),
+  };
 }
 
 //
@@ -149,7 +201,7 @@ function fixErrorIntervalsCount(data: Data): Data {
 function checkIfHandlesInRange({
   min,
   max,
-  handles,
+  handleDict,
   handleIds,
 }: Data): Maybe<RangeSliderError> {
   if (min > max) {
@@ -157,17 +209,17 @@ function checkIfHandlesInRange({
     return Nothing;
   }
 
-  const realValues = handleIds.map(id => handles[id]);
+  const realValues = handleIds.map(id => handleDict[id].value);
   const handlesAreInRange = all(inRange(min, inc(max)), realValues);
 
   return handlesAreInRange ? Nothing : Just(errHandlesNotInRange());
 }
 
 function checkHandlesOrder({
-  handles,
+  handleDict,
   handleIds,
 }: Data): Maybe<RangeSliderError> {
-  const realValues = handleIds.map(id => handles[id]);
+  const realValues = handleIds.map(id => handleDict[id].value);
   const hasCorrectOrder = isSortedArray(realValues, 'ascending');
 
   return hasCorrectOrder ? Nothing : Just(errHandlesOrder());
@@ -209,18 +261,45 @@ const defaultData: Data = {
   step: 1,
   orientation: 'horizontal',
   cssClass: 'range-slider',
+
   /** HANDLES */
-  handles: { handle_0: 50 },
+  handleDict: {
+    handle_0: {
+      id: 'handle_0',
+      value: 50,
+      tooltipId: 'tooltip_0',
+      lhsIntervalId: 'interval_0',
+      rhsIntervalId: 'interval_1',
+    },
+  },
   handleIds: ['handle_0'],
   activeHandleId: null,
+
   /** TOOLTIPS */
-  tooltips: { tooltip_0: true },
+  tooltipDict: {
+    tooltip_0: { id: 'tooltip_0', isVisible: true, handleId: 'handle_0' },
+  },
   tooltipIds: ['tooltip_0'],
-  tooltipFormatter: (value: number) => value.toLocaleString(),
+  tooltipFormatter: defaults.tooltipFormatter,
   tooltipCollisions: [],
+
   /** INTERVALS */
-  intervals: { interval_0: true, interval_1: false },
+  intervalDict: {
+    interval_0: {
+      id: 'interval_0',
+      isVisible: true,
+      lhsHandleId: null,
+      rhsHandleId: 'handle_0',
+    },
+    interval_1: {
+      id: 'interval_1',
+      isVisible: false,
+      lhsHandleId: 'handle_0',
+      rhsHandleId: null,
+    },
+  },
   intervalIds: ['interval_0', 'interval_1'],
+
   /** GRID */
   grid: { isVisible: false, numCells: defaults.gridNumCells },
 };

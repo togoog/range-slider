@@ -1,27 +1,41 @@
-import { fromPairs, includes, zip, props, aperture } from 'ramda';
+import { includes, prop, props, indexBy } from 'ramda';
 import {
-  RelativePos,
+  RealValue,
   Data,
   State,
+  Track,
+  Grid,
+  GridCell,
   Handle,
-  HandleId,
   Tooltip,
-  Interval,
   TooltipId,
+  Interval,
 } from '../types';
 import { createId, getRelativePosition } from '../helpers';
 
-function createHandles(data: Data): Handle[] {
+/**
+ * Create Handles state from model Data
+ * @param data model Data
+ */
+function createHandlesState({
+  min,
+  max,
+  orientation,
+  cssClass,
+  handleIds,
+  handleDict,
+  activeHandleId,
+}: Data): Handle[] {
   const role = 'handle';
-  const cssClass = `${data.cssClass}__${role}`;
+  const handleCSSClass = `${cssClass}__${role}`;
 
-  const handles = data.handleIds.map(
+  const handles = handleIds.map(
     (id): Handle => ({
       id,
-      orientation: data.orientation,
-      position: getRelativePosition(data.min, data.max, data.handles[id]),
-      isActive: data.activeHandleId === id,
-      cssClass,
+      orientation,
+      position: getRelativePosition(min, max, handleDict[id].value),
+      isActive: activeHandleId === id,
+      cssClass: handleCSSClass,
       role,
     }),
   );
@@ -29,162 +43,237 @@ function createHandles(data: Data): Handle[] {
   return handles;
 }
 
+/**
+ * Create content from group of overlapping Tooltips
+ * @param data model Data
+ * @param tooltipsToMerge array of Tooltips
+ */
 function getMergedTooltipsContent(
   data: Data,
-  tooltipsToMerge: Tooltip[],
+  ids: TooltipId[],
 ): Tooltip['content'] {
-  // if 2 adjacent values belong to visible interval -> connect them with dash (-)
-  // otherwise connect them with semicolon (;)
-  const valuesWithConnectors = tooltipsToMerge
-    .reduce(
-      (acc, cur): HandleId[] => acc.concat(cur.handleIds),
-      [] as HandleId[],
-    )
-    .map(handleId => ({
-      handleIdx: data.handleIds.findIndex(id => id === handleId),
-      value: data.handles[handleId],
-    }))
-    .reduce((acc, cur, idx, arr): { handleIdx: number; value: number }[] => {
-      const nextVal = arr[idx + 1] ? arr[idx + 1].value : null;
+  const valueConnectorChain = ids
+    .map((id): [RealValue, string] => {
+      const { handleId } = data.tooltipDict[id];
+      const { value, rhsIntervalId } = data.handleDict[handleId];
+      const isVisibleInterval = data.intervalDict[rhsIntervalId].isVisible;
 
-      if (nextVal !== cur.value) {
-        acc.push(cur);
+      return [
+        value,
+        // if 2 adjacent values belong to visible interval -> connect them with dash (-)
+        // otherwise connect them with semicolon (;)
+        isVisibleInterval ? '-' : ';',
+      ];
+    })
+    .reduce((acc, cur, idx, arr): [RealValue, string][] => {
+      const nextValue = arr[idx + 1] ? arr[idx + 1][0] : null;
+
+      if (cur[0] === nextValue) {
+        return acc;
       }
 
-      return acc;
-    }, [] as { handleIdx: number; value: number }[])
-    .flatMap(({ handleIdx, value }) => {
-      const intervalId = data.intervalIds[handleIdx + 1];
-      const formatedValue = data.tooltipFormatter(value);
-
-      if (data.intervals[intervalId]) {
-        return [formatedValue, ' - '];
-      }
-
-      return [formatedValue, '; '];
-    });
+      return acc.concat(cur);
+    }, [] as [RealValue, string][]);
 
   // remove last connector
-  valuesWithConnectors.pop();
+  valueConnectorChain.pop();
 
-  return valuesWithConnectors.join('');
+  return valueConnectorChain.join(' ');
 }
 
-function getMergedTooltipPosition(
-  tooltipsToMerge: Tooltip[],
-): Tooltip['position'] {
-  const len = tooltipsToMerge.length;
-  const firstTooltipPosition = tooltipsToMerge[0].position;
-  const lastTooltipPosition = tooltipsToMerge[len - 1].position;
+/**
+ * Calculate merged Tooltip position
+ * @param tooltips list of Tooltips
+ */
+function getMergedTooltipPosition(tooltips: Tooltip[]): Tooltip['position'] {
+  const len = tooltips.length;
+  const firstTooltipPosition = tooltips[0].position;
+  const lastTooltipPosition = tooltips[len - 1].position;
 
   return (firstTooltipPosition + lastTooltipPosition) / 2;
 }
 
-function createTooltips(data: Data): Tooltip[] {
+/**
+ * Create Tooltips state from model Data
+ * @param data model Data
+ */
+function createTooltipsState(data: Data): Tooltip[] {
+  const {
+    min,
+    max,
+    orientation,
+    cssClass,
+    handleDict,
+    tooltipIds,
+    tooltipDict,
+    tooltipCollisions,
+    tooltipFormatter,
+  } = data;
   const role = 'tooltip';
-  const cssClass = `${data.cssClass}__${role}`;
+  const tooltipCSSClass = `${cssClass}__${role}`;
 
-  const tooltipPairs = zip(data.handleIds, data.tooltipIds).map(
-    ([handleId, tooltipId]): [TooltipId, Tooltip] => [
-      tooltipId,
-      {
-        id: tooltipId,
-        handleIds: [handleId],
-        content: data.tooltipFormatter(data.handles[handleId]),
-        orientation: data.orientation,
-        hasCollisions: data.tooltipCollisions.some(includes(tooltipId)),
-        isVisible: data.tooltips[tooltipId],
-        position: getRelativePosition(
-          data.min,
-          data.max,
-          data.handles[handleId],
-        ),
-        cssClass,
+  const tooltips = tooltipIds.map(
+    (id): Tooltip => {
+      const { handleId, isVisible } = tooltipDict[id];
+      const { value } = handleDict[handleId];
+
+      return {
+        id,
+        content: tooltipFormatter(value),
+        orientation,
+        cssClass: tooltipCSSClass,
+        position: getRelativePosition(min, max, value),
+        isVisible,
+        hasCollisions: tooltipCollisions.some(includes(id)),
         role: 'tooltip',
-      },
-    ],
+      };
+    },
   );
 
-  const tooltipsMap = fromPairs(tooltipPairs);
+  const tooltipsDict = indexBy(prop('id'), tooltips);
 
   // when tooltips overlap - they are hidden
   // mergedTooltip is shown instead of group of overlapping tooltips
-
-  const mergedTooltips = data.tooltipCollisions.map(
-    (group, idx): Tooltip => ({
+  const mergedTooltips = tooltipCollisions.map(
+    (ids, idx): Tooltip => ({
       id: createId('tooltip-merged', idx),
-      handleIds: group.reduce(
-        (acc, tooltipId) => acc.concat(tooltipsMap[tooltipId].handleIds),
-        [] as HandleId[],
-      ),
-      content: getMergedTooltipsContent(data, props(group, tooltipsMap)),
-      orientation: data.orientation,
+      content: getMergedTooltipsContent(data, ids),
+      orientation,
       hasCollisions: false,
       isVisible: true,
-      position: getMergedTooltipPosition(props(group, tooltipsMap)),
-      cssClass,
+      position: getMergedTooltipPosition(props(ids, tooltipsDict)),
+      cssClass: tooltipCSSClass,
       role: 'tooltip-merged',
     }),
   );
 
-  return Object.values(tooltipsMap).concat(mergedTooltips);
+  return Object.values(tooltipsDict).concat(mergedTooltips);
 }
 
-function createIntervals(data: Data): Interval[] {
+/**
+ * Create Intervals state from model Data
+ * @param data model Data
+ */
+function createIntervalsState({
+  min,
+  max,
+  orientation,
+  cssClass,
+  handleIds,
+  handleDict,
+  intervalIds,
+  intervalDict,
+}: Data): Interval[] {
   const role = 'interval';
-  const cssClass = `${data.cssClass}__${role}`;
+  const intervalCSSClass = `${cssClass}__${role}`;
 
-  const handlePositions = data.handleIds.map((handleId): {
-    id: HandleId;
-    pos: RelativePos;
-  } => ({
-    id: handleId,
-    pos: getRelativePosition(data.min, data.max, data.handles[handleId]),
-  }));
-
-  const allRelativePositions = [
-    { id: 'first', pos: 0 },
-    ...handlePositions,
-    { id: 'last', pos: 100 },
-  ];
-
-  const intervals = zip(
-    data.intervalIds,
-    aperture(2, allRelativePositions),
-  ).map(
-    ([id, [start, stop]]): Interval => ({
-      id,
-      from: start.pos,
-      to: stop.pos,
-      handleIds: [start.id, stop.id],
-      orientation: data.orientation,
-      cssClass,
-      isVisible: data.intervals[id],
-      role,
-    }),
+  const intervals = intervalIds.map(
+    (id, idx): Interval => {
+      const { lhsHandleId, rhsHandleId } = intervalDict[id];
+      return {
+        id,
+        from:
+          idx > 0 && lhsHandleId
+            ? getRelativePosition(min, max, handleDict[lhsHandleId].value)
+            : 0,
+        to:
+          idx < handleIds.length && rhsHandleId
+            ? getRelativePosition(min, max, handleDict[rhsHandleId].value)
+            : 100,
+        cssClass: intervalCSSClass,
+        orientation,
+        isVisible: intervalDict[id].isVisible,
+        role: 'interval',
+      };
+    },
   );
 
   return intervals;
 }
 
+// TODO: Make it recursive to create cells inside big cell and cells inside medium cell
+// eslint-disable-next-line complexity
+function createGridCellsState({
+  min,
+  max,
+  orientation,
+  cssClass,
+  grid,
+}: Data): GridCell[] {
+  const { numCells } = grid;
+  const rangeSize = Math.abs(max - min);
+  const cells: { [position: number]: GridCell } = {};
+  const role = 'grid-cell';
+  const gridCellCSSClass = `${cssClass}__${role}`;
+
+  let totalCells = 1;
+  for (let i = 0; i < numCells.length; i += 1) {
+    if (numCells[i] > 0) {
+      totalCells *= numCells[i];
+      const cellSize = rangeSize / totalCells;
+      for (let j = 0; j <= totalCells; j += 1) {
+        const value = min + cellSize * j;
+        const position = parseFloat(
+          (((j * cellSize) / rangeSize) * 100).toFixed(2),
+        );
+
+        if (cells[position] === undefined) {
+          cells[position] = {
+            label: `${parseFloat(value.toFixed(2))}`,
+            isVisibleLabel: i === 0,
+            level: i + 1,
+            orientation,
+            cssClass: gridCellCSSClass,
+            position,
+            role,
+          };
+        }
+      }
+    }
+  }
+
+  return Object.keys(cells)
+    .sort((a, b) => parseFloat(a) - parseFloat(b))
+    .map((key: string) => cells[parseFloat(key)]);
+}
+
+/**
+ * Create Grid state from model Data
+ * @param param0 model Data
+ */
+function createGridState(data: Data): Grid {
+  const { min, max, cssClass, orientation, grid } = data;
+  return {
+    min,
+    max,
+    orientation,
+    isVisible: grid.isVisible,
+    cssClass: `${cssClass}__grid`,
+    cells: createGridCellsState(data),
+    role: 'grid',
+  };
+}
+
+/**
+ * Create Track state from model Data
+ * @param param0 model Data
+ */
+function createTrackState({ orientation, cssClass }: Data): Track {
+  return {
+    orientation,
+    cssClass: `${cssClass}__track`,
+    role: 'track',
+  };
+}
+
 function convertDataToState(data: Data): State {
   return {
     cssClass: data.cssClass,
-    track: {
-      orientation: data.orientation,
-      cssClass: `${data.cssClass}__track`,
-    },
-    grid: {
-      isVisible: data.grid.isVisible,
-      orientation: data.orientation,
-      cssClass: `${data.cssClass}__grid`,
-      numCells: data.grid.numCells,
-      min: data.min,
-      max: data.max,
-    },
-    intervals: createIntervals(data),
-    handles: createHandles(data),
-    tooltips: createTooltips(data),
+    track: createTrackState(data),
+    grid: createGridState(data),
+    intervals: createIntervalsState(data),
+    handles: createHandlesState(data),
+    tooltips: createTooltipsState(data),
   };
 }
 
