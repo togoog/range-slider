@@ -24,12 +24,12 @@ function intervalView({
   const styles: StyleInfo = {
     [origin]: `${from}%`,
     [dimension]: `${to - from}%`,
-    display: isVisible ? 'block' : 'none',
   };
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
     [`${cssClass}_${orientation}`]: true,
+    [`${cssClass}_is-hidden`]: !isVisible,
   };
 
   return html`

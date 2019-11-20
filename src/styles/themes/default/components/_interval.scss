@@ -12,4 +12,8 @@
   @include modifier('vertical') {
     width: $base-size * 0.6;
   }
+
+  @include modifier('is-hidden') {
+    display: none;
+  }
 }

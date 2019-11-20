@@ -17,6 +17,10 @@
     transform: translateY(50%) translateX(calc(#{- $base-size * 2.3} - 50%));
   }
 
+  @include modifier('is-hidden') {
+    display: none;
+  }
+
   @include modifier('has-collisions') {
     opacity: 0;
     z-index: -10;

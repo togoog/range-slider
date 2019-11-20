@@ -15,6 +15,10 @@
     width: $base-size / 15;
     transform: translateX($base-size * 1.5);
   }
+
+  @include modifier('is-hidden') {
+    display: none;
+  }
 }
 
 @include element('grid-cell') {
