@@ -8,6 +8,7 @@ function gridView({
   isVisible,
   cssClass,
   orientation,
+  role,
 }: Grid): TemplateResult {
   const cssClasses: ClassInfo = {
     [cssClass]: true,
@@ -16,7 +17,7 @@ function gridView({
   };
 
   return html`
-    <div class=${classMap(cssClasses)}>
+    <div class=${classMap(cssClasses)} data-role=${role}>
       ${cells.map(cellView)}
     </div>
   `;

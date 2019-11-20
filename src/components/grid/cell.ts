@@ -11,6 +11,7 @@ function cellView({
   position,
   orientation,
   cssClass,
+  role,
 }: GridCell): TemplateResult {
   const origin = convertOrientationToOrigin(orientation);
 
@@ -37,7 +38,11 @@ function cellView({
     : null;
 
   return html`
-    <div class=${classMap(cellCSSClasses)} style=${styleMap(styles)}>
+    <div
+      class=${classMap(cellCSSClasses)}
+      style=${styleMap(styles)}
+      data-role=${role}
+    >
       ${labelHTML}
     </div>
   `;

@@ -11,8 +11,8 @@ function tooltipView({
   content,
   isVisible,
   hasCollisions,
-  role,
   cssClass,
+  role,
 }: Tooltip): TemplateResult {
   const origin = convertOrientationToOrigin(orientation);
 
