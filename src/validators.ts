@@ -22,11 +22,11 @@ function isBoolean(v: unknown): v is boolean {
   return typeof v === 'boolean';
 }
 
-function isArrayOfNumbers(v: unknown): v is [number, number] {
+function isArrayOfNumbers(v: unknown): v is number[] {
   return allPass([isArray, all(isNumber)])(v);
 }
 
-function isArrayOfBooleans(v: unknown): v is [boolean, boolean] {
+function isArrayOfBooleans(v: unknown): v is boolean[] {
   return allPass([isArray, all(isBoolean)])(v);
 }
 
