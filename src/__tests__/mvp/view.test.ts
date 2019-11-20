@@ -1,5 +1,5 @@
-import View from '../mvp/view';
-import { State } from '../types';
+import View from '../../mvp/view';
+import { State } from '../../types';
 
 const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;

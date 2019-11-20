@@ -1,6 +1,6 @@
 import { Right } from 'purify-ts/Either';
 import { multiply, add, subtract, fromPairs, indexBy, prop, map } from 'ramda';
-import { Data, Proposal } from '../types';
+import { Data, Proposal } from '../../types';
 import {
   Model,
   // errors
@@ -9,8 +9,8 @@ import {
   errMinMax,
   errTooltipsCount,
   errIntervalsCount,
-} from '../mvp/model';
-import * as defaults from '../defaults';
+} from '../../mvp/model';
+import * as defaults from '../../defaults';
 
 describe('Model.checkDataIntegrity', () => {
   test('should contain errMinMax', () => {
