@@ -76,7 +76,7 @@ function convertOptionsToData(options: Options): Data {
   const handlesList = value.map(
     (val, idx): HandleData => ({
       id: createId('handle', idx),
-      value: clamp(min, max, closestToStep(step, val)),
+      value: closestToStep(min, max, step, val),
       tooltipId: createId('tooltip', idx),
       lhsIntervalId: createId('interval', idx),
       rhsIntervalId: createId('interval', idx + 1),

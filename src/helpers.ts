@@ -38,8 +38,25 @@ function toArray<T>(v: T | T[]): T[] {
  * @param step
  * @param value
  */
-function closestToStep(step: number, value: number): number {
-  return step <= 0 ? value : Math.round(value / step) * step;
+function closestToStep(
+  min: number,
+  max: number,
+  step: number,
+  value: number,
+): number {
+  if (value < min) {
+    return min;
+  }
+
+  if (value > max) {
+    return max;
+  }
+
+  if (step <= 0) {
+    return value;
+  }
+
+  return min + Math.round((value - min) / step) * step;
 }
 
 /**

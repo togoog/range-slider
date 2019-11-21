@@ -82,7 +82,7 @@ class Presenter implements RangeSliderPresenter {
 
             return {
               ...handleDict[id],
-              value: clamp(min, max, closestToStep(step, absVal)),
+              value: closestToStep(min, max, step, absVal),
             };
           },
         );
