@@ -1,181 +1,62 @@
-import { Options, Data } from '../../types';
+import * as fc from 'fast-check';
 import { convertOptionsToData } from '../../converters';
+import { makeOptions } from '../arbitraries';
+import { toArray, closestToStep } from '../../helpers';
 import * as defaults from '../../defaults';
 
 test('convertOptionsToData', () => {
-  const options: Options = {
-    value: 50,
-    min: 0,
-    max: 100,
-    step: 1,
-    cssClass: 'range-slider',
-    orientation: 'horizontal',
-    tooltips: true,
-    tooltipFormatter: defaults.tooltipFormatter,
-    intervals: true,
-    grid: false,
-  };
+  fc.assert(
+    fc.property(makeOptions(), options => {
+      const data = convertOptionsToData(options);
+      const optValue = toArray(options.value);
 
-  const data: Data = {
-    handleDict: {
-      handle_0: {
-        id: 'handle_0',
-        value: 50,
-        tooltipId: 'tooltip_0',
-        lhsIntervalId: 'interval_0',
-        rhsIntervalId: 'interval_1',
-      },
-    },
-    handleIds: ['handle_0'],
-    activeHandleId: null,
-    min: 0,
-    max: 100,
-    step: 1,
-    cssClass: 'range-slider',
-    orientation: 'horizontal',
-    tooltipDict: {
-      tooltip_0: { id: 'tooltip_0', isVisible: true, handleId: 'handle_0' },
-    },
-    tooltipIds: ['tooltip_0'],
-    tooltipFormatter: defaults.tooltipFormatter,
-    tooltipCollisions: [],
-    intervalDict: {
-      interval_0: {
-        id: 'interval_0',
-        isVisible: true,
-        lhsHandleId: null,
-        rhsHandleId: 'handle_0',
-      },
-      interval_1: {
-        id: 'interval_1',
-        isVisible: false,
-        lhsHandleId: 'handle_0',
-        rhsHandleId: null,
-      },
-    },
-    intervalIds: ['interval_0', 'interval_1'],
-    grid: { isVisible: false, numCells: defaults.gridNumCells },
-  };
+      // Common
+      expect(data.min).toEqual(options.min);
+      expect(data.max).toEqual(options.max);
+      expect(data.step).toEqual(options.step);
+      expect(data.orientation).toEqual(options.orientation);
+      expect(data.cssClass).toEqual(options.cssClass);
 
-  expect(convertOptionsToData(options)).toEqual(data);
+      // Handles
+      expect(data.handleIds.length).toEqual(optValue.length);
+      expect(Object.keys(data.handleDict).length).toEqual(optValue.length);
+      expect(Object.keys(data.handleDict).length).toEqual(
+        data.handleIds.length,
+      );
+      expect(Object.values(data.handleDict).map(v => v.value)).toEqual(
+        optValue.map(v =>
+          closestToStep(options.min, options.max, options.step, v),
+        ),
+      );
+      expect(data.activeHandleId).toEqual(null);
 
-  const options_1: Options = {
-    value: [-20, 0, 60, 70],
-    min: -100,
-    max: 100,
-    step: 5,
-    cssClass: 'range-slider',
-    orientation: 'vertical',
-    tooltips: true,
-    tooltipFormatter: defaults.tooltipFormatter,
-    intervals: false,
-    grid: { isVisible: true, numCells: [2, 3] },
-  };
+      // Tooltips
+      expect(data.tooltipIds.length).toEqual(optValue.length);
+      expect(Object.keys(data.tooltipDict).length).toEqual(optValue.length);
+      expect(Object.keys(data.tooltipDict).length).toEqual(
+        data.tooltipIds.length,
+      );
 
-  const data_1: Data = {
-    handleDict: {
-      handle_0: {
-        id: 'handle_0',
-        value: -20,
-        tooltipId: 'tooltip_0',
-        lhsIntervalId: 'interval_0',
-        rhsIntervalId: 'interval_1',
-      },
-      handle_1: {
-        id: 'handle_1',
-        value: 0,
-        tooltipId: 'tooltip_1',
-        lhsIntervalId: 'interval_1',
-        rhsIntervalId: 'interval_2',
-      },
-      handle_2: {
-        id: 'handle_2',
-        value: 60,
-        tooltipId: 'tooltip_2',
-        lhsIntervalId: 'interval_2',
-        rhsIntervalId: 'interval_3',
-      },
-      handle_3: {
-        id: 'handle_3',
-        value: 70,
-        tooltipId: 'tooltip_3',
-        lhsIntervalId: 'interval_3',
-        rhsIntervalId: 'interval_4',
-      },
-    },
-    handleIds: ['handle_0', 'handle_1', 'handle_2', 'handle_3'],
-    activeHandleId: null,
-    min: -100,
-    max: 100,
-    step: 5,
-    cssClass: 'range-slider',
-    orientation: 'vertical',
-    tooltipDict: {
-      tooltip_0: {
-        id: 'tooltip_0',
-        isVisible: true,
-        handleId: 'handle_0',
-      },
-      tooltip_1: {
-        id: 'tooltip_1',
-        isVisible: true,
-        handleId: 'handle_1',
-      },
-      tooltip_2: {
-        id: 'tooltip_2',
-        isVisible: true,
-        handleId: 'handle_2',
-      },
-      tooltip_3: {
-        id: 'tooltip_3',
-        isVisible: true,
-        handleId: 'handle_3',
-      },
-    },
-    tooltipIds: ['tooltip_0', 'tooltip_1', 'tooltip_2', 'tooltip_3'],
-    tooltipFormatter: defaults.tooltipFormatter,
-    tooltipCollisions: [],
-    intervalDict: {
-      interval_0: {
-        id: 'interval_0',
-        isVisible: false,
-        lhsHandleId: null,
-        rhsHandleId: 'handle_0',
-      },
-      interval_1: {
-        id: 'interval_1',
-        isVisible: false,
-        lhsHandleId: 'handle_0',
-        rhsHandleId: 'handle_1',
-      },
-      interval_2: {
-        id: 'interval_2',
-        isVisible: false,
-        lhsHandleId: 'handle_1',
-        rhsHandleId: 'handle_2',
-      },
-      interval_3: {
-        id: 'interval_3',
-        isVisible: false,
-        lhsHandleId: 'handle_2',
-        rhsHandleId: 'handle_3',
-      },
-      interval_4: {
-        id: 'interval_4',
-        isVisible: false,
-        lhsHandleId: 'handle_3',
-        rhsHandleId: null,
-      },
-    },
-    intervalIds: [
-      'interval_0',
-      'interval_1',
-      'interval_2',
-      'interval_3',
-      'interval_4',
-    ],
-    grid: { isVisible: true, numCells: [2, 3] },
-  };
+      // Intervals
+      expect(data.intervalIds.length).toEqual(optValue.length + 1);
+      expect(Object.keys(data.intervalDict).length).toEqual(
+        optValue.length + 1,
+      );
+      expect(Object.keys(data.intervalDict).length).toEqual(
+        data.intervalIds.length,
+      );
 
-  expect(convertOptionsToData(options_1)).toEqual(data_1);
+      // Grid
+      expect(data.grid.isVisible).toEqual(
+        typeof options.grid === 'boolean'
+          ? options.grid
+          : options.grid.isVisible,
+      );
+      expect(data.grid.numCells).toEqual(
+        typeof options.grid === 'boolean'
+          ? defaults.gridNumCells
+          : options.grid.numCells,
+      );
+    }),
+  );
 });
