@@ -200,6 +200,11 @@ function createGridCellsState({
   cssClass,
   grid,
 }: Data): GridCell[] {
+  if (min === max) {
+    // no point in creating grid
+    return [];
+  }
+
   const { numCells } = grid;
   const rangeSize = Math.abs(max - min);
   const cells: { [position: number]: GridCell } = {};
