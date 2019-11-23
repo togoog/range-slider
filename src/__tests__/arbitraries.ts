@@ -51,7 +51,7 @@ function makeData() {
     })
     .map(({ value, orientation, numCells, seed }) => {
       const min = Math.round(value[0] - seed);
-      const max = Math.round(value[value.length - 1] + seed);
+      const max = Math.round(value[value.length - 1] + seed + 1);
       const step = Math.min(max - min, seed);
 
       const handlesList = value.map(
