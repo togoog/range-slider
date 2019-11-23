@@ -71,46 +71,46 @@ describe('Handle', () => {
 
   test(`View should emit ${View.EVENT_HANDLE_MOVE_START} on Handle mouseDown`, () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     const dragStartListener = jest.fn();
     view.on(View.EVENT_HANDLE_MOVE_START, dragStartListener);
     view.render(state);
-    const $handle = document.getElementsByClassName(
+    const handle = document.getElementsByClassName(
       handleCSSClass,
     )[0] as HTMLElement;
-    fireEvent.mouseDown($handle);
+    fireEvent.mouseDown(handle);
     expect(dragStartListener).toBeCalledTimes(1);
     expect(dragStartListener).toBeCalledWith('handle_0');
   });
 
   test(`View should emit ${View.EVENT_HANDLE_MOVE_END} on Handle mouseUp`, () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     const dragEndListener = jest.fn();
     view.on(View.EVENT_HANDLE_MOVE_END, dragEndListener);
     view.render(state);
-    const $handle = document.getElementsByClassName(
+    const handle = document.getElementsByClassName(
       handleCSSClass,
     )[0] as HTMLElement;
-    fireEvent.mouseDown($handle);
-    fireEvent.mouseUp($handle);
+    fireEvent.mouseDown(handle);
+    fireEvent.mouseUp(handle);
     expect(dragEndListener).toBeCalledTimes(1);
   });
 
   test(`View should emit ${View.EVENT_HANDLE_MOVE} on Handle move`, () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     const dragListener = jest.fn();
     view.on(View.EVENT_HANDLE_MOVE, dragListener);
     view.render(state);
-    const $handle = document.getElementsByClassName(
+    const handle = document.getElementsByClassName(
       handleCSSClass,
     )[0] as HTMLElement;
-    fireEvent.mouseDown($handle);
-    fireEvent.mouseMove($handle, { clientX: 100 });
+    fireEvent.mouseDown(handle);
+    fireEvent.mouseMove(handle, { clientX: 100 });
     expect(dragListener).toBeCalledTimes(1);
   });
 });

@@ -92,24 +92,24 @@ const state: State = {
 describe('Interval', () => {
   test('interval should be hidden if isVisible = false', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
-    let $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect($intervals).toHaveLength(0);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
+    let intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(intervals).toHaveLength(0);
     view.render(state);
-    $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect($intervals).toHaveLength(1);
-    expect(window.getComputedStyle($intervals[0]).display).toBe('block');
+    intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(intervals).toHaveLength(1);
+    expect(window.getComputedStyle(intervals[0]).display).toBe('block');
   });
 
   test('should position interval relative to beginning of track (horizontal)', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     view.render(state);
-    const $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect(window.getComputedStyle($intervals[0]).left).toBe('20%');
-    expect(window.getComputedStyle($intervals[0]).width).toBe('20%');
+    const intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(window.getComputedStyle(intervals[0]).left).toBe('20%');
+    expect(window.getComputedStyle(intervals[0]).width).toBe('20%');
   });
 
   test('should position interval relative to beginning of track (vertical)', () => {
@@ -202,11 +202,11 @@ describe('Interval', () => {
     };
 
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     view.render(state);
-    const $intervals = document.getElementsByClassName(intervalCSSClass);
-    expect(window.getComputedStyle($intervals[0]).bottom).toBe('20%');
-    expect(window.getComputedStyle($intervals[0]).height).toBe('20%');
+    const intervals = document.getElementsByClassName(intervalCSSClass);
+    expect(window.getComputedStyle(intervals[0]).bottom).toBe('20%');
+    expect(window.getComputedStyle(intervals[0]).height).toBe('20%');
   });
 });

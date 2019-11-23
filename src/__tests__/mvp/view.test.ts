@@ -98,30 +98,30 @@ describe('View.render', () => {
 
   test('should render track', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
-    let $interval = document.getElementsByClassName(trackCSSClass);
-    expect($interval).toHaveLength(0);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
+    let interval = document.getElementsByClassName(trackCSSClass);
+    expect(interval).toHaveLength(0);
     view.render(state);
-    $interval = document.getElementsByClassName(trackCSSClass);
-    expect($interval).toHaveLength(1);
+    interval = document.getElementsByClassName(trackCSSClass);
+    expect(interval).toHaveLength(1);
   });
 
   test('should render grid', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
-    let $grid = document.getElementsByClassName(gridCSSClass);
-    expect($grid).toHaveLength(0);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
+    let grid = document.getElementsByClassName(gridCSSClass);
+    expect(grid).toHaveLength(0);
     view.render(state);
-    $grid = document.getElementsByClassName(gridCSSClass);
-    expect($grid).toHaveLength(1);
+    grid = document.getElementsByClassName(gridCSSClass);
+    expect(grid).toHaveLength(1);
   });
 
   test('should render only visible intervals (with isVisible = true)', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     let intervals = document.getElementsByClassName(intervalCSSClass);
     expect(intervals).toHaveLength(0);
     view.render(state);
@@ -131,8 +131,8 @@ describe('View.render', () => {
 
   test('should render handles', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
     expect(
       document.getElementsByClassName(state.handles[0].cssClass).length,
     ).toBe(0);
@@ -144,12 +144,12 @@ describe('View.render', () => {
 
   test('should render tooltips', () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const $el = document.querySelector('#root');
-    const view = new View($el as HTMLElement);
-    let $tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
-    expect($tooltips.length).toBe(0);
+    const el = document.querySelector('#root');
+    const view = new View(el as HTMLElement);
+    let tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
+    expect(tooltips.length).toBe(0);
     view.render(state);
-    $tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
-    expect($tooltips.length).toBe(2);
+    tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
+    expect(tooltips.length).toBe(2);
   });
 });
