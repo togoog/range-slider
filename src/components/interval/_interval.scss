@@ -1,0 +1,25 @@
+$interval-bg: $color-secondary-light !default;
+$interval-border-width: 0px !default;
+$interval-border-style: solid !default;
+$interval-border-color: darken($color-primary-dark, 10%) !default;
+$interval-radius: $base-size / 3 !default;
+$interval-thickness: $base-size * 0.6 !default;
+
+@include element('interval') {
+  position: absolute;
+  background: $interval-bg;
+  border: $interval-border-width $interval-border-style $interval-border-color;
+  border-radius: $interval-radius;
+
+  @include modifier('horizontal') {
+    height: $interval-thickness;
+  }
+
+  @include modifier('vertical') {
+    width: $interval-thickness;
+  }
+
+  @include modifier('is-hidden') {
+    display: none;
+  }
+}

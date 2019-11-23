@@ -1,0 +1,40 @@
+$handle-width: $base-size * 1.5 !default;
+$handle-height: $base-size * 1.5 !default;
+$handle-bg: $color-primary !default;
+$handle-border-width: 0px !default;
+$handle-border-style: solid !default;
+$handle-border-color: darken($color-primary-dark, 10%) !default;
+$handle-radius: $base-size !default;
+
+@include element('handle') {
+  position: absolute;
+  width: $handle-width;
+  height: $handle-height;
+  background: $handle-bg;
+  border: $handle-border-width $handle-border-style $handle-border-color;
+  border-radius: $handle-radius;
+
+  @include modifier('horizontal') {
+    transform: translateX(-50%);
+  }
+
+  @include modifier('vertical') {
+    transform: translateY(50%);
+  }
+
+  @include modifier('active') {
+    width: $handle-width * 1.15;
+    height: $handle-height * 1.15;
+    z-index: 1;
+
+    &-horizontal {
+      transform-origin: left;
+      transform: translateX(-50%);
+    }
+
+    &-vertical {
+      transform-origin: center;
+      transform: translateY(50%);
+    }
+  }
+}

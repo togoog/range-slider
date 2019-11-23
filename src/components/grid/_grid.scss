@@ -1,0 +1,24 @@
+$grid-bg: $color-primary-dark !default;
+$grid-offset: $base-size * 1.3 !default;
+$grid-thickness: $base-size / 15 !default;
+
+@include element('grid') {
+  position: absolute;
+  background: $grid-bg;
+
+  @include modifier('horizontal') {
+    width: 100%;
+    top: $grid-offset;
+    height: $grid-thickness;
+  }
+
+  @include modifier('vertical') {
+    height: 100%;
+    width: $grid-thickness;
+    transform: translateX($grid-offset * 1.2);
+  }
+
+  @include modifier('is-hidden') {
+    display: none;
+  }
+}

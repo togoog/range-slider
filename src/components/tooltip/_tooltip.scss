@@ -1,0 +1,38 @@
+$tooltip-padding: $base-size * 0.5 $base-size * 1.1 !default;
+$tooltip-bg: $color-secondary !default;
+$tooltip-border-width: 0px !default;
+$tooltip-border-style: solid !default;
+$tooltip-border-color: darken($color-primary-dark, 10%) !default;
+$tooltip-offset: $base-size * 1.2 !default;
+$tooltip-radius: $base-size / 3 !default;
+$tooltip-font-size: $base-size !default;
+$tooltip-text-color: $color-secondary-text !default;
+
+@include element('tooltip') {
+  position: absolute;
+  padding: $tooltip-padding;
+  background: $tooltip-bg;
+  border: $tooltip-border-width $tooltip-border-style $tooltip-border-color;
+  bottom: $tooltip-offset;
+  border-radius: $tooltip-radius;
+  font-size: $tooltip-font-size;
+  text-color: $tooltip-text-color;
+
+  @include modifier('horizontal') {
+    transform: translateX(-50%);
+  }
+
+  @include modifier('vertical') {
+    transform: translateY(50%)
+      translateX(calc(#{- $tooltip-offset * 1.2} - 50%));
+  }
+
+  @include modifier('is-hidden') {
+    display: none;
+  }
+
+  @include modifier('has-collisions') {
+    opacity: 0;
+    z-index: -10;
+  }
+}

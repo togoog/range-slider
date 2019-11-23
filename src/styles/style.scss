@@ -1,4 +1,4 @@
-@import './themes/modern/vars';
+@import './themes/default';
 @import './mixins';
 
 .range-slider {
@@ -15,5 +15,5 @@
     flex-direction: column;
   }
 
-  @import './themes/modern/components';
+  @import '../components';
 }

@@ -1,4 +1,6 @@
-// Colors
+//=== Base vars ===
+
+//== Colors
 $color-primary: #1b5e20;
 $color-primary-light: #4c8c4a;
 $color-primary-dark: #003300;
@@ -8,8 +10,13 @@ $color-secondary-light: #f05545;
 $color-secondary-dark: #7f0000;
 $color-secondary-text: #ffffff;
 
-// Typography
+//== Typography
 $font: 'Open Sans', Arial, sans-serif !default;
 
-// Sizes
+//== Sizes
 $base-size: 1rem;
+
+//=== Components ===
+
+//== Handle
+$handle-radius: 4px;
