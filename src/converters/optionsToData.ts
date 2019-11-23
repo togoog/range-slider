@@ -1,4 +1,4 @@
-import { clamp, indexBy, prop, pluck } from 'ramda';
+import { indexBy, prop, pluck } from 'ramda';
 import { isBoolean } from 'ramda-adjunct';
 import {
   Data,
