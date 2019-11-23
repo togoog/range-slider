@@ -14,13 +14,13 @@ import {
 } from '../components';
 
 class View extends EventEmitter implements RangeSliderView {
-  static EVENT_HANDLE_MOVE_START = 'View/Handle/moveStart';
+  static EVENT_HANDLE_MOVE_START = 'RangeSlider/View/handleMoveStart';
 
-  static EVENT_HANDLE_MOVE_END = 'View/Handle/moveEnd';
+  static EVENT_HANDLE_MOVE_END = 'RangeSlider/View/handleMoveEnd';
 
-  static EVENT_HANDLE_MOVE = 'View/Handle/move';
+  static EVENT_HANDLE_MOVE = 'RangeSlider/View/handleMove';
 
-  static EVENT_TOOLTIP_COLLISIONS = 'View/TooltipCollisions';
+  static EVENT_TOOLTIP_COLLISIONS = 'RangeSlider/View/tooltipCollisions';
 
   // mouse pointer offset X coordinate for Handle when dragging
   private handleShiftX = 0;

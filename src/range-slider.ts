@@ -1,17 +1,47 @@
-import { mergeAll } from 'ramda';
+import { mergeAll, pick, forEach } from 'ramda';
+import { EventEmitter } from 'events';
 import {
   Plugin,
+  RangeSliderError,
   RangeSliderModel,
   RangeSliderView,
   RangeSliderPresenter,
   Options,
   OptionsKey,
+  Data,
 } from './types';
 import { Model, View, Presenter } from './mvp';
 import { selectElements } from './helpers';
-import { logError } from './services/logger';
+import logError from './services/logger';
 import { convertOptionsToData, convertDataToOptions } from './converters';
 import { checkRangeSliderOptions } from './validators';
+
+//
+// ─── ERROR IDS ──────────────────────────────────────────────────────────────────
+//
+
+const ErrorCanNotFindDOMElements = 'RangeSlider/ErrorCanNotFindDOMElements';
+const ErrorNotValidSourceType = 'RangeSlider/ErrorNotValidSourceType';
+
+//
+// ─── ERROR CONSTRUCTORS ─────────────────────────────────────────────────────────
+//
+
+function errCanNotFindDOMElements(selector: string): RangeSliderError {
+  return {
+    id: ErrorCanNotFindDOMElements,
+    desc: `(can't find DOM elements with selector: ${selector})`,
+  };
+}
+
+function errNotValidSourceType(source: string): RangeSliderError {
+  return {
+    id: ErrorNotValidSourceType,
+    desc: `(source should be a CSS selector, HtmlElement or array of HtmlElements, instead ${source} given)`,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
 
 const defaultOptions: Options = {
   value: 50,
@@ -26,7 +56,11 @@ const defaultOptions: Options = {
   grid: false,
 };
 
-class RangeSlider implements Plugin {
+class RangeSlider extends EventEmitter implements Plugin {
+  static EVENT_UPDATE = 'RangeSlider/update';
+
+  static EVENT_ERRORS = 'RangeSlider/errors';
+
   private model!: RangeSliderModel;
 
   private view!: RangeSliderView;
@@ -34,40 +68,53 @@ class RangeSlider implements Plugin {
   private presenter!: RangeSliderPresenter;
 
   constructor(el: HTMLElement, options: Partial<Options> = defaultOptions) {
+    super();
+
     const mergedOptions = mergeAll([defaultOptions, options]) as Options;
     const rs = this;
 
     checkRangeSliderOptions(mergedOptions)
-      .mapLeft(err => logError('RangeSlider', err))
+      .mapLeft(forEach(logError))
       .map(options => {
         const data = convertOptionsToData(options);
         rs.model = new Model(data);
         rs.view = new View(el);
-        rs.presenter = new Presenter(this.model, this.view);
+        rs.presenter = new Presenter(rs.model, rs.view);
+        rs.processModelEvents();
       });
   }
 
-  get<T extends OptionsKey>(key: T): Options[T] {
+  get<K extends OptionsKey>(key: K): Options[K] {
     const options = convertDataToOptions(this.model.getAll());
     return options[key];
   }
 
-  set<T extends OptionsKey>(key: T, value: Options[T]): RangeSlider {
+  getAll() {
+    return convertDataToOptions(this.model.getAll());
+  }
+
+  pick<K extends OptionsKey>(keys: K[]): Partial<Options> {
     const options = convertDataToOptions(this.model.getAll());
-    options[key] = value;
-    const data = convertOptionsToData(options);
-    this.model.setAll(data);
+    return pick(keys, options);
+  }
+
+  set<K extends OptionsKey>(newOptions: Partial<Options>): RangeSlider {
+    const options = convertDataToOptions(this.model.getAll());
+    const mergedOptions = mergeAll([options, newOptions]) as Options;
+    const newData = convertOptionsToData(mergedOptions);
+    this.model.set(newData);
     return this;
   }
 
-  getAll(): Options {
-    const options = convertDataToOptions(this.model.getAll());
-    return options;
-  }
+  private processModelEvents(): void {
+    this.model.on(Model.EVENT_UPDATE, (data: Data) => {
+      const options = convertDataToOptions(data);
+      this.emit(RangeSlider.EVENT_UPDATE, options);
+    });
 
-  setAll(options: Options): void {
-    const data = convertOptionsToData(options);
-    this.model.setAll(data);
+    this.model.on(Model.EVENT_ERRORS, (errors: RangeSliderError[]) => {
+      this.emit(RangeSlider.EVENT_ERRORS, errors);
+    });
   }
 }
 
@@ -84,9 +131,7 @@ function createRangeSlider(
 ): RangeSlider[] {
   if (typeof source === 'string') {
     return selectElements(source)
-      .ifNothing(() =>
-        logError('RangeSlider', `can't find elements by selector: ${source}`),
-      )
+      .ifNothing(() => logError(errCanNotFindDOMElements(source)))
       .map(elements => elements.map(el => new RangeSlider(el, options)))
       .toList()
       .flat();
@@ -100,10 +145,7 @@ function createRangeSlider(
     return [new RangeSlider(source, options)];
   }
 
-  logError(
-    'RangeSlider',
-    'provided source is not a valid css selector, HTMLElement or array of HTMLElements',
-  );
+  logError(errNotValidSourceType(source));
 
   return [];
 }

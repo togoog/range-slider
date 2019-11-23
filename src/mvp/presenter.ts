@@ -1,5 +1,6 @@
-import { pipe, clamp, indexBy, prop } from 'ramda';
+import { pipe, indexBy, prop } from 'ramda';
 import {
+  RangeSliderError,
   RangeSliderModel,
   RangeSliderView,
   RangeSliderPresenter,
@@ -7,9 +8,18 @@ import {
   HandleData,
   Data,
 } from '../types';
-import { Model } from './model';
+import {
+  Model,
+  ErrorMinMax,
+  ErrorStepNotInRange,
+  ErrorValuesNotInRange,
+  ErrorValuesOrder,
+  ErrorTooltipsCount,
+  ErrorIntervalsCount,
+} from './model';
 import View from './view';
 import { closestToStep } from '../helpers';
+import logError from '../services/logger';
 import { convertDataToState, convertOrientationToOrigin } from '../converters';
 
 class Presenter implements RangeSliderPresenter {
@@ -29,6 +39,7 @@ class Presenter implements RangeSliderPresenter {
     const renderView = this.view.render.bind(this.view);
 
     this.model.on(Model.EVENT_UPDATE, pipe(convertDataToState, renderView));
+    this.model.on(Model.EVENT_ERRORS, Presenter.onModelErrors);
   }
 
   private processViewEvents(): void {
@@ -96,6 +107,21 @@ class Presenter implements RangeSliderPresenter {
     this.model.propose({
       tooltipCollisions: () => collisions,
     });
+  }
+
+  private static onModelErrors(errors: RangeSliderError[]): void {
+    const errorActionsDict: { [key: string]: Function } = {
+      [ErrorMinMax]: logError,
+      [ErrorStepNotInRange]: logError,
+      [ErrorTooltipsCount]: logError,
+      [ErrorIntervalsCount]: logError,
+      [ErrorValuesNotInRange]: logError,
+      // ValuesOrder error can be a result of dragging a handle
+      // no need to destruct user with error messages in this case
+      [ErrorValuesOrder]: () => 'nothing',
+    };
+
+    errors.forEach(error => errorActionsDict[error.id](error));
   }
 }
 

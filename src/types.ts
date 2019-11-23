@@ -1,8 +1,8 @@
 export type Plugin = {
   get<K extends OptionsKey>(key: K): Options[K];
-  set<K extends OptionsKey>(key: K, value: Options[K]): Plugin;
   getAll(): Options;
-  setAll(options: Options): void;
+  pick<K extends OptionsKey>(keys: K[]): Partial<Options>;
+  set(newOptions: Partial<Options>): Plugin;
 };
 
 export type RangeSliderError = {
@@ -72,10 +72,10 @@ export type OptionsKey = keyof Options;
 //
 
 export type RangeSliderModel = {
-  getAll(): Data;
-  setAll(data: Data): void;
   get<K extends DataKey>(key: K): Data[K];
-  set<K extends DataKey>(key: K, value: Data[K]): RangeSliderModel;
+  getAll(): Data;
+  pick<K extends DataKey>(keys: K[]): Partial<Data>;
+  set(newData: Partial<Data>): RangeSliderModel;
   on(eventName: string, listener: Function): void;
   propose(change: Partial<Proposal>): void;
 };
@@ -142,7 +142,7 @@ export type Data = {
 export type DataKey = keyof Data;
 
 export type Proposal = {
-  [key in keyof Data]: (data: Data) => Data[key];
+  [key in DataKey]: (data: Data) => Data[key];
 };
 
 //
