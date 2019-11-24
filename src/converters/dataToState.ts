@@ -22,14 +22,14 @@ function createHandlesState({
   max,
   orientation,
   cssClass,
-  handleIds,
+  handlesStackOrder,
   handleDict,
   activeHandleIds,
 }: Data): Handle[] {
   const role = 'handle';
   const handleCSSClass = `${cssClass}__${role}`;
 
-  const handles = handleIds.map(
+  const handles = handlesStackOrder.map(
     (id): Handle => ({
       id,
       orientation,

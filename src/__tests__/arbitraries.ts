@@ -100,6 +100,7 @@ function makeData() {
         handleIds: pluck('id', handlesList),
         handleDict: indexBy(prop('id'), handlesList),
         activeHandleIds: seed < 50 ? [] : [handlesList[0].id],
+        handlesStackOrder: pluck('id', handlesList),
 
         // Tooltips
         tooltipIds: pluck('id', tooltipsList),

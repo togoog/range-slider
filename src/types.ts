@@ -123,6 +123,7 @@ export type Data = {
   handleDict: { [handleId: string]: HandleData };
   handleIds: HandleId[];
   activeHandleIds: HandleId[];
+  handlesStackOrder: HandleId[];
 
   /** TOOLTIPS */
   tooltipDict: { [tooltipId: string]: TooltipData };

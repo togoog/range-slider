@@ -1,4 +1,4 @@
-import { pipe, indexBy, prop } from 'ramda';
+import { pipe, indexBy, prop, without } from 'ramda';
 import {
   RangeSliderError,
   RangeSliderModel,
@@ -57,6 +57,10 @@ class Presenter implements RangeSliderPresenter {
 
   private onHandleMoveStart(handleId: HandleId): void {
     this.model.propose({
+      handlesStackOrder: ({ handleIds }) => [
+        ...without([handleId], handleIds),
+        handleId,
+      ],
       activeHandleIds: () => [handleId],
     });
   }

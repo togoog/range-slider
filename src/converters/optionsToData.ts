@@ -111,6 +111,7 @@ function convertOptionsToData(options: Options): Data {
     handleDict: indexBy(prop('id'), handlesList),
     handleIds: pluck('id', handlesList),
     activeHandleIds: [],
+    handlesStackOrder: pluck('id', handlesList),
 
     /** TOOLTIPS */
     tooltipDict: indexBy(prop('id'), tooltipsList),
