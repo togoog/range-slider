@@ -124,7 +124,10 @@ function fillArrayWith<A, B>(
  * @param value current value
  */
 function getRelativePosition(min: number, max: number, value: number): number {
-  return ((value - min) / (max - min)) * 100;
+  const absValue = (value - min) / (max - min);
+  const roundedValue = Number(absValue.toFixed(3));
+
+  return roundedValue * 100;
 }
 
 export {
