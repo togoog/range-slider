@@ -99,7 +99,7 @@ function makeData() {
         // Handles
         handleIds: pluck('id', handlesList),
         handleDict: indexBy(prop('id'), handlesList),
-        activeHandleId: seed < 50 ? null : handlesList[0].id,
+        activeHandleIds: seed < 50 ? [] : [handlesList[0].id],
 
         // Tooltips
         tooltipIds: pluck('id', tooltipsList),

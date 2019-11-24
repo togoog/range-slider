@@ -24,7 +24,7 @@ function createHandlesState({
   cssClass,
   handleIds,
   handleDict,
-  activeHandleId,
+  activeHandleIds,
 }: Data): Handle[] {
   const role = 'handle';
   const handleCSSClass = `${cssClass}__${role}`;
@@ -34,7 +34,7 @@ function createHandlesState({
       id,
       orientation,
       position: getRelativePosition(min, max, handleDict[id].value),
-      isActive: activeHandleId === id,
+      isActive: activeHandleIds.includes(id),
       cssClass: handleCSSClass,
       role,
     }),

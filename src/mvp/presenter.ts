@@ -57,13 +57,13 @@ class Presenter implements RangeSliderPresenter {
 
   private onHandleMoveStart(handleId: HandleId): void {
     this.model.propose({
-      activeHandleId: () => handleId,
+      activeHandleIds: () => [handleId],
     });
   }
 
   private onHandleMoveEnd(): void {
     this.model.propose({
-      activeHandleId: () => null,
+      activeHandleIds: () => [],
     });
   }
 
@@ -79,11 +79,11 @@ class Presenter implements RangeSliderPresenter {
         orientation,
         handleDict,
         handleIds,
-        activeHandleId,
+        activeHandleIds,
       }: Data) => {
         const handles = handleIds.map(
           (id): HandleData => {
-            if (activeHandleId !== id) {
+            if (!activeHandleIds.includes(id)) {
               return handleDict[id];
             }
 

@@ -28,7 +28,7 @@ test('convertOptionsToData', () => {
           closestToStep(options.min, options.max, options.step, v),
         ),
       );
-      expect(data.activeHandleId).toEqual(null);
+      expect(data.activeHandleIds).toEqual([]);
 
       // Tooltips
       expect(data.tooltipIds.length).toEqual(optValue.length);

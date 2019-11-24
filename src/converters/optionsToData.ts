@@ -110,7 +110,7 @@ function convertOptionsToData(options: Options): Data {
     /** HANDLES */
     handleDict: indexBy(prop('id'), handlesList),
     handleIds: pluck('id', handlesList),
-    activeHandleId: null,
+    activeHandleIds: [],
 
     /** TOOLTIPS */
     tooltipDict: indexBy(prop('id'), tooltipsList),

@@ -25,7 +25,9 @@ test('convertDataToState', () => {
       expect(state.handles.length).toEqual(data.handleIds.length);
       state.handles.map(handle => {
         expect(handle.cssClass).toEqual(`${data.cssClass}__handle`);
-        expect(handle.isActive).toEqual(data.activeHandleId === handle.id);
+        expect(handle.isActive).toEqual(
+          data.activeHandleIds.includes(handle.id),
+        );
         expect(handle.orientation).toEqual(data.orientation);
         expect(handle.position).toEqual(
           getRelativePosition(
