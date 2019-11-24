@@ -1,5 +1,7 @@
+import * as fc from 'fast-check';
+import { prop } from 'ramda';
+import { makeState } from '../arbitraries';
 import View from '../../mvp/view';
-import { State } from '../../types';
 
 const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;
@@ -9,147 +11,43 @@ const handleCSSClass = `${cssClass}__handle`;
 const tooltipCSSClass = `${cssClass}__tooltip`;
 
 describe('View.render', () => {
-  const state: State = {
-    cssClass,
-    track: {
-      orientation: 'horizontal',
-      cssClass: trackCSSClass,
-      role: 'track',
-    },
-    intervals: [
-      {
-        id: 'interval_0',
-        from: 0,
-        to: 20,
-        cssClass: intervalCSSClass,
-        orientation: 'horizontal',
-        isVisible: false,
-        role: 'interval',
-      },
-      {
-        id: 'interval_1',
-        from: 20,
-        to: 40,
-        cssClass: intervalCSSClass,
-        orientation: 'horizontal',
-        isVisible: true,
-        role: 'interval',
-      },
-      {
-        id: 'interval_2',
-        from: 40,
-        to: 100,
-        cssClass: intervalCSSClass,
-        orientation: 'horizontal',
-        isVisible: false,
-        role: 'interval',
-      },
-    ],
-    handles: [
-      {
-        id: 'handle_0',
-        position: 20,
-        cssClass: handleCSSClass,
-        orientation: 'horizontal',
-        isActive: false,
-        role: 'handle',
-      },
-      {
-        id: 'handle_1',
-        position: 40,
-        cssClass: handleCSSClass,
-        orientation: 'horizontal',
-        isActive: false,
-        role: 'handle',
-      },
-    ],
-    tooltips: [
-      {
-        id: 'tooltip_0',
-        position: 20,
-        content: '20',
-        orientation: 'horizontal',
-        cssClass: tooltipCSSClass,
-        isVisible: true,
-        hasCollisions: false,
-        role: 'tooltip',
-      },
-      {
-        id: 'tooltip_1',
-        position: 40,
-        content: '40',
-        orientation: 'horizontal',
-        cssClass: tooltipCSSClass,
-        isVisible: true,
-        hasCollisions: false,
-        role: 'tooltip',
-      },
-    ],
-    grid: {
-      cssClass: 'range-slider__grid',
-      isVisible: true,
-      orientation: 'horizontal',
-      min: 0,
-      max: 100,
-      role: 'grid',
-      cells: [],
-    },
-  };
+  document.body.innerHTML = '<div id="root"></div>';
+  const el = document.querySelector('#root');
+  const view = new View(el as HTMLElement);
 
-  test('should render track', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const el = document.querySelector('#root');
-    const view = new View(el as HTMLElement);
-    let interval = document.getElementsByClassName(trackCSSClass);
-    expect(interval).toHaveLength(0);
-    view.render(state);
-    interval = document.getElementsByClassName(trackCSSClass);
-    expect(interval).toHaveLength(1);
-  });
+  test('should render components according to provided State', () => {
+    fc.assert(
+      fc.property(makeState(), state => {
+        // Track
+        view.render(state);
+        const track = document.getElementsByClassName(trackCSSClass);
+        expect(track).toHaveLength(1);
 
-  test('should render grid', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const el = document.querySelector('#root');
-    const view = new View(el as HTMLElement);
-    let grid = document.getElementsByClassName(gridCSSClass);
-    expect(grid).toHaveLength(0);
-    view.render(state);
-    grid = document.getElementsByClassName(gridCSSClass);
-    expect(grid).toHaveLength(1);
-  });
+        // Grid
+        const grid = document.getElementsByClassName(gridCSSClass);
+        if (state.grid.isVisible) {
+          expect(grid).toHaveLength(1);
+        } else {
+          expect(grid).toHaveLength(0);
+        }
 
-  test('should render only visible intervals (with isVisible = true)', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const el = document.querySelector('#root');
-    const view = new View(el as HTMLElement);
-    let intervals = document.getElementsByClassName(intervalCSSClass);
-    expect(intervals).toHaveLength(0);
-    view.render(state);
-    intervals = document.getElementsByClassName(intervalCSSClass);
-    expect(intervals).toHaveLength(1);
-  });
+        // Intervals
+        const intervals = document.getElementsByClassName(intervalCSSClass);
+        expect(intervals).toHaveLength(
+          state.intervals.filter(prop('isVisible')).length,
+        );
 
-  test('should render handles', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const el = document.querySelector('#root');
-    const view = new View(el as HTMLElement);
-    expect(
-      document.getElementsByClassName(state.handles[0].cssClass).length,
-    ).toBe(0);
-    view.render(state);
-    expect(
-      document.getElementsByClassName(state.handles[0].cssClass).length,
-    ).toBe(2);
-  });
+        // Handles
+        const handles = document.getElementsByClassName(handleCSSClass);
+        expect(handles).toHaveLength(state.handles.length);
 
-  test('should render tooltips', () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    const el = document.querySelector('#root');
-    const view = new View(el as HTMLElement);
-    let tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
-    expect(tooltips.length).toBe(0);
-    view.render(state);
-    tooltips = document.getElementsByClassName(state.tooltips[0].cssClass);
-    expect(tooltips.length).toBe(2);
+        // Tooltips
+        const tooltips = document.getElementsByClassName(tooltipCSSClass);
+        expect(tooltips).toHaveLength(
+          state.tooltips.filter(prop('isVisible')).length,
+        );
+      }),
+      { numRuns: 10 },
+    );
   });
 });

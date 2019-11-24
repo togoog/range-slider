@@ -47,7 +47,7 @@ class View extends EventEmitter implements RangeSliderView {
     const { orientation } = state.track;
 
     const track = trackView(state.track);
-    const grid = gridView(state.grid);
+    const grid = state.grid.isVisible ? gridView(state.grid) : '';
     const intervals = state.intervals
       .filter(prop('isVisible'))
       .map(intervalView);
@@ -56,7 +56,7 @@ class View extends EventEmitter implements RangeSliderView {
         onMouseDown: this.onHandleMouseDown,
       }),
     );
-    const tooltips = state.tooltips.map(tooltipView);
+    const tooltips = state.tooltips.filter(prop('isVisible')).map(tooltipView);
 
     const cssClasses: ClassInfo = {
       [cssClass]: true,
