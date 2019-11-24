@@ -1,7 +1,15 @@
 import * as fc from 'fast-check';
 import { prop, indexBy, pluck } from 'ramda';
 import { isEven } from 'ramda-adjunct';
-import { Options, Data, HandleData, TooltipData, IntervalData } from '../types';
+import {
+  Options,
+  Data,
+  State,
+  HandleData,
+  TooltipData,
+  IntervalData,
+} from '../types';
+import { convertDataToState } from '../converters';
 import { createId, closestToStep } from '../helpers';
 
 function sortedArrayArb(minLength = 1, maxLength = 10) {
@@ -113,4 +121,8 @@ function makeData() {
     });
 }
 
-export { sortedArrayArb, makeOptions, makeData };
+function makeState() {
+  return makeData().map(convertDataToState);
+}
+
+export { sortedArrayArb, makeOptions, makeData, makeState };
