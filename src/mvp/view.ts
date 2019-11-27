@@ -22,6 +22,8 @@ class View extends EventEmitter implements RangeSliderView {
 
   static EVENT_TOOLTIP_COLLISIONS = 'RangeSlider/View/tooltipCollisions';
 
+  private rootElement!: HTMLElement;
+
   // mouse pointer offset X coordinate for Handle when dragging
   private handleShiftX = 0;
 
@@ -35,16 +37,19 @@ class View extends EventEmitter implements RangeSliderView {
   // DOM changes observer
   private mutationObserver!: MutationObserver;
 
-  constructor(private el: HTMLElement) {
+  constructor(private elementToReplace: HTMLElement) {
     super();
 
+    this.replaceInputElement();
     this.listenForDOMChanges();
     this.bindEvents();
   }
 
   render(state: State): void {
-    const { cssClass } = state;
-    const { orientation } = state.track;
+    this.rootElement.classList.add(
+      `${state.cssClass}`,
+      `${state.cssClass}_${state.track.orientation}`,
+    );
 
     const track = trackView(state.track);
     const grid = state.grid.isVisible ? gridView(state.grid) : '';
@@ -58,18 +63,11 @@ class View extends EventEmitter implements RangeSliderView {
     );
     const tooltips = state.tooltips.filter(prop('isVisible')).map(tooltipView);
 
-    const cssClasses: ClassInfo = {
-      [cssClass]: true,
-      [`${cssClass}_${orientation}`]: true,
-    };
-
     const template = html`
-      <div class=${classMap(cssClasses)} data-role="range-slider">
-        ${track} ${grid} ${intervals} ${handles} ${tooltips}
-      </div>
+      ${track} ${grid} ${intervals} ${handles} ${tooltips}
     `;
 
-    render(template, this.el);
+    render(template, this.rootElement);
   }
 
   onHandleMouseDown(handleId: HandleId, e: MouseEvent): void {
@@ -109,9 +107,22 @@ class View extends EventEmitter implements RangeSliderView {
       y: e.clientY - this.handleShiftY + this.handleHeight / 2,
     };
 
-    const rangeSliderRect = this.el.getBoundingClientRect();
+    const rangeSliderRect = this.rootElement.getBoundingClientRect();
 
     this.emit(View.EVENT_HANDLE_MOVE, handleCenterCoords, rangeSliderRect);
+  }
+
+  private replaceInputElement(): void {
+    this.rootElement = document.createElement('div');
+    this.rootElement.style.width = '100%';
+    this.rootElement.style.height = '100%';
+    this.elementToReplace.after(this.rootElement);
+
+    this.elementToReplace.style.position = 'absolute';
+    this.elementToReplace.style.width = '1px';
+    this.elementToReplace.style.height = '1px';
+    this.elementToReplace.style.overflow = 'hidden';
+    this.elementToReplace.style.opacity = '0';
   }
 
   private listenForDOMChanges(): void {
@@ -119,7 +130,7 @@ class View extends EventEmitter implements RangeSliderView {
       this.observeRootElement.bind(this),
     );
 
-    this.mutationObserver.observe(this.el, {
+    this.mutationObserver.observe(this.rootElement, {
       childList: true,
       attributes: true,
       subtree: true,
@@ -134,7 +145,10 @@ class View extends EventEmitter implements RangeSliderView {
   }
 
   private detectTooltipsCollisions(): void {
-    const tooltipCoordsList = selectElements('[data-role="tooltip"]', this.el)
+    const tooltipCoordsList = selectElements(
+      '[data-role="tooltip"]',
+      this.rootElement,
+    )
       .orDefault([])
       .map((tooltip, idx): [TooltipId, DOMRect] => [
         tooltip.getAttribute('data-tooltip-id') || createId('tooltip', idx),
