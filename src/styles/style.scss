@@ -73,6 +73,14 @@ $cell-label-font-size: $base-size * 0.9 !default;
   margin: $base-size / 2 $base-size;
 }
 
+.range-slider-wrapper {
+  height: 100%;
+}
+
+.range-slider-root {
+  height: 100%;
+}
+
 .range-slider_vertical {
   height: 100%;
   flex-direction: row;

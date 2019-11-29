@@ -78,7 +78,7 @@ class RangeSlider extends EventEmitter implements Plugin {
       .map(options => {
         const data = convertOptionsToData(options);
         rs.model = new Model(data);
-        rs.view = new View(el);
+        rs.view = new View(el, options.cssClass);
         rs.presenter = new Presenter(rs.model, rs.view);
         rs.processModelEvents();
       });

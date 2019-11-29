@@ -22,6 +22,10 @@ class View extends EventEmitter implements RangeSliderView {
 
   static EVENT_TOOLTIP_COLLISIONS = 'RangeSlider/View/tooltipCollisions';
 
+  // element for wrapping old and rootElement
+  private wrapperElement!: HTMLElement;
+
+  // element for rendering range slider
   private rootElement!: HTMLElement;
 
   // mouse pointer offset X coordinate for Handle when dragging
@@ -37,10 +41,10 @@ class View extends EventEmitter implements RangeSliderView {
   // DOM changes observer
   private mutationObserver!: MutationObserver;
 
-  constructor(private elementToReplace: HTMLElement) {
+  constructor(private oldInput: HTMLElement, cssClass: string) {
     super();
 
-    this.replaceInputElement();
+    this.replaceInputElement(cssClass);
     this.listenForDOMChanges();
     this.bindEvents();
   }
@@ -73,20 +77,22 @@ class View extends EventEmitter implements RangeSliderView {
 
     const trackTpl = trackView(track);
 
-    const template = html`
-      ${tooltipsTpl}
-      <div class="${cssClass}__axis">
-        ${trackTpl} ${intervalsTpl} ${handlesTpl}
-      </div>
-      ${gridTpl}
-    `;
+    const rangeSliderCSSClasses: ClassInfo = {
+      [cssClass]: true,
+      [`${cssClass}_${track.orientation}`]: true,
+      [`${cssClass}_with-grid`]: grid.isVisible,
+      [`${cssClass}_with-tooltips`]: visibleTooltips.length > 0,
+    };
 
-    this.rootElement.classList.add(
-      `${cssClass}`,
-      `${cssClass}_${track.orientation}`,
-      visibleTooltips.length > 0 ? `${cssClass}_with-tooltips` : '',
-      grid.isVisible ? `${cssClass}_with-grid` : '',
-    );
+    const template = html`
+      <div class=${classMap(rangeSliderCSSClasses)}>
+        ${tooltipsTpl}
+        <div class="${cssClass}__axis">
+          ${trackTpl} ${intervalsTpl} ${handlesTpl}
+        </div>
+        ${gridTpl}
+      </div>
+    `;
 
     render(template, this.rootElement);
   }
@@ -133,15 +139,26 @@ class View extends EventEmitter implements RangeSliderView {
     this.emit(View.EVENT_HANDLE_MOVE, handleCenterCoords, rangeSliderRect);
   }
 
-  private replaceInputElement(): void {
-    this.rootElement = document.createElement('div');
-    this.elementToReplace.after(this.rootElement);
+  private replaceInputElement(cssClass: string): void {
+    // create wrapper
+    this.wrapperElement = document.createElement('div');
+    this.wrapperElement.classList.add(`${cssClass}-wrapper`);
 
-    this.elementToReplace.style.position = 'absolute';
-    this.elementToReplace.style.width = '1px';
-    this.elementToReplace.style.height = '1px';
-    this.elementToReplace.style.overflow = 'hidden';
-    this.elementToReplace.style.opacity = '0';
+    // create root
+    this.rootElement = document.createElement('div');
+    this.rootElement.classList.add(`${cssClass}-root`);
+
+    // wrap old input and root
+    this.oldInput.after(this.wrapperElement);
+    this.wrapperElement.append(this.oldInput);
+    this.wrapperElement.append(this.rootElement);
+
+    // hide old input element
+    this.oldInput.style.position = 'absolute';
+    this.oldInput.style.width = '1px';
+    this.oldInput.style.height = '1px';
+    this.oldInput.style.overflow = 'hidden';
+    this.oldInput.style.opacity = '0';
   }
 
   private listenForDOMChanges(): void {
