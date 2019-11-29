@@ -1,6 +1,5 @@
 import { includes, prop, props, indexBy } from 'ramda';
 import {
-  RealValue,
   Data,
   State,
   Track,
@@ -53,32 +52,40 @@ function getMergedTooltipsContent(
   ids: TooltipId[],
 ): Tooltip['content'] {
   const valueConnectorChain = ids
-    .map((id): [RealValue, string] => {
+    .map((id): [string, string] => {
       const { handleId } = data.tooltipDict[id];
       const { value, rhsIntervalId } = data.handleDict[handleId];
       const isVisibleInterval = data.intervalDict[rhsIntervalId].isVisible;
+      const formattedValue = data.tooltipFormatter(value);
 
       return [
-        value,
+        formattedValue,
         // if 2 adjacent values belong to visible interval -> connect them with dash (-)
         // otherwise connect them with semicolon (;)
         isVisibleInterval ? '-' : ';',
       ];
     })
-    .reduce((acc, cur, idx, arr): [RealValue, string][] => {
+    .reduce((acc, cur, idx, arr): [string, string][] => {
       const nextValue = arr[idx + 1] ? arr[idx + 1][0] : null;
 
-      if (cur[0] === nextValue) {
-        return acc;
+      if (cur[0] !== nextValue) {
+        acc.push(cur);
       }
 
-      return acc.concat(cur);
-    }, [] as [RealValue, string][]);
+      return acc;
+    }, [] as [string, string][]);
 
-  // remove last connector
-  valueConnectorChain.pop();
+  const lastPair = valueConnectorChain.pop();
+  const lastValue = lastPair ? lastPair[0] : '';
 
-  return valueConnectorChain.join(' ');
+  const result = valueConnectorChain
+    .map(([value, connector]) =>
+      connector === ';' ? `${value}${connector}` : `${value} ${connector}`,
+    )
+    .concat(lastValue)
+    .join(' ');
+
+  return result;
 }
 
 /**
