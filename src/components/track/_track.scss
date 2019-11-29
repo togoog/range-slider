@@ -8,12 +8,12 @@ $track-thickness: $base-size / 3 !default;
   border-radius: $track-radius;
 
   @include modifier('horizontal') {
-    height: $track-thickness;
     width: 100%;
+    height: $track-thickness;
   }
 
   @include modifier('vertical') {
-    height: 100%;
     width: $track-thickness;
+    height: 100%;
   }
 }

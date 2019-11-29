@@ -21,14 +21,11 @@ function cellView({
 
   const cellCSSClasses: ClassInfo = {
     [cssClass]: true,
-    [`${cssClass}_${orientation}`]: true,
-    [`${cssClass}_${orientation}-level-${level}`]: true,
+    [`${cssClass}-level-${level}`]: true,
   };
 
   const labelCSSClasses: ClassInfo = {
     [`${cssClass}-label`]: true,
-    [`${cssClass}-label_${orientation}`]: true,
-    [`${cssClass}-label_${orientation}-level-${level}`]: true,
   };
 
   const labelHTML = isVisibleLabel

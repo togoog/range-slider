@@ -1,19 +1,348 @@
 @import './themes/default';
 @import './mixins';
 
+/* COMMON VARS */
+// Colors
+$color-primary: #4a148c !default;
+$color-primary-light: #7c43bd !default;
+$color-primary-dark: #12005e !default;
+$color-primary-text: #ffffff !default;
+$color-secondary: #e65100 !default;
+$color-secondary-light: #ff833a !default;
+$color-secondary-dark: #ac1900 !default;
+$color-secondary-text: #000000 !default;
+
+// Typography
+$font: 'Open Sans', Arial, sans-serif !default;
+
+// Sizes
+$base-size: 1rem !default;
+
+/* COMPONENT VARS */
+// Interval
+$interval-bg: $color-secondary-light !default;
+$interval-border-width: 0px !default;
+$interval-border-style: solid !default;
+$interval-border-color: darken($color-primary-dark, 10%) !default;
+$interval-radius: $base-size / 3 !default;
+$interval-thickness: $base-size * 0.6 !default;
+
+// Handle
+$handle-width: $base-size * 1.5 !default;
+$handle-height: $base-size * 1.5 !default;
+$handle-bg: $color-primary !default;
+$handle-border-width: 0px !default;
+$handle-border-style: solid !default;
+$handle-border-color: darken($color-primary-dark, 10%) !default;
+$handle-radius: $base-size !default;
+
+// Tooltip
+$tooltip-padding: $base-size * 0.5 $base-size * 1.1 !default;
+$tooltip-bg: $color-secondary !default;
+$tooltip-max-height: $base-size * 2.5 !default;
+$tooltip-max-width: $base-size * 4 !default;
+$tooltip-border-width: 0px !default;
+$tooltip-border-style: solid !default;
+$tooltip-border-color: darken($color-primary-dark, 10%) !default;
+$tooltip-offset: $base-size * 0.5 !default;
+$tooltip-radius: $base-size / 3 !default;
+$tooltip-font-size: $base-size !default;
+$tooltip-text-color: $color-secondary-text !default;
+
+// Track
+$track-bg: $color-primary !default;
+$track-radius: $base-size / 3 !default;
+$track-thickness: $base-size / 3 !default;
+
+// Grid
+$grid-line-bg: $color-primary-dark !default;
+$grid-offset: $base-size * 0.7 !default;
+$grid-line-thickness: 1px !default;
+
+// Grid cell
+$cell-pip-max-size: $base-size * 0.9 !default;
+$cell-pip-max-thickness: 2px !default;
+$cell-pip-bg: $color-primary-dark !default;
+$cell-label-offset: 0 !default;
+$cell-label-font-size: $base-size * 0.9 !default;
+
 .range-slider {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: $base-size / 2 $base-size;
+}
+
+.range-slider_vertical {
+  height: 100%;
+  flex-direction: row;
+}
+
+// Axis styles
+.range-slider__axis {
   position: relative;
   display: flex;
   align-items: center;
+}
 
-  @include modifier('horizontal') {
-    width: 100%;
+.range-slider_horizontal .range-slider__axis {
+  height: max($track-thickness, $interval-thickness, $handle-height);
+}
+
+.range-slider_vertical .range-slider__axis {
+  width: max($track-thickness, $interval-thickness, $handle-width);
+  flex-direction: column;
+}
+
+// Track styles
+.range-slider__track {
+  position: absolute;
+  background: $track-bg;
+  border-radius: $track-radius;
+}
+
+.range-slider_horizontal .range-slider__track {
+  width: 100%;
+  height: $track-thickness;
+}
+
+.range-slider_vertical .range-slider__track {
+  width: $track-thickness;
+  height: 100%;
+}
+
+// Interval styles
+.range-slider__intervals {
+  position: absolute;
+}
+
+.range-slider_horizontal .range-slider__intervals {
+  height: $interval-thickness;
+  width: 100%;
+}
+
+.range-slider_vertical .range-slider__intervals {
+  height: 100%;
+  width: $interval-thickness;
+}
+
+.range-slider__interval {
+  position: absolute;
+  background: $interval-bg;
+  border: $interval-border-width $interval-border-style $interval-border-color;
+  border-radius: $interval-radius;
+}
+
+.range-slider_horizontal .range-slider__interval {
+  height: $interval-thickness;
+}
+
+.range-slider_vertical .range-slider__interval {
+  width: $interval-thickness;
+}
+
+.range-slider__interval_is-hidden {
+  display: none;
+}
+
+// Handle styles
+.range-slider__handles {
+  position: absolute;
+}
+
+.range-slider_horizontal .range-slider__handles {
+  width: 100%;
+  height: $handle-height;
+}
+.range-slider_vertical .range-slider__handles {
+  width: $handle-width;
+  height: 100%;
+}
+
+.range-slider__handle {
+  position: absolute;
+  width: $handle-width;
+  height: $handle-height;
+  background: $handle-bg;
+  border: $handle-border-width $handle-border-style $handle-border-color;
+  border-radius: $handle-radius;
+}
+
+.range-slider_horizontal .range-slider__handle {
+  transform: translateX(-50%);
+}
+
+.range-slider_vertical .range-slider__handle {
+  transform: translateY(50%);
+}
+
+.range-slider__handle_active {
+  z-index: 1;
+  transform-origin: center;
+}
+
+.range-slider_horizontal .range-slider__handle_active {
+  transform: translateX(-50%) scale(1.15);
+}
+
+.range-slider_vertical .range-slider__handle_active {
+  transform: translateY(50%) scale(1.15);
+}
+
+// Tooltip styles
+.range-slider__tooltips {
+  position: relative;
+}
+
+.range-slider_horizontal .range-slider__tooltips {
+  width: 100%;
+  height: $tooltip-max-height;
+  margin-bottom: $tooltip-offset;
+}
+
+.range-slider_vertical .range-slider__tooltips {
+  width: $tooltip-max-width;
+  height: 100%;
+  margin-right: $tooltip-offset;
+}
+
+.range-slider__tooltip {
+  position: absolute;
+  padding: $tooltip-padding;
+  background: $tooltip-bg;
+  border: $tooltip-border-width $tooltip-border-style $tooltip-border-color;
+  border-radius: $tooltip-radius;
+  font-size: $tooltip-font-size;
+  color: $tooltip-text-color;
+}
+
+.range-slider__tooltip_is-hidden {
+  display: none;
+}
+
+.range-slider__tooltip_has-collisions {
+  opacity: 0;
+  z-index: -10;
+}
+
+.range-slider_horizontal .range-slider__tooltip {
+  transform: translateX(-50%);
+  max-height: $tooltip-max-height;
+  bottom: 0;
+}
+
+.range-slider_vertical .range-slider__tooltip {
+  transform: translateY(50%);
+  max-width: $tooltip-max-width;
+  right: 0;
+}
+
+// Grid styles
+.range-slider__grid {
+  position: relative;
+}
+
+.range-slider__grid_is-hidden {
+  display: none;
+}
+
+.range-slider_horizontal .range-slider__grid {
+  width: 100%;
+  margin-top: $grid-offset;
+}
+
+.range-slider_vertical .range-slider__grid {
+  height: 100%;
+  transform: translateX($grid-offset * 1.2);
+}
+
+.range-slider__grid-line {
+  background: $grid-line-bg;
+}
+
+.range-slider_horizontal .range-slider__grid-line {
+  height: $grid-line-thickness;
+}
+
+.range-slider_vertical .range-slider__grid-line {
+  width: $grid-line-thickness;
+  height: 100%;
+}
+
+// Grid cell styles
+.range-slider__grid-cell {
+  position: absolute;
+  background: $cell-pip-bg;
+}
+
+.range-slider_horizontal .range-slider__grid-cell {
+  transform: translateX(-50%);
+
+  &-level-1 {
+    width: $cell-pip-max-thickness;
+    height: $cell-pip-max-size;
+
+    // move first pip inline with grid line
+    &:first-child {
+      transform: translateX(0px);
+    }
+
+    // move last pip inline with grid line
+    &:last-child {
+      transform: translateX(-$cell-pip-max-thickness);
+    }
   }
 
-  @include modifier('vertical') {
-    height: 100%;
-    flex-direction: column;
+  &-level-2 {
+    width: ceil($cell-pip-max-thickness / 2);
+    height: $cell-pip-max-size - $cell-pip-max-size / 3;
   }
 
-  @import '../components';
+  &-level-3 {
+    width: ceil($cell-pip-max-thickness / 3);
+    height: $cell-pip-max-size / 3;
+  }
+}
+
+.range-slider_vertical .range-slider__grid-cell {
+  &-level-1 {
+    width: $cell-pip-max-size;
+    height: $cell-pip-max-thickness;
+
+    // move first pip inline with grid line
+    &:first-child {
+      transform: translateY(0px);
+    }
+
+    // move last pip inline with grid line
+    &:last-child {
+      transform: translateY($cell-pip-max-thickness);
+    }
+  }
+
+  &-level-2 {
+    width: $cell-pip-max-size - $cell-pip-max-size / 3;
+    height: ceil($cell-pip-max-thickness / 2);
+  }
+
+  &-level-3 {
+    width: $cell-pip-max-size / 3;
+    height: ceil($cell-pip-max-thickness / 3);
+  }
+}
+
+.range-slider__grid-cell-label {
+  position: absolute;
+  font-size: $cell-label-font-size;
+  padding: $cell-label-font-size / 4 $cell-label-font-size / 2;
+}
+
+.range-slider_horizontal .range-slider__grid-cell-label {
+  top: $cell-pip-max-size + $cell-label-offset;
+  transform: translateX(-50%);
+}
+
+.range-slider_vertical .range-slider__grid-cell-label {
+  left: $cell-pip-max-size + $cell-label-offset;
+  transform: translateY(-50%);
 }

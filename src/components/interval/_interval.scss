@@ -5,6 +5,20 @@ $interval-border-color: darken($color-primary-dark, 10%) !default;
 $interval-radius: $base-size / 3 !default;
 $interval-thickness: $base-size * 0.6 !default;
 
+@include element('intervals') {
+  position: absolute;
+
+  @include modifier('horizontal') {
+    height: $interval-thickness;
+    width: 100%;
+  }
+
+  @include modifier('vertical') {
+    height: 100%;
+    width: $interval-thickness;
+  }
+}
+
 @include element('interval') {
   position: absolute;
   background: $interval-bg;

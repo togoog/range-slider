@@ -45,27 +45,48 @@ class View extends EventEmitter implements RangeSliderView {
     this.bindEvents();
   }
 
-  render(state: State): void {
-    this.rootElement.classList.add(
-      `${state.cssClass}`,
-      `${state.cssClass}_${state.track.orientation}`,
-    );
+  render({ cssClass, track, grid, tooltips, handles, intervals }: State): void {
+    const gridTpl = grid.isVisible ? gridView(grid) : '';
 
-    const track = trackView(state.track);
-    const grid = state.grid.isVisible ? gridView(state.grid) : '';
-    const intervals = state.intervals
-      .filter(prop('isVisible'))
-      .map(intervalView);
-    const handles = state.handles.map(handleState =>
-      handleView(handleState, {
-        onMouseDown: this.onHandleMouseDown,
-      }),
-    );
-    const tooltips = state.tooltips.filter(prop('isVisible')).map(tooltipView);
+    const intervalsTpl = html`
+      <div class="${cssClass}__intervals">
+        ${intervals.filter(prop('isVisible')).map(intervalView)}
+      </div>
+    `;
+
+    const handlesTpl = html`
+      <div class="${cssClass}__handles">
+        ${handles.map(handleState =>
+          handleView(handleState, {
+            onMouseDown: this.onHandleMouseDown,
+          }),
+        )}
+      </div>
+    `;
+
+    const visibleTooltips = tooltips.filter(prop('isVisible'));
+    const tooltipsTpl = html`
+      <div class="${cssClass}__tooltips">
+        ${visibleTooltips.map(tooltipView)}
+      </div>
+    `;
+
+    const trackTpl = trackView(track);
 
     const template = html`
-      ${track} ${grid} ${intervals} ${handles} ${tooltips}
+      ${tooltipsTpl}
+      <div class="${cssClass}__axis">
+        ${trackTpl} ${intervalsTpl} ${handlesTpl}
+      </div>
+      ${gridTpl}
     `;
+
+    this.rootElement.classList.add(
+      `${cssClass}`,
+      `${cssClass}_${track.orientation}`,
+      visibleTooltips.length > 0 ? `${cssClass}_with-tooltips` : '',
+      grid.isVisible ? `${cssClass}_with-grid` : '',
+    );
 
     render(template, this.rootElement);
   }
@@ -114,8 +135,6 @@ class View extends EventEmitter implements RangeSliderView {
 
   private replaceInputElement(): void {
     this.rootElement = document.createElement('div');
-    this.rootElement.style.width = '100%';
-    this.rootElement.style.height = '100%';
     this.elementToReplace.after(this.rootElement);
 
     this.elementToReplace.style.position = 'absolute';

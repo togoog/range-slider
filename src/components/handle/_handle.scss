@@ -6,6 +6,20 @@ $handle-border-style: solid !default;
 $handle-border-color: darken($color-primary-dark, 10%) !default;
 $handle-radius: $base-size !default;
 
+@include element('handles') {
+  position: absolute;
+
+  @include modifier('horizontal') {
+    width: 100%;
+    height: $handle-height;
+  }
+
+  @include modifier('vertical') {
+    width: $handle-width;
+    height: 100%;
+  }
+}
+
 @include element('handle') {
   position: absolute;
   width: $handle-width;

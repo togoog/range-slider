@@ -22,7 +22,6 @@ function tooltipView({
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
-    [`${cssClass}_${orientation}`]: true,
     [`${cssClass}_has-collisions`]: hasCollisions,
     [`${cssClass}_is-hidden`]: !isVisible,
   };

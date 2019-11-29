@@ -1,0 +1,9 @@
+.example {
+  padding: 50px 0;
+  border: 1px solid gray;
+  margin-bottom: 3rem;
+
+  &_vertical {
+    height: 20rem;
+  }
+}

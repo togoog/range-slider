@@ -8,6 +8,18 @@ $tooltip-radius: $base-size / 3 !default;
 $tooltip-font-size: $base-size !default;
 $tooltip-text-color: $color-secondary-text !default;
 
+@include element('tooltips') {
+  position: absolute;
+
+  @include modifier('horizontal') {
+    width: 100%;
+  }
+
+  @include modifier('vertical') {
+    height: 100%;
+  }
+}
+
 @include element('tooltip') {
   position: absolute;
   padding: $tooltip-padding;
@@ -16,7 +28,7 @@ $tooltip-text-color: $color-secondary-text !default;
   bottom: $tooltip-offset;
   border-radius: $tooltip-radius;
   font-size: $tooltip-font-size;
-  text-color: $tooltip-text-color;
+  color: $tooltip-text-color;
 
   @include modifier('horizontal') {
     transform: translateX(-50%);

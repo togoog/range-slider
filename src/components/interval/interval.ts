@@ -28,7 +28,6 @@ function intervalView({
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
-    [`${cssClass}_${orientation}`]: true,
     [`${cssClass}_is-hidden`]: !isVisible,
   };
 
