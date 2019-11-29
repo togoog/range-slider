@@ -183,7 +183,7 @@ test('Model.pick', () => {
     'cssClass',
     'handleDict',
     'handleIds',
-    'activeHandleId',
+    'activeHandleIds',
     'tooltipDict',
     'tooltipIds',
     'tooltipCollisions',
