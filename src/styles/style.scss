@@ -222,6 +222,7 @@ $cell-label-font-size: $base-size * 0.9 !default;
   border-radius: $tooltip-radius;
   font-size: $tooltip-font-size;
   color: $tooltip-text-color;
+  text-align: center;
 }
 
 .range-slider__tooltip_is-hidden {
