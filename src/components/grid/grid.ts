@@ -12,7 +12,9 @@ function gridView({ cells, isVisible, cssClass, role }: Grid): TemplateResult {
   return html`
     <div class=${classMap(cssClasses)} data-role=${role}>
       <div class="${cssClass}-line"></div>
-      ${cells.map(cellView)}
+      <div class="${cssClass}-cells">
+        ${cells.map(cellView)}
+      </div>
     </div>
   `;
 }

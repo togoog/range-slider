@@ -248,6 +248,7 @@ $cell-label-font-size: $base-size * 0.9 !default;
 // Grid styles
 .range-slider__grid {
   position: relative;
+  display: flex;
 }
 
 .range-slider__grid_is-hidden {
@@ -257,6 +258,7 @@ $cell-label-font-size: $base-size * 0.9 !default;
 .range-slider_horizontal .range-slider__grid {
   width: 100%;
   margin-top: $grid-offset;
+  flex-direction: column;
 }
 
 .range-slider_vertical .range-slider__grid {
@@ -278,6 +280,19 @@ $cell-label-font-size: $base-size * 0.9 !default;
 }
 
 // Grid cell styles
+.range-slider__grid-cells {
+  position: relative;
+}
+
+.range-slider_horizontal .range-slider__grid-cells {
+  height: $base-size * 2;
+}
+
+.range-slider_vertical .range-slider__grid-cells {
+  width: $base-size * 3;
+  height: 100%;
+}
+
 .range-slider__grid-cell {
   position: absolute;
   background: $cell-pip-bg;
