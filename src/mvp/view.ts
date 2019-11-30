@@ -12,6 +12,7 @@ import {
   handleView,
   tooltipView,
 } from '../components';
+import * as defaults from '../defaults';
 
 class View extends EventEmitter implements RangeSliderView {
   static EVENT_HANDLE_MOVE_START = 'RangeSlider/View/handleMoveStart';
@@ -41,7 +42,7 @@ class View extends EventEmitter implements RangeSliderView {
   // DOM changes observer
   private mutationObserver!: MutationObserver;
 
-  constructor(private oldInput: HTMLElement, cssClass: string) {
+  constructor(private oldInput: HTMLElement, cssClass = defaults.cssClass) {
     super();
 
     this.replaceInputElement(cssClass);
