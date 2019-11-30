@@ -75,6 +75,10 @@ function getMergedTooltipsContent(
       return acc;
     }, [] as [string, string][]);
 
+  if (data.orientation === 'vertical') {
+    valueConnectorChain.reverse();
+  }
+
   const lastPair = valueConnectorChain.pop();
   const lastValue = lastPair ? lastPair[0] : '';
 
