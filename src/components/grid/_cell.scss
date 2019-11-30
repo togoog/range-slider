@@ -5,78 +5,92 @@ $cell-pip-bg: $color-primary-dark !default;
 $cell-label-offset: calc(100% + #{$base-size * 0.3}) !default;
 $cell-label-font-size: $base-size * 0.9 !default;
 
-@include element('grid-cell') {
+&__grid-cells {
+  position: relative;
+}
+
+&_horizontal #{&}__grid-cells {
+  height: $base-size * 2;
+}
+
+&_vertical #{&}__grid-cells {
+  width: $base-size * 3;
+  height: 100%;
+}
+
+&__grid-cell {
   position: absolute;
   background: $cell-pip-bg;
+}
 
-  @include modifier('horizontal') {
-    transform: translateX(-50%);
+&_horizontal #{&}__grid-cell {
+  transform: translateX(-50%);
 
-    &-level-1 {
-      width: $cell-pip-max-thickness;
-      height: $cell-pip-max-size;
+  &-level-1 {
+    width: $cell-pip-max-thickness;
+    height: $cell-pip-max-size;
 
-      // move first pip inline with grid line
-      &:first-child {
-        transform: translateX(0px);
-      }
-
-      // move last pip inline with grid line
-      &:last-child {
-        transform: translateX(-$cell-pip-max-thickness);
-      }
+    // move first pip inline with grid line
+    &:first-child {
+      transform: translateX(0px);
     }
 
-    &-level-2 {
-      width: ceil($cell-pip-max-thickness / 2);
-      height: $cell-pip-max-size - $cell-pip-max-size / 3;
-    }
-
-    &-level-3 {
-      width: ceil($cell-pip-max-thickness / 3);
-      height: $cell-pip-max-size / 3;
+    // move last pip inline with grid line
+    &:last-child {
+      transform: translateX(-$cell-pip-max-thickness);
     }
   }
 
-  @include modifier('vertical') {
-    &-level-1 {
-      width: $cell-pip-max-size;
-      height: $cell-pip-max-thickness;
+  &-level-2 {
+    width: ceil($cell-pip-max-thickness / 2);
+    height: $cell-pip-max-size - $cell-pip-max-size / 3;
+  }
 
-      // move first pip inline with grid line
-      &:first-child {
-        transform: translateY(0px);
-      }
-
-      // move last pip inline with grid line
-      &:last-child {
-        transform: translateY($cell-pip-max-thickness);
-      }
-    }
-
-    &-level-2 {
-      width: $cell-pip-max-size - $cell-pip-max-size / 3;
-      height: ceil($cell-pip-max-thickness / 2);
-    }
-
-    &-level-3 {
-      width: $cell-pip-max-size / 3;
-      height: ceil($cell-pip-max-thickness / 3);
-    }
+  &-level-3 {
+    width: ceil($cell-pip-max-thickness / 3);
+    height: $cell-pip-max-size / 3;
   }
 }
 
-@include element('grid-cell-label') {
+&_vertical #{&}__grid-cell {
+  &-level-1 {
+    width: $cell-pip-max-size;
+    height: $cell-pip-max-thickness;
+
+    // move first pip inline with grid line
+    &:first-child {
+      transform: translateY(0px);
+    }
+
+    // move last pip inline with grid line
+    &:last-child {
+      transform: translateY($cell-pip-max-thickness);
+    }
+  }
+
+  &-level-2 {
+    width: $cell-pip-max-size - $cell-pip-max-size / 3;
+    height: ceil($cell-pip-max-thickness / 2);
+  }
+
+  &-level-3 {
+    width: $cell-pip-max-size / 3;
+    height: ceil($cell-pip-max-thickness / 3);
+  }
+}
+
+&__grid-cell-label {
   position: absolute;
   font-size: $cell-label-font-size;
+  padding: $cell-label-font-size / 4 $cell-label-font-size / 2;
+}
 
-  @include modifier('horizontal') {
-    top: $cell-label-offset;
-    transform: translateX(-50%);
-  }
+&_horizontal #{&}__grid-cell-label {
+  top: $cell-pip-max-size + $cell-label-offset;
+  transform: translateX(-50%);
+}
 
-  @include modifier('vertical') {
-    left: $cell-label-offset;
-    transform: translateY(-50%);
-  }
+&_vertical #{&}__grid-cell-label {
+  left: $cell-pip-max-size + $cell-label-offset;
+  transform: translateY(-50%);
 }

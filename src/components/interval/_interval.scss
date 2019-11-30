@@ -5,35 +5,31 @@ $interval-border-color: darken($color-primary-dark, 10%) !default;
 $interval-radius: $base-size / 3 !default;
 $interval-thickness: $base-size * 0.6 !default;
 
-@include element('intervals') {
+&__intervals {
   position: absolute;
-
-  @include modifier('horizontal') {
-    height: $interval-thickness;
-    width: 100%;
-  }
-
-  @include modifier('vertical') {
-    height: 100%;
-    width: $interval-thickness;
-  }
 }
 
-@include element('interval') {
+&_horizontal #{&}__intervals {
+  height: $interval-thickness;
+  width: 100%;
+}
+
+&_vertical #{&}__intervals {
+  height: 100%;
+  width: $interval-thickness;
+}
+
+&__interval {
   position: absolute;
   background: $interval-bg;
   border: $interval-border-width $interval-border-style $interval-border-color;
   border-radius: $interval-radius;
+}
 
-  @include modifier('horizontal') {
-    height: $interval-thickness;
-  }
+&_horizontal #{&}__interval {
+  height: $interval-thickness;
+}
 
-  @include modifier('vertical') {
-    width: $interval-thickness;
-  }
-
-  @include modifier('is-hidden') {
-    display: none;
-  }
+&_vertical #{&}__interval {
+  width: $interval-thickness;
 }

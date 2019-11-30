@@ -6,49 +6,45 @@ $handle-border-style: solid !default;
 $handle-border-color: darken($color-primary-dark, 10%) !default;
 $handle-radius: $base-size !default;
 
-@include element('handles') {
+&__handles {
   position: absolute;
-
-  @include modifier('horizontal') {
-    width: 100%;
-    height: $handle-height;
-  }
-
-  @include modifier('vertical') {
-    width: $handle-width;
-    height: 100%;
-  }
 }
 
-@include element('handle') {
+&_horizontal #{&}__handles {
+  width: 100%;
+  height: $handle-height;
+}
+&_vertical #{&}__handles {
+  width: $handle-width;
+  height: 100%;
+}
+
+&__handle {
   position: absolute;
   width: $handle-width;
   height: $handle-height;
   background: $handle-bg;
   border: $handle-border-width $handle-border-style $handle-border-color;
   border-radius: $handle-radius;
+}
 
-  @include modifier('horizontal') {
-    transform: translateX(-50%);
-  }
+&_horizontal #{&}__handle {
+  transform: translateX(-50%);
+}
 
-  @include modifier('vertical') {
-    transform: translateY(50%);
-  }
+&_vertical #{&}__handle {
+  transform: translateY(50%);
+}
 
-  @include modifier('active') {
-    width: $handle-width * 1.15;
-    height: $handle-height * 1.15;
-    z-index: 1;
+&__handle_active {
+  z-index: 1;
+  transform-origin: center;
+}
 
-    &-horizontal {
-      transform-origin: left;
-      transform: translateX(-50%);
-    }
+&_horizontal #{&}__handle_active {
+  transform: translateX(-50%) scale(1.15);
+}
 
-    &-vertical {
-      transform-origin: center;
-      transform: translateY(50%);
-    }
-  }
+&_vertical #{&}__handle_active {
+  transform: translateY(50%) scale(1.15);
 }

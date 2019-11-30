@@ -2,18 +2,18 @@ $track-bg: $color-primary !default;
 $track-radius: $base-size / 3 !default;
 $track-thickness: $base-size / 3 !default;
 
-@include element('track') {
+&__track {
   position: absolute;
   background: $track-bg;
   border-radius: $track-radius;
+}
 
-  @include modifier('horizontal') {
-    width: 100%;
-    height: $track-thickness;
-  }
+&_horizontal #{&}__track {
+  width: 100%;
+  height: $track-thickness;
+}
 
-  @include modifier('vertical') {
-    width: $track-thickness;
-    height: 100%;
-  }
+&_vertical #{&}__track {
+  width: $track-thickness;
+  height: 100%;
 }

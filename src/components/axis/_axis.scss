@@ -1,0 +1,14 @@
+&__axis {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+&_horizontal #{&}__axis {
+  height: $handle-height;
+}
+
+&_vertical #{&}__axis {
+  width: $handle-width;
+  flex-direction: column;
+}
