@@ -1,4 +1,6 @@
-// Colors
+// === Base vars ===
+
+// == Colors
 $color-primary: #4a148c !default;
 $color-primary-light: #7c43bd !default;
 $color-primary-dark: #12005e !default;
@@ -8,8 +10,57 @@ $color-secondary-light: #ff833a !default;
 $color-secondary-dark: #ac1900 !default;
 $color-secondary-text: #000000 !default;
 
-// Typography
+// == Typography
 $font: 'Open Sans', Arial, sans-serif !default;
 
-// Sizes
+// == Sizes
 $base-size: 1rem !default;
+
+// === Component vars ===
+
+// == Interval
+$interval-bg: $color-secondary-light !default;
+$interval-border-width: 0px !default;
+$interval-border-style: solid !default;
+$interval-border-color: darken($color-primary-dark, 10%) !default;
+$interval-radius: $base-size / 3 !default;
+$interval-thickness: $base-size * 0.6 !default;
+
+// == Handle
+$handle-width: $base-size * 1.5 !default;
+$handle-height: $base-size * 1.5 !default;
+$handle-bg: $color-primary !default;
+$handle-border-width: 0px !default;
+$handle-border-style: solid !default;
+$handle-border-color: darken($color-primary-dark, 10%) !default;
+$handle-radius: $base-size !default;
+
+// == Tooltip
+$tooltip-padding: $base-size * 0.5 $base-size * 1.1 !default;
+$tooltip-bg: $color-secondary !default;
+$tooltip-max-height: $base-size * 2.5 !default;
+$tooltip-max-width: $base-size * 4 !default;
+$tooltip-border-width: 0px !default;
+$tooltip-border-style: solid !default;
+$tooltip-border-color: darken($color-primary-dark, 10%) !default;
+$tooltip-offset: $base-size * 0.5 !default;
+$tooltip-radius: $base-size / 3 !default;
+$tooltip-font-size: $base-size !default;
+$tooltip-text-color: $color-secondary-text !default;
+
+// == Track
+$track-bg: $color-primary !default;
+$track-radius: $base-size / 3 !default;
+$track-thickness: $base-size / 3 !default;
+
+// == Grid
+$grid-line-bg: $color-primary-dark !default;
+$grid-offset: $base-size * 0.7 !default;
+$grid-line-thickness: 1px !default;
+
+// == Grid cell
+$cell-pip-max-size: $base-size * 0.9 !default;
+$cell-pip-max-thickness: 2px !default;
+$cell-pip-bg: $color-primary-dark !default;
+$cell-label-offset: 0 !default;
+$cell-label-font-size: $base-size * 0.9 !default;

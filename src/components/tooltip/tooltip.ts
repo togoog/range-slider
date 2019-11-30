@@ -9,7 +9,6 @@ function tooltipView({
   orientation,
   position,
   content,
-  isVisible,
   hasCollisions,
   cssClass,
   role,
@@ -23,7 +22,6 @@ function tooltipView({
   const cssClasses: ClassInfo = {
     [cssClass]: true,
     [`${cssClass}_has-collisions`]: hasCollisions,
-    [`${cssClass}_is-hidden`]: !isVisible,
   };
 
   return html`

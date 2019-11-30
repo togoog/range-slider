@@ -80,8 +80,6 @@ class View extends EventEmitter implements RangeSliderView {
     const rangeSliderCSSClasses: ClassInfo = {
       [cssClass]: true,
       [`${cssClass}_${track.orientation}`]: true,
-      [`${cssClass}_with-grid`]: grid.isVisible,
-      [`${cssClass}_with-tooltips`]: visibleTooltips.length > 0,
     };
 
     const template = html`

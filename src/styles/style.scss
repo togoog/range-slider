@@ -1,372 +1,295 @@
-@import './themes/default';
 @import './mixins';
-
-/* COMMON VARS */
-// Colors
-$color-primary: #4a148c !default;
-$color-primary-light: #7c43bd !default;
-$color-primary-dark: #12005e !default;
-$color-primary-text: #ffffff !default;
-$color-secondary: #e65100 !default;
-$color-secondary-light: #ff833a !default;
-$color-secondary-dark: #ac1900 !default;
-$color-secondary-text: #000000 !default;
-
-// Typography
-$font: 'Open Sans', Arial, sans-serif !default;
-
-// Sizes
-$base-size: 1rem !default;
-
-/* COMPONENT VARS */
-// Interval
-$interval-bg: $color-secondary-light !default;
-$interval-border-width: 0px !default;
-$interval-border-style: solid !default;
-$interval-border-color: darken($color-primary-dark, 10%) !default;
-$interval-radius: $base-size / 3 !default;
-$interval-thickness: $base-size * 0.6 !default;
-
-// Handle
-$handle-width: $base-size * 1.5 !default;
-$handle-height: $base-size * 1.5 !default;
-$handle-bg: $color-primary !default;
-$handle-border-width: 0px !default;
-$handle-border-style: solid !default;
-$handle-border-color: darken($color-primary-dark, 10%) !default;
-$handle-radius: $base-size !default;
-
-// Tooltip
-$tooltip-padding: $base-size * 0.5 $base-size * 1.1 !default;
-$tooltip-bg: $color-secondary !default;
-$tooltip-max-height: $base-size * 2.5 !default;
-$tooltip-max-width: $base-size * 4 !default;
-$tooltip-border-width: 0px !default;
-$tooltip-border-style: solid !default;
-$tooltip-border-color: darken($color-primary-dark, 10%) !default;
-$tooltip-offset: $base-size * 0.5 !default;
-$tooltip-radius: $base-size / 3 !default;
-$tooltip-font-size: $base-size !default;
-$tooltip-text-color: $color-secondary-text !default;
-
-// Track
-$track-bg: $color-primary !default;
-$track-radius: $base-size / 3 !default;
-$track-thickness: $base-size / 3 !default;
-
-// Grid
-$grid-line-bg: $color-primary-dark !default;
-$grid-offset: $base-size * 0.7 !default;
-$grid-line-thickness: 1px !default;
-
-// Grid cell
-$cell-pip-max-size: $base-size * 0.9 !default;
-$cell-pip-max-thickness: 2px !default;
-$cell-pip-bg: $color-primary-dark !default;
-$cell-label-offset: 0 !default;
-$cell-label-font-size: $base-size * 0.9 !default;
+@import './themes/default';
 
 .range-slider {
   display: flex;
   flex-direction: column;
   position: relative;
   margin: $base-size / 2 $base-size;
-}
 
-.range-slider-wrapper {
-  height: 100%;
-}
+  &-wrapper {
+    height: 100%;
+  }
 
-.range-slider-root {
-  height: 100%;
-}
+  &-root {
+    height: 100%;
+  }
 
-.range-slider_vertical {
-  height: 100%;
-  flex-direction: row;
-}
+  &_vertical {
+    height: 100%;
+    flex-direction: row;
+  }
 
-// Axis styles
-.range-slider__axis {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+  // Axis styles
+  &__axis {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-.range-slider_horizontal .range-slider__axis {
-  height: max($track-thickness, $interval-thickness, $handle-height);
-}
+  &_horizontal #{&}__axis {
+    height: max($track-thickness, $interval-thickness, $handle-height);
+  }
 
-.range-slider_vertical .range-slider__axis {
-  width: max($track-thickness, $interval-thickness, $handle-width);
-  flex-direction: column;
-}
+  &_vertical #{&}__axis {
+    width: max($track-thickness, $interval-thickness, $handle-width);
+    flex-direction: column;
+  }
 
-// Track styles
-.range-slider__track {
-  position: absolute;
-  background: $track-bg;
-  border-radius: $track-radius;
-}
+  // Track styles
+  &__track {
+    position: absolute;
+    background: $track-bg;
+    border-radius: $track-radius;
+  }
 
-.range-slider_horizontal .range-slider__track {
-  width: 100%;
-  height: $track-thickness;
-}
+  &_horizontal #{&}__track {
+    width: 100%;
+    height: $track-thickness;
+  }
 
-.range-slider_vertical .range-slider__track {
-  width: $track-thickness;
-  height: 100%;
-}
+  &_vertical #{&}__track {
+    width: $track-thickness;
+    height: 100%;
+  }
 
-// Interval styles
-.range-slider__intervals {
-  position: absolute;
-}
+  // Interval styles
+  &__intervals {
+    position: absolute;
+  }
 
-.range-slider_horizontal .range-slider__intervals {
-  height: $interval-thickness;
-  width: 100%;
-}
+  &_horizontal #{&}__intervals {
+    height: $interval-thickness;
+    width: 100%;
+  }
 
-.range-slider_vertical .range-slider__intervals {
-  height: 100%;
-  width: $interval-thickness;
-}
+  &_vertical #{&}__intervals {
+    height: 100%;
+    width: $interval-thickness;
+  }
 
-.range-slider__interval {
-  position: absolute;
-  background: $interval-bg;
-  border: $interval-border-width $interval-border-style $interval-border-color;
-  border-radius: $interval-radius;
-}
+  &__interval {
+    position: absolute;
+    background: $interval-bg;
+    border: $interval-border-width $interval-border-style $interval-border-color;
+    border-radius: $interval-radius;
+  }
 
-.range-slider_horizontal .range-slider__interval {
-  height: $interval-thickness;
-}
+  &_horizontal #{&}__interval {
+    height: $interval-thickness;
+  }
 
-.range-slider_vertical .range-slider__interval {
-  width: $interval-thickness;
-}
+  &_vertical #{&}__interval {
+    width: $interval-thickness;
+  }
 
-.range-slider__interval_is-hidden {
-  display: none;
-}
+  // Handle styles
+  &__handles {
+    position: absolute;
+  }
 
-// Handle styles
-.range-slider__handles {
-  position: absolute;
-}
+  &_horizontal #{&}__handles {
+    width: 100%;
+    height: $handle-height;
+  }
+  &_vertical #{&}__handles {
+    width: $handle-width;
+    height: 100%;
+  }
 
-.range-slider_horizontal .range-slider__handles {
-  width: 100%;
-  height: $handle-height;
-}
-.range-slider_vertical .range-slider__handles {
-  width: $handle-width;
-  height: 100%;
-}
+  &__handle {
+    position: absolute;
+    width: $handle-width;
+    height: $handle-height;
+    background: $handle-bg;
+    border: $handle-border-width $handle-border-style $handle-border-color;
+    border-radius: $handle-radius;
+  }
 
-.range-slider__handle {
-  position: absolute;
-  width: $handle-width;
-  height: $handle-height;
-  background: $handle-bg;
-  border: $handle-border-width $handle-border-style $handle-border-color;
-  border-radius: $handle-radius;
-}
+  &_horizontal #{&}__handle {
+    transform: translateX(-50%);
+  }
 
-.range-slider_horizontal .range-slider__handle {
-  transform: translateX(-50%);
-}
+  &_vertical #{&}__handle {
+    transform: translateY(50%);
+  }
 
-.range-slider_vertical .range-slider__handle {
-  transform: translateY(50%);
-}
+  &__handle_active {
+    z-index: 1;
+    transform-origin: center;
+  }
 
-.range-slider__handle_active {
-  z-index: 1;
-  transform-origin: center;
-}
+  &_horizontal #{&}__handle_active {
+    transform: translateX(-50%) scale(1.15);
+  }
 
-.range-slider_horizontal .range-slider__handle_active {
-  transform: translateX(-50%) scale(1.15);
-}
+  &_vertical #{&}__handle_active {
+    transform: translateY(50%) scale(1.15);
+  }
 
-.range-slider_vertical .range-slider__handle_active {
-  transform: translateY(50%) scale(1.15);
-}
+  // Tooltip styles
+  &__tooltips {
+    position: relative;
+  }
 
-// Tooltip styles
-.range-slider__tooltips {
-  position: relative;
-}
+  &_horizontal #{&}__tooltips {
+    width: 100%;
+    height: $tooltip-max-height;
+    margin-bottom: $tooltip-offset;
+  }
 
-.range-slider_horizontal .range-slider__tooltips {
-  width: 100%;
-  height: $tooltip-max-height;
-  margin-bottom: $tooltip-offset;
-}
+  &_vertical #{&}__tooltips {
+    width: $tooltip-max-width;
+    height: 100%;
+    margin-right: $tooltip-offset;
+  }
 
-.range-slider_vertical .range-slider__tooltips {
-  width: $tooltip-max-width;
-  height: 100%;
-  margin-right: $tooltip-offset;
-}
+  &__tooltip {
+    position: absolute;
+    padding: $tooltip-padding;
+    background: $tooltip-bg;
+    border: $tooltip-border-width $tooltip-border-style $tooltip-border-color;
+    border-radius: $tooltip-radius;
+    font-size: $tooltip-font-size;
+    color: $tooltip-text-color;
+    text-align: center;
+  }
 
-.range-slider__tooltip {
-  position: absolute;
-  padding: $tooltip-padding;
-  background: $tooltip-bg;
-  border: $tooltip-border-width $tooltip-border-style $tooltip-border-color;
-  border-radius: $tooltip-radius;
-  font-size: $tooltip-font-size;
-  color: $tooltip-text-color;
-  text-align: center;
-}
+  &__tooltip_has-collisions {
+    opacity: 0;
+    z-index: -10;
+  }
 
-.range-slider__tooltip_is-hidden {
-  display: none;
-}
+  &_horizontal #{&}__tooltip {
+    transform: translateX(-50%);
+    max-height: $tooltip-max-height;
+    bottom: 0;
+  }
 
-.range-slider__tooltip_has-collisions {
-  opacity: 0;
-  z-index: -10;
-}
+  &_vertical #{&}__tooltip {
+    transform: translateY(50%);
+    max-width: $tooltip-max-width;
+    right: 0;
+  }
 
-.range-slider_horizontal .range-slider__tooltip {
-  transform: translateX(-50%);
-  max-height: $tooltip-max-height;
-  bottom: 0;
-}
+  // Grid styles
+  &__grid {
+    position: relative;
+    display: flex;
+  }
 
-.range-slider_vertical .range-slider__tooltip {
-  transform: translateY(50%);
-  max-width: $tooltip-max-width;
-  right: 0;
-}
+  &_horizontal #{&}__grid {
+    width: 100%;
+    margin-top: $grid-offset;
+    flex-direction: column;
+  }
 
-// Grid styles
-.range-slider__grid {
-  position: relative;
-  display: flex;
-}
+  &_vertical #{&}__grid {
+    height: 100%;
+    transform: translateX($grid-offset * 1.2);
+  }
 
-.range-slider__grid_is-hidden {
-  display: none;
-}
+  &__grid-line {
+    background: $grid-line-bg;
+  }
 
-.range-slider_horizontal .range-slider__grid {
-  width: 100%;
-  margin-top: $grid-offset;
-  flex-direction: column;
-}
+  &_horizontal #{&}__grid-line {
+    height: $grid-line-thickness;
+  }
 
-.range-slider_vertical .range-slider__grid {
-  height: 100%;
-  transform: translateX($grid-offset * 1.2);
-}
+  &_vertical #{&}__grid-line {
+    width: $grid-line-thickness;
+    height: 100%;
+  }
 
-.range-slider__grid-line {
-  background: $grid-line-bg;
-}
+  // Grid cell styles
+  &__grid-cells {
+    position: relative;
+  }
 
-.range-slider_horizontal .range-slider__grid-line {
-  height: $grid-line-thickness;
-}
+  &_horizontal #{&}__grid-cells {
+    height: $base-size * 2;
+  }
 
-.range-slider_vertical .range-slider__grid-line {
-  width: $grid-line-thickness;
-  height: 100%;
-}
+  &_vertical #{&}__grid-cells {
+    width: $base-size * 3;
+    height: 100%;
+  }
 
-// Grid cell styles
-.range-slider__grid-cells {
-  position: relative;
-}
+  &__grid-cell {
+    position: absolute;
+    background: $cell-pip-bg;
+  }
 
-.range-slider_horizontal .range-slider__grid-cells {
-  height: $base-size * 2;
-}
+  &_horizontal #{&}__grid-cell {
+    transform: translateX(-50%);
 
-.range-slider_vertical .range-slider__grid-cells {
-  width: $base-size * 3;
-  height: 100%;
-}
+    &-level-1 {
+      width: $cell-pip-max-thickness;
+      height: $cell-pip-max-size;
 
-.range-slider__grid-cell {
-  position: absolute;
-  background: $cell-pip-bg;
-}
+      // move first pip inline with grid line
+      &:first-child {
+        transform: translateX(0px);
+      }
 
-.range-slider_horizontal .range-slider__grid-cell {
-  transform: translateX(-50%);
-
-  &-level-1 {
-    width: $cell-pip-max-thickness;
-    height: $cell-pip-max-size;
-
-    // move first pip inline with grid line
-    &:first-child {
-      transform: translateX(0px);
+      // move last pip inline with grid line
+      &:last-child {
+        transform: translateX(-$cell-pip-max-thickness);
+      }
     }
 
-    // move last pip inline with grid line
-    &:last-child {
-      transform: translateX(-$cell-pip-max-thickness);
+    &-level-2 {
+      width: ceil($cell-pip-max-thickness / 2);
+      height: $cell-pip-max-size - $cell-pip-max-size / 3;
+    }
+
+    &-level-3 {
+      width: ceil($cell-pip-max-thickness / 3);
+      height: $cell-pip-max-size / 3;
     }
   }
 
-  &-level-2 {
-    width: ceil($cell-pip-max-thickness / 2);
-    height: $cell-pip-max-size - $cell-pip-max-size / 3;
-  }
+  &_vertical #{&}__grid-cell {
+    &-level-1 {
+      width: $cell-pip-max-size;
+      height: $cell-pip-max-thickness;
 
-  &-level-3 {
-    width: ceil($cell-pip-max-thickness / 3);
-    height: $cell-pip-max-size / 3;
-  }
-}
+      // move first pip inline with grid line
+      &:first-child {
+        transform: translateY(0px);
+      }
 
-.range-slider_vertical .range-slider__grid-cell {
-  &-level-1 {
-    width: $cell-pip-max-size;
-    height: $cell-pip-max-thickness;
-
-    // move first pip inline with grid line
-    &:first-child {
-      transform: translateY(0px);
+      // move last pip inline with grid line
+      &:last-child {
+        transform: translateY($cell-pip-max-thickness);
+      }
     }
 
-    // move last pip inline with grid line
-    &:last-child {
-      transform: translateY($cell-pip-max-thickness);
+    &-level-2 {
+      width: $cell-pip-max-size - $cell-pip-max-size / 3;
+      height: ceil($cell-pip-max-thickness / 2);
+    }
+
+    &-level-3 {
+      width: $cell-pip-max-size / 3;
+      height: ceil($cell-pip-max-thickness / 3);
     }
   }
 
-  &-level-2 {
-    width: $cell-pip-max-size - $cell-pip-max-size / 3;
-    height: ceil($cell-pip-max-thickness / 2);
+  &__grid-cell-label {
+    position: absolute;
+    font-size: $cell-label-font-size;
+    padding: $cell-label-font-size / 4 $cell-label-font-size / 2;
   }
 
-  &-level-3 {
-    width: $cell-pip-max-size / 3;
-    height: ceil($cell-pip-max-thickness / 3);
+  &_horizontal #{&}__grid-cell-label {
+    top: $cell-pip-max-size + $cell-label-offset;
+    transform: translateX(-50%);
   }
-}
 
-.range-slider__grid-cell-label {
-  position: absolute;
-  font-size: $cell-label-font-size;
-  padding: $cell-label-font-size / 4 $cell-label-font-size / 2;
-}
-
-.range-slider_horizontal .range-slider__grid-cell-label {
-  top: $cell-pip-max-size + $cell-label-offset;
-  transform: translateX(-50%);
-}
-
-.range-slider_vertical .range-slider__grid-cell-label {
-  left: $cell-pip-max-size + $cell-label-offset;
-  transform: translateY(-50%);
+  &_vertical #{&}__grid-cell-label {
+    left: $cell-pip-max-size + $cell-label-offset;
+    transform: translateY(-50%);
+  }
 }

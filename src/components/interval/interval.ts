@@ -10,7 +10,6 @@ function intervalView({
   from,
   to,
   cssClass,
-  isVisible,
   role,
 }: Interval): TemplateResult {
   const origin = convertOrientationToOrigin(orientation);
@@ -28,7 +27,6 @@ function intervalView({
 
   const cssClasses: ClassInfo = {
     [cssClass]: true,
-    [`${cssClass}_is-hidden`]: !isVisible,
   };
 
   return html`
