@@ -50,9 +50,10 @@ function controlGrid({ grid }: Options, onUpdate: Function) {
               </label>
               <input
                 type="number"
+                min="1"
                 id=${numCellsId.concat(idx.toString())}
                 name="grid.numCells"
-                class="config-panel__group-item-checkbox"
+                class="config-panel__input"
                 value=${value}
                 @input=${onUpdate}
               />

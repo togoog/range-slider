@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint --ext '.ts, .js' --fix ./src",
-    "demo": "parcel ./demo/demo.html"
+    "demo": "parcel ./demo/demo.pug"
   },
   "keywords": [
     "typescript",
@@ -40,6 +40,7 @@
     "jest": "^24.9.0",
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.19.1",
+    "pug": "^2.0.4",
     "sass": "^1.23.6",
     "ts-jest": "^24.1.0",
     "typescript": "^3.7.2"

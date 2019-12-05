@@ -24,7 +24,7 @@ function controlValue({ value, step }: Options, onUpdate: Function) {
                 type="number"
                 id=${id.concat(idx.toString())}
                 name="value"
-                class="config-panel__group-item-input"
+                class="config-panel__input"
                 value=${step === 0 ? valueFormatter(v) : v}
                 @input=${onUpdate}
               />

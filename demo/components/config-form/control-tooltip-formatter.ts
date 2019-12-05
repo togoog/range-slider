@@ -17,7 +17,7 @@ function controlTooltipFormatter(
         id=${id}
         name="tooltipFormatter"
         class="config-panel__textarea"
-        rows="5"
+        rows="3"
         @change=${onUpdate}
       >
 ${getFunctionBody(tooltipFormatter)}
