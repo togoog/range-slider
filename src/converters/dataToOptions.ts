@@ -1,4 +1,4 @@
-import { Data, Options } from '../types';
+import { Data, Options, OptimizedOptions } from '../types';
 
 /**
  * Convert model Data to user Options

@@ -57,9 +57,9 @@ const defaultOptions: Options = {
 };
 
 class RangeSlider extends EventEmitter implements Plugin {
-  static EVENT_UPDATE = 'RangeSlider/update';
+  static EVENT_UPDATE = 'update';
 
-  static EVENT_ERRORS = 'RangeSlider/errors';
+  static EVENT_ERRORS = 'errors';
 
   private model!: RangeSliderModel;
 
