@@ -1,0 +1,15 @@
+mixin date(id)
+  -
+    const rootId = `${id}-example`;
+    const targetId = `${id}-target`;
+    const resultId = `${id}-result`;
+
+  h2.example__title Date Example
+  div(class="example", id=rootId)
+    .config-panel
+    .rs-panel
+      .rs-panel__result
+        label
+          | Result:
+          input(type="text", class="rs-panel__result-input", id=resultId)
+      input(type="range", id=targetId)
