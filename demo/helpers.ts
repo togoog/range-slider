@@ -1,6 +1,4 @@
-import { path, assocPath, hasPath, tryCatch } from 'ramda';
 import { Options } from '../src/types';
-import { toArray } from '../src/helpers';
 
 function getRandomId(prefix: string) {
   return `${prefix}-${Math.random()
@@ -20,35 +18,11 @@ function valueFormatter(value: number): string {
 }
 
 function getOptionsFromConfigForm(form: HTMLFormElement): Options {
-  return [...form.elements]
-    .map((input: HTMLInputElement) => {
-      if (['checkbox', 'radio'].includes(input.type)) {
-        return {
-          name: input.name,
-          value: input.checked,
-        };
-      }
+  const serializedInput = form.getElementsByClassName(
+    'js-options',
+  )[0] as HTMLInputElement;
 
-      return {
-        name: input.name,
-        value: input.value,
-      };
-    })
-    .filter(({ name }) => name.length > 0)
-    .reduce((acc, cur) => {
-      const { name, value } = cur;
-      const nested = name.split('.');
-      let parsedValue = tryCatch(JSON.parse, () => value)(value);
-      if (name === 'tooltipFormatter') {
-        // eslint-disable-next-line no-new-func
-        parsedValue = new Function('value', parsedValue);
-      }
-      if (hasPath(nested, acc)) {
-        const oldValue = toArray(path(nested, acc));
-        return assocPath(nested, [...oldValue, parsedValue], acc);
-      }
-      return assocPath(nested, parsedValue, acc);
-    }, {}) as Options;
+  return JSON.parse(serializedInput.value);
 }
 
 export {

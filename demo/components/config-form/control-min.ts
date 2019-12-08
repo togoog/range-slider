@@ -1,8 +1,10 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { assoc } from 'ramda';
+import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
 
-function controlMin({ min }: Options, onUpdate: Function) {
+function controlMin({ options, onUpdate }: Config) {
+  const { min } = options;
   const id = getRandomId('rs-min');
 
   return html`
@@ -13,10 +15,13 @@ function controlMin({ min }: Options, onUpdate: Function) {
       <input
         type="number"
         id=${id}
-        name="min"
         class="config-panel__input"
         value=${min}
-        @input=${onUpdate}
+        @input=${(e: KeyboardEvent) =>
+          onUpdate(e, options => {
+            const newValue = (e.target as HTMLInputElement).value;
+            return assoc('min', parseFloat(newValue), options);
+          })}
       />
     </div>
   `;

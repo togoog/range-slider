@@ -1,12 +1,11 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { update, assoc } from 'ramda';
+import { Config } from '../../types';
 import { toArray } from '../../../src/helpers';
 import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlIntervals(
-  { value, min, max, step, intervals }: Options,
-  onUpdate: Function,
-) {
+function controlIntervals({ options, onUpdate }: Config) {
+  const { value, min, max, intervals } = options;
   const id = getRandomId('intervals');
   const values = toArray(value);
 
@@ -32,17 +31,22 @@ function controlIntervals(
                 class="config-panel__group-item-checkbox"
                 value=${isChecked}
                 ?checked=${isChecked}
-                @input=${onUpdate}
+                @input=${(e: KeyboardEvent) =>
+                  onUpdate(e, options => {
+                    const newValue = (e.target as HTMLInputElement).checked;
+                    const newIntervals = update(
+                      idx,
+                      !!newValue,
+                      toArray(options.intervals),
+                    );
+                    return assoc('intervals', newIntervals, options);
+                  })}
               />
               <span class="config-panel__group-item-desc">
                 between
-                <code
-                  >${step === 0 ? valueFormatter(leftValue) : leftValue}</code
-                >
+                <code>${valueFormatter(leftValue)}</code>
                 and
-                <code
-                  >${step === 0 ? valueFormatter(rightValue) : rightValue}</code
-                >
+                <code>${valueFormatter(rightValue)}</code>
               </span>
             </div>
           `;

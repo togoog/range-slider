@@ -1,8 +1,9 @@
 import { render } from 'lit-html';
 import { Options } from '../../../src/types';
 import { RangeSlider } from '../../../src/range-slider';
-import configForm from '../../components';
-import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
+import { OnConfigFormUpdate } from '../../types';
+import { getOptionsFromConfigForm } from '../../helpers';
+import configForm from './basic-config-form';
 
 (function basicExample() {
   //
@@ -34,30 +35,39 @@ import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
   // ─── HELPERS ────────────────────────────────────────────────────────────────────
   //
 
-  function renderConfigForm(
-    options: Options,
-    onUpdate: Function,
-    container: Element,
-  ) {
-    render(configForm(options, onUpdate), container);
+  function valueFormatter(value: Options['value']) {
+    const precision = 2;
+
+    if (Array.isArray(value)) {
+      return value.map(v => v.toFixed(precision)).join(', ');
+    }
+
+    return value.toFixed(precision);
   }
 
-  function renderResult(options: Options) {
-    const { value, step } = options;
-    if (Array.isArray(value)) {
-      result.value = value
-        .map(v => (step === 0 ? valueFormatter(v) : v))
-        .toString();
-    } else {
-      result.value = valueFormatter(value);
+  function renderConfigForm(
+    options: Options,
+    onUpdate: OnConfigFormUpdate,
+    container: Element,
+  ) {
+    render(configForm({ options, onUpdate }), container);
+  }
+
+  function updateResultInput(value: Options['value'], resultId: string) {
+    const input = document.getElementById(resultId) as HTMLInputElement;
+
+    if (!input) {
+      console.log('Can not find Result input');
     }
+
+    input.value = valueFormatter(value);
   }
 
   //
   // ─── EVENT HANDLERS ─────────────────────────────────────────────────────────────
   //
 
-  function onConfigFormUpdate(
+  function onFormUpdate(
     e: MouseEvent,
     proposal?: (options: Options) => Options,
   ) {
@@ -77,8 +87,8 @@ import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
   //
 
   rangeSlider.on('update', (options: Options) => {
-    renderConfigForm(options, onConfigFormUpdate, configPanel);
-    renderResult(options);
+    renderConfigForm(options, onFormUpdate, configPanel);
+    updateResultInput(options.value, resultId);
   });
 
   result.addEventListener('change', (e: MouseEvent) => {
@@ -92,6 +102,6 @@ import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
   // ─── RUN EXAMPLE ────────────────────────────────────────────────────────────────
   //
 
-  renderConfigForm(rangeSlider.getAll(), onConfigFormUpdate, configPanel);
-  renderResult(rangeSlider.getAll());
+  renderConfigForm(rangeSlider.getAll(), onFormUpdate, configPanel);
+  updateResultInput(rangeSlider.getAll().value, resultId);
 })();

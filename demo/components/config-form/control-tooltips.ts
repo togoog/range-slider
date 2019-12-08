@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { assoc, update } from 'ramda';
+import { Config } from '../../types';
 import { toArray } from '../../../src/helpers';
 import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlTooltips(
-  { value, step, tooltips }: Options,
-  onUpdate: Function,
-) {
+function controlTooltips({ options, onUpdate }: Config) {
+  const { tooltips, value } = options;
   const id = getRandomId('rs-tooltip');
+  const values = toArray(value);
 
   return html`
     <div class="config-panel__control">
@@ -24,19 +24,23 @@ function controlTooltips(
               <input
                 type="checkbox"
                 id=${id.concat(idx.toString())}
-                name="tooltips"
                 class="config-panel__group-item-checkbox"
                 value=${isChecked}
                 ?checked=${isChecked}
-                @input=${onUpdate}
+                @input=${(e: Event) =>
+                  onUpdate(e, options => {
+                    const newValue = (e.target as HTMLInputElement).checked;
+                    const newTooltips = update(
+                      idx,
+                      newValue,
+                      toArray(options.tooltips),
+                    );
+                    return assoc('tooltips', newTooltips, options);
+                  })}
               />
               <span class="config-panel__group-item-desc">
                 for value:
-                <code
-                  >${step === 0
-                    ? valueFormatter(toArray(value)[idx])
-                    : toArray(value)[idx]}</code
-                >
+                <code>${valueFormatter(values[idx])}</code>
               </span>
             </div>
           `,

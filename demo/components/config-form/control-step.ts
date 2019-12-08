@@ -1,8 +1,10 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { assoc } from 'ramda';
+import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
 
-function controlStep({ step }: Options, onUpdate: Function) {
+function controlStep({ options, onUpdate }: Config) {
+  const { step } = options;
   const id = getRandomId('rs-step');
 
   return html`
@@ -13,11 +15,14 @@ function controlStep({ step }: Options, onUpdate: Function) {
       <input
         type="number"
         id=${id}
-        name="step"
         class="config-panel__input"
         value=${step}
         min="0"
-        @input=${onUpdate}
+        @input=${(e: KeyboardEvent) =>
+          onUpdate(e, options => {
+            const newValue = (e.target as HTMLInputElement).value;
+            return assoc('step', parseFloat(newValue), options);
+          })}
       />
     </div>
   `;

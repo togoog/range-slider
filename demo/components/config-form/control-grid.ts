@@ -1,10 +1,13 @@
 import { html } from 'lit-html';
+import { assocPath, update } from 'ramda';
 import { ClassInfo, classMap } from 'lit-html/directives/class-map';
-import { Options } from '../../../src/types';
+import { GridOptions } from '../../../src/types';
+import { Config } from '../../types';
 import * as defaults from '../../../src/defaults';
 import { getRandomId } from '../../helpers';
 
-function controlGrid({ grid }: Options, onUpdate: Function) {
+function controlGrid({ options, onUpdate }: Config) {
+  const { grid } = options;
   let isVisible = defaults.gridIsVisible;
   let numCells = defaults.gridNumCells;
 
@@ -29,11 +32,14 @@ function controlGrid({ grid }: Options, onUpdate: Function) {
       <input
         type="checkbox"
         id=${isVisibleId}
-        name="grid.isVisible"
         class="config-panel__checkbox"
         value=${isVisible}
         ?checked=${isVisible}
-        @input=${onUpdate}
+        @input=${(e: KeyboardEvent) =>
+          onUpdate(e, options => {
+            const isVisible = (e.target as HTMLInputElement).checked;
+            return assocPath(['grid', 'isVisible'], isVisible, options);
+          })}
       />
     </div>
 
@@ -52,10 +58,18 @@ function controlGrid({ grid }: Options, onUpdate: Function) {
                 type="number"
                 min="1"
                 id=${numCellsId.concat(idx.toString())}
-                name="grid.numCells"
                 class="config-panel__input"
                 value=${value}
-                @input=${onUpdate}
+                @input=${(e: KeyboardEvent) =>
+                  onUpdate(e, options => {
+                    const { numCells } = options.grid as GridOptions;
+                    const newValue = (e.target as HTMLInputElement).value;
+                    return assocPath(
+                      ['grid', 'numCells'],
+                      update(idx, parseInt(newValue, 10), numCells),
+                      options,
+                    );
+                  })}
               />
             </div>
           `,

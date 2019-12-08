@@ -1,11 +1,10 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { assoc } from 'ramda';
+import { Config } from '../../types';
 import { getRandomId, getFunctionBody } from '../../helpers';
 
-function controlTooltipFormatter(
-  { tooltipFormatter }: Options,
-  onUpdate: Function,
-) {
+function controlTooltipFormatter({ options, onUpdate }: Config) {
+  const { tooltipFormatter } = options;
   const id = getRandomId('rs-tooltip-formatter');
 
   return html`
@@ -15,10 +14,15 @@ function controlTooltipFormatter(
       </label>
       <textarea
         id=${id}
-        name="tooltipFormatter"
         class="config-panel__textarea"
         rows="3"
-        @change=${onUpdate}
+        @change=${(e: Event) =>
+          onUpdate(e, options => {
+            const newFnBody = (e.target as HTMLTextAreaElement).value;
+            // eslint-disable-next-line no-new-func
+            const newFn = new Function('value', newFnBody);
+            return assoc('tooltipFormatter', newFn, options);
+          })}
       >
 ${getFunctionBody(tooltipFormatter)}
       </textarea

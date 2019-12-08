@@ -1,11 +1,14 @@
 import { html } from 'lit-html';
-import { insert } from 'ramda';
+import { insert, update } from 'ramda';
 import { Options } from '../../../src/types';
+import { Config } from '../../types';
 import { toArray } from '../../../src/helpers';
 import * as defaults from '../../../src/defaults';
 import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlValue({ value, step }: Options, onUpdate: Function) {
+function controlValue({ options, onUpdate }: Config) {
+  const { value } = options;
+  const values = toArray(value);
   const id = getRandomId('rs-value');
 
   return html`
@@ -13,8 +16,9 @@ function controlValue({ value, step }: Options, onUpdate: Function) {
       <label class="config-panel__label">
         Value
       </label>
+      <input type="hidden" name="value" value=${JSON.stringify(value)} />
       <div class="config-panel__group">
-        ${toArray(value).map(
+        ${values.map(
           (v, idx) => html`
             <div class="config-panel__group-item">
               <label class="config-panel__group-item-label">
@@ -23,10 +27,17 @@ function controlValue({ value, step }: Options, onUpdate: Function) {
               <input
                 type="number"
                 id=${id.concat(idx.toString())}
-                name="value"
                 class="config-panel__input"
-                value=${step === 0 ? valueFormatter(v) : v}
-                @input=${onUpdate}
+                .value=${valueFormatter(v)}
+                @input=${(e: KeyboardEvent) =>
+                  onUpdate(e, options => {
+                    const newValue = (e.target as HTMLInputElement).value;
+
+                    return {
+                      ...options,
+                      value: update(idx, parseFloat(newValue), values),
+                    };
+                  })}
               />
               <button
                 class="config-panel__group-item-btn"
@@ -54,7 +65,7 @@ function controlValue({ value, step }: Options, onUpdate: Function) {
               <button
                 class="config-panel__group-item-btn"
                 @click=${(e: MouseEvent) => {
-                  onUpdate(e, (options: Options) => {
+                  onUpdate(e, options => {
                     const values = toArray(options.value);
                     const currentValue = values[idx];
                     const nextValue = values[idx + 1] || options.max;

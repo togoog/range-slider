@@ -1,8 +1,10 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { assoc } from 'ramda';
+import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
 
-function controlMax({ max }: Options, onUpdate: Function) {
+function controlMax({ options, onUpdate }: Config) {
+  const { max } = options;
   const id = getRandomId('rs-max');
 
   return html`
@@ -13,10 +15,13 @@ function controlMax({ max }: Options, onUpdate: Function) {
       <input
         type="number"
         id=${id}
-        name="max"
         class="config-panel__input"
         value=${max}
-        @input=${onUpdate}
+        @input=${(e: KeyboardEvent) =>
+          onUpdate(e, options => {
+            const newValue = (e.target as HTMLInputElement).value;
+            return assoc('max', parseFloat(newValue), options);
+          })}
       />
     </div>
   `;

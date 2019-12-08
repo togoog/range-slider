@@ -1,8 +1,10 @@
 import { html } from 'lit-html';
-import { Options } from '../../../src/types';
+import { assoc } from 'ramda';
+import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
 
-function controlOrientation({ orientation }: Options, onUpdate: Function) {
+function controlOrientation({ options, onUpdate }: Config) {
+  const { orientation } = options;
   const id = getRandomId('rs-orientation');
 
   return html`
@@ -13,8 +15,11 @@ function controlOrientation({ orientation }: Options, onUpdate: Function) {
       <select
         class="config-panel__select"
         id=${id}
-        name="orientation"
-        @change=${onUpdate}
+        @change=${(e: Event) =>
+          onUpdate(e, options => {
+            const newValue = (e.target as HTMLInputElement).value;
+            return assoc('orientation', newValue, options);
+          })}
       >
         <option value="horizontal" ?selected=${orientation === 'horizontal'}
           >Horizontal</option
