@@ -36,6 +36,8 @@ Value(s) can be selected by dragging handle(s).
   npm run demo
 ```
 
+4. Open `localhost:1234` in browser
+
 # Options
 
 1. **value** Describe [Handle](#handle) positions on the [Track](#track). Each number corresponds to a [Handle](#handle) position. _(default: 50)_
