@@ -16,6 +16,26 @@ Main purpose of this project is to learn the basics of:
 Range slider is a ui component for selecting values (with any type) from predefined range.
 Value(s) can be selected by dragging handle(s).
 
+# Installation
+
+1. Clone this repo
+
+```bash
+  git clone git@github.com:romengrus/range-slider.git --depth=1
+```
+
+2. Install dependencies
+
+```bash
+  npm install
+```
+
+3. Run demo
+
+```bash
+  npm run demo
+```
+
 # Options
 
 1. **value** Describe [Handle](#handle) positions on the [Track](#track). Each number corresponds to a [Handle](#handle) position. _(default: 50)_
