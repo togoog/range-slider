@@ -16,6 +16,10 @@ Main purpose of this project is to learn the basics of:
 Range slider is a ui component for selecting values (with any type) from predefined range.
 Value(s) can be selected by dragging handle(s).
 
+# Demo
+
+Range-slider in action: [https://romengrus.github.io/range-slider/](https://romengrus.github.io/range-slider/)
+
 # Installation
 
 1. Clone this repo
