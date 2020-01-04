@@ -4,3 +4,4 @@ docs
 coverage
 .cache
 .directory
+.vscode
