@@ -5,11 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "clean:dist": "rimraf dist",
     "lint": "eslint --ext '.ts, .js' --fix ./src",
     "start": "parcel ./demo/index.pug",
-    "prebuild": "npm run clean:dist",
-    "build": "parcel build ./demo/index.pug --public-url /range-slider/dist"
+    "clean": "rimraf docs",
+    "gh-pages": "npm run clean && parcel build demo/index.pug --public-url /range-slider --out-dir docs"
   },
   "keywords": [
     "typescript",
