@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "clean:dist": "rimraf dist",
     "lint": "eslint --ext '.ts, .js' --fix ./src",
-    "demo": "parcel ./demo/demo.pug"
+    "start": "parcel ./demo/index.pug",
+    "prebuild": "npm run clean:dist",
+    "build": "parcel build ./demo/index.pug --public-url /range-slider/dist"
   },
   "keywords": [
     "typescript",
@@ -14,7 +17,7 @@
   ],
   "author": "Roman Korenev",
   "license": "ISC",
-  "browserlist": [
+  "browserslist": [
     "last 2 versions",
     "> 1%"
   ],
@@ -41,6 +44,7 @@
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.19.1",
     "pug": "^2.0.4",
+    "rimraf": "^3.0.0",
     "sass": "^1.23.6",
     "ts-jest": "^24.1.0",
     "typescript": "^3.7.2"
