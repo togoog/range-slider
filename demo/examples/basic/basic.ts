@@ -1,5 +1,6 @@
 import { render } from 'lit-html';
 import { Options } from '../../../src/types';
+import defaultOptions from './defaults';
 import { RangeSlider } from '../../../src/range-slider';
 import { OnConfigFormUpdate } from '../../types';
 import { getOptionsFromConfigForm } from '../../helpers';
@@ -17,15 +18,10 @@ import configForm from './basic-config-form';
 
   const example = document.getElementById(exampleId);
 
-  const rangeSlider = new RangeSlider(document.getElementById(targetId), {
-    value: 500,
-    min: -1000,
-    max: 1000,
-    step: 10,
-    tooltips: true,
-    intervals: false,
-    grid: { isVisible: true, numCells: [4, 2, 5] },
-  });
+  const rangeSlider = new RangeSlider(
+    document.getElementById(targetId),
+    defaultOptions,
+  );
 
   const result = document.getElementById(resultId) as HTMLInputElement;
 
@@ -57,7 +53,7 @@ import configForm from './basic-config-form';
     const input = document.getElementById(resultId) as HTMLInputElement;
 
     if (!input) {
-      console.log('Can not find Result input');
+      console.error('Can not find Result input');
     }
 
     input.value = valueFormatter(value);

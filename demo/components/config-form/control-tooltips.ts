@@ -27,7 +27,7 @@ function controlTooltips({ options, onUpdate }: Config) {
                 class="config-panel__group-item-checkbox"
                 value=${isChecked}
                 ?checked=${isChecked}
-                @input=${(e: Event) =>
+                @change=${(e: Event) =>
                   onUpdate(e, options => {
                     const newValue = (e.target as HTMLInputElement).checked;
                     const newTooltips = update(

@@ -6,6 +6,13 @@ import { getRandomId } from '../../helpers';
 function controlMin({ options, onUpdate }: Config) {
   const { min } = options;
   const id = getRandomId('rs-min');
+  const updateMin = (e: KeyboardEvent) =>
+    onUpdate(e, options => {
+      const newValue = (e.target as HTMLInputElement).value;
+      return assoc('min', parseFloat(newValue), options);
+    });
+  const updateMinOnEnter = (e: KeyboardEvent) =>
+    e.keyCode === 13 ? updateMin(e) : null;
 
   return html`
     <div class="config-panel__control">
@@ -17,11 +24,8 @@ function controlMin({ options, onUpdate }: Config) {
         id=${id}
         class="config-panel__input"
         value=${min}
-        @input=${(e: KeyboardEvent) =>
-          onUpdate(e, options => {
-            const newValue = (e.target as HTMLInputElement).value;
-            return assoc('min', parseFloat(newValue), options);
-          })}
+        @keydown=${updateMinOnEnter}
+        @change=${updateMin}
       />
     </div>
   `;

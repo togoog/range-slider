@@ -10,6 +10,18 @@ function controlGrid({ options, onUpdate }: Config) {
   const { grid } = options;
   let isVisible = defaults.gridIsVisible;
   let numCells = defaults.gridNumCells;
+  const updateGrid = (idx: number) => (e: KeyboardEvent) =>
+    onUpdate(e, options => {
+      const { numCells } = options.grid as GridOptions;
+      const newValue = (e.target as HTMLInputElement).value;
+      return assocPath(
+        ['grid', 'numCells'],
+        update(idx, parseInt(newValue, 10), numCells),
+        options,
+      );
+    });
+  const updateGridOnEnter = (idx: number) => (e: KeyboardEvent) =>
+    e.keyCode === 13 ? updateGrid(idx)(e) : null;
 
   if (typeof grid !== 'boolean') {
     isVisible = grid.isVisible;
@@ -35,7 +47,7 @@ function controlGrid({ options, onUpdate }: Config) {
         class="config-panel__checkbox"
         value=${isVisible}
         ?checked=${isVisible}
-        @input=${(e: KeyboardEvent) =>
+        @change=${(e: KeyboardEvent) =>
           onUpdate(e, options => {
             const isVisible = (e.target as HTMLInputElement).checked;
             return assocPath(['grid', 'isVisible'], isVisible, options);
@@ -57,19 +69,12 @@ function controlGrid({ options, onUpdate }: Config) {
               <input
                 type="number"
                 min="1"
+                max="10"
                 id=${numCellsId.concat(idx.toString())}
                 class="config-panel__input"
                 value=${value}
-                @input=${(e: KeyboardEvent) =>
-                  onUpdate(e, options => {
-                    const { numCells } = options.grid as GridOptions;
-                    const newValue = (e.target as HTMLInputElement).value;
-                    return assocPath(
-                      ['grid', 'numCells'],
-                      update(idx, parseInt(newValue, 10), numCells),
-                      options,
-                    );
-                  })}
+                @keydown=${updateGridOnEnter(idx)}
+                @change=${updateGrid(idx)}
               />
             </div>
           `,

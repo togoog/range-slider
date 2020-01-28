@@ -10,6 +10,17 @@ function controlValue({ options, onUpdate }: Config) {
   const { value } = options;
   const values = toArray(value);
   const id = getRandomId('rs-value');
+  const updateValue = (idx: number) => (e: KeyboardEvent) =>
+    onUpdate(e, options => {
+      const newValue = (e.target as HTMLInputElement).value;
+
+      return {
+        ...options,
+        value: update(idx, parseFloat(newValue), values),
+      };
+    });
+  const updateValueOnEnter = (idx: number) => (e: KeyboardEvent) =>
+    e.keyCode === 13 ? updateValue(idx)(e) : null;
 
   return html`
     <div class="config-panel__control">
@@ -29,15 +40,8 @@ function controlValue({ options, onUpdate }: Config) {
                 id=${id.concat(idx.toString())}
                 class="config-panel__input"
                 .value=${valueFormatter(v)}
-                @input=${(e: KeyboardEvent) =>
-                  onUpdate(e, options => {
-                    const newValue = (e.target as HTMLInputElement).value;
-
-                    return {
-                      ...options,
-                      value: update(idx, parseFloat(newValue), values),
-                    };
-                  })}
+                @keydown=${updateValueOnEnter(idx)}
+                @change=${updateValue(idx)}
               />
               <button
                 class="config-panel__group-item-btn"
