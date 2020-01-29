@@ -2,7 +2,7 @@ import { aperture } from 'ramda';
 import { Options } from '../../../src/types';
 import defaultOptions from './defaults';
 import { RangeSlider } from '../../../src/range-slider';
-import { getOptionsFromConfigForm } from '../../helpers';
+import { getOptionsFromConfigForm, getResultFromOptions } from '../../helpers';
 import { prepareOptionsForInternalUse } from '../../../src/converters/optionsToData';
 import { renderConfigForm } from '../../components/config-form/config-form';
 
@@ -31,29 +31,9 @@ import { renderConfigForm } from '../../components/config-form/config-form';
   // ─── HELPERS ────────────────────────────────────────────────────────────────────
   //
 
-  // eslint-disable-next-line complexity
   function updateResultInput(options: Options, resultId: string) {
     const input = document.getElementById(resultId) as HTMLInputElement;
-    const { value, intervals, min, max } = prepareOptionsForInternalUse(
-      options,
-    );
-
-    const isConnected = (idx: number) => intervals[idx];
-    const isNotConnected = (idx: number) => !isConnected(idx);
-    const valuePairs = aperture(2, [min, ...value, max]);
-    const result = valuePairs
-      .reduce((acc, valuePair, idx) => {
-        if (isConnected(idx)) {
-          return acc.concat(valuePair.join('..'));
-        }
-
-        if (isNotConnected(idx + 1) && idx + 1 < valuePairs.length) {
-          return acc.concat(valuePair[1]);
-        }
-
-        return acc;
-      }, [])
-      .join('; ');
+    const result = getResultFromOptions(options);
 
     input.value = result;
     // adjust input width to see the result

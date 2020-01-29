@@ -1,7 +1,11 @@
 import { partialRight } from 'ramda';
 import { Options } from '../../../src/types';
 import { RangeSlider } from '../../../src/range-slider';
-import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
+import {
+  valueFormatter,
+  getOptionsFromConfigForm,
+  getResultFromOptions,
+} from '../../helpers';
 import { renderConfigForm } from '../../components/config-form/config-form';
 import {
   controlValue,
@@ -21,19 +25,6 @@ import {
   // ─── HELPERS ────────────────────────────────────────────────────────────────────
   //
 
-  function renderResult(options: Options, input: HTMLInputElement) {
-    const { value, step } = options;
-    if (Array.isArray(value)) {
-      // eslint-disable-next-line no-param-reassign
-      input.value = value
-        .map(v => (step === 0 ? valueFormatter(v) : v))
-        .toString();
-    } else {
-      // eslint-disable-next-line no-param-reassign
-      input.value = valueFormatter(value);
-    }
-  }
-
   function timestampToDate(timestamp: number, lang = 'ru-RU') {
     const date = new Date(timestamp);
 
@@ -50,6 +41,15 @@ import {
 
   function dateToTimestamp(date: Date) {
     return date.valueOf();
+  }
+
+  function updateResultInput(options: Options, resultId: string) {
+    const input = document.getElementById(resultId) as HTMLInputElement;
+    const result = getResultFromOptions(options, timestampToISOString);
+
+    input.value = result;
+    // adjust input width to see the result
+    input.style.width = `${result.length * 8}px`;
   }
 
   //
@@ -124,7 +124,7 @@ import {
   // ─── EVENT HANDLERS ─────────────────────────────────────────────────────────────
   //
 
-  function onConfigFormUpdate(
+  function onFormUpdate(
     e: MouseEvent,
     proposal?: (options: Options) => Options,
   ) {
@@ -144,8 +144,8 @@ import {
   //
 
   rangeSlider.on('update', (options: Options) => {
-    renderConfigForm(options, onConfigFormUpdate, configPanel, elements);
-    renderResult(options, resultInput);
+    renderConfigForm(options, onFormUpdate, configPanel, elements);
+    updateResultInput(options, resultId);
   });
 
   resultInput.addEventListener('change', (e: MouseEvent) => {
@@ -159,11 +159,6 @@ import {
   // ─── RUN EXAMPLE ────────────────────────────────────────────────────────────────
   //
 
-  renderConfigForm(
-    rangeSlider.getAll(),
-    onConfigFormUpdate,
-    configPanel,
-    elements,
-  );
-  renderResult(rangeSlider.getAll(), resultInput);
+  renderConfigForm(rangeSlider.getAll(), onFormUpdate, configPanel, elements);
+  updateResultInput(rangeSlider.getAll(), resultId);
 })();
