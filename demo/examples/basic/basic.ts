@@ -1,9 +1,11 @@
+import { aperture } from 'ramda';
 import { render } from 'lit-html';
 import { Options } from '../../../src/types';
 import defaultOptions from './defaults';
 import { RangeSlider } from '../../../src/range-slider';
 import { OnConfigFormUpdate } from '../../types';
 import { getOptionsFromConfigForm } from '../../helpers';
+import { prepareOptionsForInternalUse } from '../../../src/converters/optionsToData';
 import configForm from './basic-config-form';
 
 (function basicExample() {
@@ -31,16 +33,6 @@ import configForm from './basic-config-form';
   // ─── HELPERS ────────────────────────────────────────────────────────────────────
   //
 
-  function valueFormatter(value: Options['value']) {
-    const precision = 2;
-
-    if (Array.isArray(value)) {
-      return value.map(v => v.toFixed(precision)).join(', ');
-    }
-
-    return value.toFixed(precision);
-  }
-
   function renderConfigForm(
     options: Options,
     onUpdate: OnConfigFormUpdate,
@@ -49,14 +41,33 @@ import configForm from './basic-config-form';
     render(configForm({ options, onUpdate }), container);
   }
 
-  function updateResultInput(value: Options['value'], resultId: string) {
+  // eslint-disable-next-line complexity
+  function updateResultInput(options: Options, resultId: string) {
     const input = document.getElementById(resultId) as HTMLInputElement;
+    const { value, intervals, min, max } = prepareOptionsForInternalUse(
+      options,
+    );
 
-    if (!input) {
-      console.error('Can not find Result input');
-    }
+    const isConnected = (idx: number) => intervals[idx];
+    const isNotConnected = (idx: number) => !isConnected(idx);
+    const valuePairs = aperture(2, [min, ...value, max]);
+    const result = valuePairs
+      .reduce((acc, valuePair, idx) => {
+        if (isConnected(idx)) {
+          return acc.concat(valuePair.join('..'));
+        }
 
-    input.value = valueFormatter(value);
+        if (isNotConnected(idx + 1) && idx + 1 < valuePairs.length) {
+          return acc.concat(valuePair[1]);
+        }
+
+        return acc;
+      }, [])
+      .join('; ');
+
+    input.value = result;
+    // adjust input width to see the result
+    input.style.width = `${result.length * 8}px`;
   }
 
   //
@@ -84,7 +95,7 @@ import configForm from './basic-config-form';
 
   rangeSlider.on('update', (options: Options) => {
     renderConfigForm(options, onFormUpdate, configPanel);
-    updateResultInput(options.value, resultId);
+    updateResultInput(options, resultId);
   });
 
   result.addEventListener('change', (e: MouseEvent) => {
@@ -99,5 +110,5 @@ import configForm from './basic-config-form';
   //
 
   renderConfigForm(rangeSlider.getAll(), onFormUpdate, configPanel);
-  updateResultInput(rangeSlider.getAll().value, resultId);
+  updateResultInput(rangeSlider.getAll(), resultId);
 })();

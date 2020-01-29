@@ -130,3 +130,4 @@ function convertOptionsToData(options: Options): Data {
 }
 
 export default convertOptionsToData;
+export { prepareOptionsForInternalUse };
