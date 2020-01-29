@@ -2,10 +2,10 @@ import { html } from 'lit-html';
 import { assoc, update } from 'ramda';
 import { Config } from '../../types';
 import { toArray } from '../../../src/helpers';
-import { getRandomId, valueFormatter } from '../../helpers';
+import { getRandomId } from '../../helpers';
 
 function controlTooltips({ options, onUpdate }: Config) {
-  const { tooltips, value } = options;
+  const { tooltips, value, tooltipFormatter } = options;
   const id = getRandomId('rs-tooltip');
   const values = toArray(value);
 
@@ -40,7 +40,7 @@ function controlTooltips({ options, onUpdate }: Config) {
               />
               <span class="config-panel__group-item-desc">
                 for value:
-                <code>${valueFormatter(values[idx])}</code>
+                <code>${tooltipFormatter(values[idx])}</code>
               </span>
             </div>
           `,
