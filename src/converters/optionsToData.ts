@@ -26,6 +26,7 @@ function prepareOptionsForInternalUse({
   tooltipFormatter,
   intervals,
   grid,
+  gridFormatter,
 }: Options): OptimizedOptions {
   const valuesLength = toArray(value).length;
 
@@ -52,6 +53,7 @@ function prepareOptionsForInternalUse({
     grid: isBoolean(grid)
       ? { isVisible: grid, numCells: defaults.gridNumCells }
       : grid,
+    gridFormatter,
   };
 }
 
@@ -71,6 +73,7 @@ function convertOptionsToData(options: Options): Data {
     tooltipFormatter,
     intervals,
     grid,
+    gridFormatter,
   } = prepareOptionsForInternalUse(options);
 
   const handlesList = value.map(
@@ -126,6 +129,7 @@ function convertOptionsToData(options: Options): Data {
 
     /** GRID */
     grid,
+    gridFormatter,
   };
 }
 

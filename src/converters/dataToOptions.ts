@@ -18,6 +18,7 @@ function convertDataToOptions({
   intervalIds,
   intervalDict,
   grid,
+  gridFormatter,
 }: Data): Options {
   return {
     value: handleIds.map(id => handleDict[id].value),
@@ -30,6 +31,7 @@ function convertDataToOptions({
     tooltipFormatter,
     intervals: intervalIds.map(id => intervalDict[id].isVisible),
     grid,
+    gridFormatter,
   };
 }
 

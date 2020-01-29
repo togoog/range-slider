@@ -10,6 +10,7 @@ import controlTooltips from './control-tooltips';
 import controlTooltipFormatter from './control-tooltip-formatter';
 import controlIntervals from './control-intervals';
 import controlGrid from './control-grid';
+import controlGridFormatter from './control-grid-formatter';
 
 function configForm(config: Config, elements?: ConfigFormElement[]) {
   return html`
@@ -42,6 +43,7 @@ function makeConfigForm(config: Config) {
     controlTooltipFormatter,
     controlIntervals,
     controlGrid,
+    controlGridFormatter,
   ]);
 }
 

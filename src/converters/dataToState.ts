@@ -210,6 +210,7 @@ function createGridCellsState({
   orientation,
   cssClass,
   grid,
+  gridFormatter,
 }: Data): GridCell[] {
   if (min === max) {
     // no point in creating grid
@@ -235,7 +236,7 @@ function createGridCellsState({
 
         if (cells[position] === undefined) {
           cells[position] = {
-            label: `${parseFloat(value.toFixed(2))}`,
+            label: gridFormatter(value),
             isVisibleLabel: i === 0,
             level: i + 1,
             orientation,

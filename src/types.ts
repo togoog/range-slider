@@ -49,6 +49,7 @@ export type Options = {
   tooltipFormatter: Formatter;
   intervals: boolean | boolean[];
   grid: boolean | GridOptions;
+  gridFormatter: Formatter;
 };
 
 // for internal use
@@ -63,6 +64,7 @@ export type OptimizedOptions = {
   tooltipFormatter: Formatter;
   intervals: boolean[];
   grid: GridOptions;
+  gridFormatter: Formatter;
 };
 
 export type OptionsKey = keyof Options;
@@ -138,6 +140,7 @@ export type Data = {
 
   /** GRID */
   grid: GridOptions;
+  gridFormatter: Formatter;
 };
 
 export type DataKey = keyof Data;

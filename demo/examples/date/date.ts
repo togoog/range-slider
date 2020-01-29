@@ -57,6 +57,7 @@ import { renderConfigForm } from '../../components/config-form/config-form';
     tooltipFormatter: timestampToDate,
     intervals: false,
     grid: { isVisible: true, numCells: [4, 2, 5] },
+    gridFormatter: timestampToDate,
   });
 
   const resultInput = document.getElementById(resultId) as HTMLInputElement;
