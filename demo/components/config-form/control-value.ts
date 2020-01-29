@@ -1,12 +1,21 @@
 import { html } from 'lit-html';
 import { insert, update } from 'ramda';
 import { Options } from '../../../src/types';
-import { Config } from '../../types';
+import { Config, ElementAttributes } from '../../types';
 import { toArray } from '../../../src/helpers';
 import * as defaults from '../../../src/defaults';
 import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlValue({ options, onUpdate }: Config) {
+const defaultAttributes = {
+  type: 'number',
+  valueFormatter,
+  valueParser: parseFloat,
+};
+
+function controlValue(
+  { options, onUpdate }: Config,
+  { type, valueFormatter, valueParser }: ElementAttributes = defaultAttributes,
+) {
   const { value } = options;
   const values = toArray(value);
   const id = getRandomId('rs-value');
@@ -16,7 +25,7 @@ function controlValue({ options, onUpdate }: Config) {
 
       return {
         ...options,
-        value: update(idx, parseFloat(newValue), values),
+        value: update(idx, valueParser(newValue), values),
       };
     });
   const updateValueOnEnter = (idx: number) => (e: KeyboardEvent) =>
@@ -36,7 +45,7 @@ function controlValue({ options, onUpdate }: Config) {
                 ${idx + 1}:
               </label>
               <input
-                type="number"
+                type=${type}
                 id=${id.concat(idx.toString())}
                 class="config-panel__input"
                 .value=${valueFormatter(v)}

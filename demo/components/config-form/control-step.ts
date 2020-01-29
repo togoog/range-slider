@@ -1,15 +1,24 @@
 import { html } from 'lit-html';
 import { assoc } from 'ramda';
-import { Config } from '../../types';
-import { getRandomId } from '../../helpers';
+import { Config, ElementAttributes } from '../../types';
+import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlStep({ options, onUpdate }: Config) {
+const defaultAttributes = {
+  type: 'number',
+  valueFormatter,
+  valueParser: parseFloat,
+};
+
+function controlStep(
+  { options, onUpdate }: Config,
+  { type, valueFormatter, valueParser }: ElementAttributes = defaultAttributes,
+) {
   const { step } = options;
   const id = getRandomId('rs-step');
   const updateStep = (e: KeyboardEvent) =>
     onUpdate(e, options => {
       const newValue = (e.target as HTMLInputElement).value;
-      return assoc('step', parseFloat(newValue), options);
+      return assoc('step', valueParser(newValue), options);
     });
   const updateStepOnEnter = (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateStep(e) : null;
@@ -20,10 +29,10 @@ function controlStep({ options, onUpdate }: Config) {
         Step
       </label>
       <input
-        type="number"
+        type=${type}
         id=${id}
         class="config-panel__input"
-        value=${step}
+        value=${valueFormatter(step)}
         min="0"
         @keydown=${updateStepOnEnter}
         @change=${updateStep}

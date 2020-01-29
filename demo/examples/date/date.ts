@@ -1,7 +1,20 @@
+import { partialRight } from 'ramda';
 import { Options } from '../../../src/types';
 import { RangeSlider } from '../../../src/range-slider';
 import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
 import { renderConfigForm } from '../../components/config-form/config-form';
+import {
+  controlValue,
+  controlMin,
+  controlMax,
+  controlStep,
+  controlOrientation,
+  controlTooltips,
+  controlTooltipFormatter,
+  controlIntervals,
+  controlGrid,
+  controlGridFormatter,
+} from '../../components';
 
 (function dateExample() {
   //
@@ -31,6 +44,10 @@ import { renderConfigForm } from '../../components/config-form/config-form';
     });
   }
 
+  function timestampToISOString(timestamp) {
+    return new Date(timestamp).toISOString().substr(0, 10);
+  }
+
   function dateToTimestamp(date: Date) {
     return date.valueOf();
   }
@@ -38,6 +55,45 @@ import { renderConfigForm } from '../../components/config-form/config-form';
   //
   // ─── INIT ───────────────────────────────────────────────────────────────────────
   //
+
+  const step = 1 * 24 * 60 * 60 * 1000; // 1 day
+
+  const elements = [
+    partialRight(controlValue, [
+      {
+        type: 'date',
+        valueFormatter: timestampToISOString,
+        valueParser: Date.parse,
+      },
+    ]),
+    partialRight(controlMin, [
+      {
+        type: 'date',
+        valueFormatter: timestampToISOString,
+        valueParser: Date.parse,
+      },
+    ]),
+    partialRight(controlMax, [
+      {
+        type: 'date',
+        valueFormatter: timestampToISOString,
+        valueParser: Date.parse,
+      },
+    ]),
+    partialRight(controlStep, [
+      {
+        type: 'number',
+        valueFormatter: (timestamp: number) => timestamp / step,
+        valueParser: (steps: number) => steps * step,
+      },
+    ]),
+    controlOrientation,
+    controlTooltips,
+    controlTooltipFormatter,
+    controlIntervals,
+    controlGrid,
+    controlGridFormatter,
+  ];
 
   const year = new Date().getFullYear();
 
@@ -52,7 +108,7 @@ import { renderConfigForm } from '../../components/config-form/config-form';
     value: dateToTimestamp(new Date(year, 2, 3)),
     min: dateToTimestamp(new Date(year, 0, 1)),
     max: dateToTimestamp(new Date(year, 11, 31)),
-    step: 1 * 24 * 60 * 60 * 1000, // 1 day
+    step,
     tooltips: true,
     tooltipFormatter: timestampToDate,
     intervals: false,
@@ -88,7 +144,7 @@ import { renderConfigForm } from '../../components/config-form/config-form';
   //
 
   rangeSlider.on('update', (options: Options) => {
-    renderConfigForm(options, onConfigFormUpdate, configPanel);
+    renderConfigForm(options, onConfigFormUpdate, configPanel, elements);
     renderResult(options, resultInput);
   });
 
@@ -103,6 +159,11 @@ import { renderConfigForm } from '../../components/config-form/config-form';
   // ─── RUN EXAMPLE ────────────────────────────────────────────────────────────────
   //
 
-  renderConfigForm(rangeSlider.getAll(), onConfigFormUpdate, configPanel);
+  renderConfigForm(
+    rangeSlider.getAll(),
+    onConfigFormUpdate,
+    configPanel,
+    elements,
+  );
   renderResult(rangeSlider.getAll(), resultInput);
 })();

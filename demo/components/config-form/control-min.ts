@@ -1,15 +1,24 @@
 import { html } from 'lit-html';
 import { assoc } from 'ramda';
-import { Config } from '../../types';
-import { getRandomId } from '../../helpers';
+import { Config, ElementAttributes } from '../../types';
+import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlMin({ options, onUpdate }: Config) {
+const defaultAttributes = {
+  type: 'number',
+  valueFormatter,
+  valueParser: parseFloat,
+};
+
+function controlMin(
+  { options, onUpdate }: Config,
+  { type, valueFormatter, valueParser }: ElementAttributes = defaultAttributes,
+) {
   const { min } = options;
   const id = getRandomId('rs-min');
   const updateMin = (e: KeyboardEvent) =>
     onUpdate(e, options => {
       const newValue = (e.target as HTMLInputElement).value;
-      return assoc('min', parseFloat(newValue), options);
+      return assoc('min', valueParser(newValue), options);
     });
   const updateMinOnEnter = (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateMin(e) : null;
@@ -20,10 +29,10 @@ function controlMin({ options, onUpdate }: Config) {
         Min
       </label>
       <input
-        type="number"
+        type=${type}
         id=${id}
         class="config-panel__input"
-        value=${min}
+        value=${valueFormatter(min)}
         @keydown=${updateMinOnEnter}
         @change=${updateMin}
       />

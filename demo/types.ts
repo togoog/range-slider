@@ -1,5 +1,5 @@
 import { TemplateResult } from 'lit-html';
-import { Options } from '../src/types';
+import { Options, Formatter } from '../src/types';
 
 export type OptionsProposal = (options: Options) => Options;
 
@@ -10,4 +10,10 @@ export type Config = {
   onUpdate: OnConfigFormUpdate;
 };
 
-export type ConfigFormElement = (config: Config) => TemplateResult;
+export type ElementAttributes = {
+  type: string;
+  valueFormatter: Formatter;
+  valueParser: (value: string) => number;
+};
+
+export type ConfigFormElement = (...args: unknown[]) => TemplateResult;

@@ -1,15 +1,24 @@
 import { html } from 'lit-html';
 import { assoc } from 'ramda';
-import { Config } from '../../types';
-import { getRandomId } from '../../helpers';
+import { Config, ElementAttributes } from '../../types';
+import { getRandomId, valueFormatter } from '../../helpers';
 
-function controlMax({ options, onUpdate }: Config) {
+const defaultAttributes = {
+  type: 'number',
+  valueFormatter,
+  valueParser: parseFloat,
+};
+
+function controlMax(
+  { options, onUpdate }: Config,
+  { type, valueFormatter, valueParser }: ElementAttributes = defaultAttributes,
+) {
   const { max } = options;
   const id = getRandomId('rs-max');
   const updateMax = (e: KeyboardEvent) =>
     onUpdate(e, options => {
       const newValue = (e.target as HTMLInputElement).value;
-      return assoc('max', parseFloat(newValue), options);
+      return assoc('max', valueParser(newValue), options);
     });
   const updateMaxOnEnter = (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateMax(e) : null;
@@ -20,10 +29,10 @@ function controlMax({ options, onUpdate }: Config) {
         Max
       </label>
       <input
-        type="number"
+        type=${type}
         id=${id}
         class="config-panel__input"
-        value=${max}
+        value=${valueFormatter(max)}
         @keydown=${updateMaxOnEnter}
         @change=${updateMax}
       />

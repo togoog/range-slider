@@ -12,6 +12,19 @@ import controlIntervals from './control-intervals';
 import controlGrid from './control-grid';
 import controlGridFormatter from './control-grid-formatter';
 
+const defaultElements = [
+  controlValue,
+  controlMin,
+  controlMax,
+  controlStep,
+  controlOrientation,
+  controlTooltips,
+  controlTooltipFormatter,
+  controlIntervals,
+  controlGrid,
+  controlGridFormatter,
+];
+
 function configForm(config: Config, elements?: ConfigFormElement[]) {
   return html`
     <h2 class="config-panel__header">Config Panel</h2>
@@ -32,28 +45,14 @@ function configForm(config: Config, elements?: ConfigFormElement[]) {
   `;
 }
 
-function makeConfigForm(config: Config) {
-  return configForm(config, [
-    controlValue,
-    controlMin,
-    controlMax,
-    controlStep,
-    controlOrientation,
-    controlTooltips,
-    controlTooltipFormatter,
-    controlIntervals,
-    controlGrid,
-    controlGridFormatter,
-  ]);
-}
-
 function renderConfigForm(
   options: Options,
   onUpdate: OnConfigFormUpdate,
   container: Element,
+  elements: ConfigFormElement[] = defaultElements,
 ) {
-  render(makeConfigForm({ options, onUpdate }), container);
+  render(configForm({ options, onUpdate }, elements), container);
 }
 
 export default configForm;
-export { makeConfigForm, renderConfigForm };
+export { renderConfigForm };

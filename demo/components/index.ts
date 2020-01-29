@@ -8,6 +8,7 @@ import controlTooltips from './config-form/control-tooltips';
 import controlTooltipFormatter from './config-form/control-tooltip-formatter';
 import controlIntervals from './config-form/control-intervals';
 import controlGrid from './config-form/control-grid';
+import controlGridFormatter from './config-form/control-grid-formatter';
 
 export {
   configForm,
@@ -20,4 +21,5 @@ export {
   controlTooltipFormatter,
   controlIntervals,
   controlGrid,
+  controlGridFormatter,
 };
