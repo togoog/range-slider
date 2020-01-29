@@ -1,21 +1,12 @@
-import { render } from 'lit-html';
 import { Options } from '../../../src/types';
 import { RangeSlider } from '../../../src/range-slider';
-import configForm from '../../components';
 import { valueFormatter, getOptionsFromConfigForm } from '../../helpers';
+import { renderConfigForm } from '../../components/config-form/config-form';
 
 (function dateExample() {
   //
   // ─── HELPERS ────────────────────────────────────────────────────────────────────
   //
-
-  function renderConfigForm(
-    options: Options,
-    onUpdate: Function,
-    container: Element,
-  ) {
-    render(configForm(options, onUpdate), container);
-  }
 
   function renderResult(options: Options, input: HTMLInputElement) {
     const { value, step } = options;

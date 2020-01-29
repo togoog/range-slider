@@ -1,4 +1,6 @@
-import { Config } from '../../types';
+import { render } from 'lit-html';
+import { Options } from '../../src/types';
+import { Config, OnConfigFormUpdate } from '../types';
 import {
   configForm,
   controlValue,
@@ -10,9 +12,9 @@ import {
   controlTooltipFormatter,
   controlIntervals,
   controlGrid,
-} from '../../components';
+} from '../components';
 
-function basicConfigForm(config: Config) {
+function makeConfigForm(config: Config) {
   return configForm(config, [
     controlValue,
     controlMin,
@@ -26,4 +28,12 @@ function basicConfigForm(config: Config) {
   ]);
 }
 
-export default basicConfigForm;
+function renderConfigForm(
+  options: Options,
+  onUpdate: OnConfigFormUpdate,
+  container: Element,
+) {
+  render(makeConfigForm({ options, onUpdate }), container);
+}
+
+export default makeConfigForm;

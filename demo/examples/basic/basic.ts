@@ -1,12 +1,10 @@
 import { aperture } from 'ramda';
-import { render } from 'lit-html';
 import { Options } from '../../../src/types';
 import defaultOptions from './defaults';
 import { RangeSlider } from '../../../src/range-slider';
-import { OnConfigFormUpdate } from '../../types';
 import { getOptionsFromConfigForm } from '../../helpers';
 import { prepareOptionsForInternalUse } from '../../../src/converters/optionsToData';
-import configForm from './basic-config-form';
+import { renderConfigForm } from '../../components/config-form/config-form';
 
 (function basicExample() {
   //
@@ -32,14 +30,6 @@ import configForm from './basic-config-form';
   //
   // ─── HELPERS ────────────────────────────────────────────────────────────────────
   //
-
-  function renderConfigForm(
-    options: Options,
-    onUpdate: OnConfigFormUpdate,
-    container: Element,
-  ) {
-    render(configForm({ options, onUpdate }), container);
-  }
 
   // eslint-disable-next-line complexity
   function updateResultInput(options: Options, resultId: string) {

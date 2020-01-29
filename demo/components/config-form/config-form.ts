@@ -1,5 +1,15 @@
-import { html } from 'lit-html';
-import { Config, ConfigFormElement } from '../../types';
+import { html, render } from 'lit-html';
+import { Options } from '../../../src/types';
+import { Config, ConfigFormElement, OnConfigFormUpdate } from '../../types';
+import controlValue from './control-value';
+import controlMin from './control-min';
+import controlMax from './control-max';
+import controlStep from './control-step';
+import controlOrientation from './control-orientation';
+import controlTooltips from './control-tooltips';
+import controlTooltipFormatter from './control-tooltip-formatter';
+import controlIntervals from './control-intervals';
+import controlGrid from './control-grid';
 
 function configForm(config: Config, elements?: ConfigFormElement[]) {
   return html`
@@ -21,4 +31,27 @@ function configForm(config: Config, elements?: ConfigFormElement[]) {
   `;
 }
 
+function makeConfigForm(config: Config) {
+  return configForm(config, [
+    controlValue,
+    controlMin,
+    controlMax,
+    controlStep,
+    controlOrientation,
+    controlTooltips,
+    controlTooltipFormatter,
+    controlIntervals,
+    controlGrid,
+  ]);
+}
+
+function renderConfigForm(
+  options: Options,
+  onUpdate: OnConfigFormUpdate,
+  container: Element,
+) {
+  render(makeConfigForm({ options, onUpdate }), container);
+}
+
 export default configForm;
+export { makeConfigForm, renderConfigForm };
