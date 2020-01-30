@@ -8,11 +8,8 @@ function getRandomId(prefix: string) {
     .substring(2, 7)}`;
 }
 
-function getFunctionBody(fn: Function): string {
-  return fn
-    .toString()
-    .match(/function[^{]+\{([\s\S]*)\}$/)[1]
-    .trim();
+function getFunctionAsText(fn: Function): string {
+  return fn.toString().trim();
 }
 
 function valueFormatter(value: number): string {
@@ -57,7 +54,7 @@ function getResultFromOptions(
 
 export {
   getRandomId,
-  getFunctionBody,
+  getFunctionAsText,
   valueFormatter,
   getOptionsFromConfigForm,
   getResultFromOptions,

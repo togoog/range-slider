@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { assoc } from 'ramda';
 import { Config } from '../../types';
-import { getRandomId, getFunctionBody } from '../../helpers';
+import { getRandomId, getFunctionAsText } from '../../helpers';
 
 function controlTooltipFormatter({ options, onUpdate }: Config) {
   const { tooltipFormatter } = options;
@@ -15,7 +15,7 @@ function controlTooltipFormatter({ options, onUpdate }: Config) {
       <textarea
         id=${id}
         class="config-panel__textarea"
-        rows="3"
+        rows="6"
         @change=${(e: Event) =>
           onUpdate(e, options => {
             const newFnBody = (e.target as HTMLTextAreaElement).value;
@@ -24,7 +24,7 @@ function controlTooltipFormatter({ options, onUpdate }: Config) {
             return assoc('tooltipFormatter', newFn, options);
           })}
       >
-${getFunctionBody(tooltipFormatter)}
+${getFunctionAsText(tooltipFormatter)}
       </textarea
       >
     </div>
