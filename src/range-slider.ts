@@ -10,7 +10,7 @@ import {
   OptionsKey,
   Data,
 } from './types';
-import { tooltipFormatter, gridFormatter } from './defaults';
+import * as defaults from './defaults';
 import { Model, View, Presenter } from './mvp';
 import { selectElements } from './helpers';
 import logError from './services/logger';
@@ -53,12 +53,15 @@ const defaultOptions: Options = {
   max: 100,
   step: 1,
   orientation: 'horizontal',
-  cssClass: 'range-slider',
-  tooltips: true,
-  tooltipFormatter,
-  intervals: [true, false],
-  grid: false,
-  gridFormatter,
+  cssClass: defaults.cssClass,
+  tooltips: defaults.tooltipValue,
+  tooltipFormatter: defaults.tooltipFormatter,
+  intervals: defaults.intervalValue,
+  grid: {
+    isVisible: defaults.gridIsVisible,
+    numCells: defaults.gridNumCells,
+  },
+  gridFormatter: defaults.gridFormatter,
 };
 
 class RangeSlider extends EventEmitter implements Plugin {
