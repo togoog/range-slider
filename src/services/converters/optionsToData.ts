@@ -7,9 +7,9 @@ import {
   HandleData,
   TooltipData,
   IntervalData,
-} from '../types';
-import { toArray, createId, closestToStep, fillArrayWith } from '../helpers';
-import * as defaults from '../defaults';
+} from '../../types';
+import { toArray, createId, closestToStep, fillArrayWith } from '../../helpers';
+import * as defaults from '../../defaults';
 
 /**
  * Optimize options for better developer experience

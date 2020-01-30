@@ -1,4 +1,4 @@
-import { Orientation, Origin } from '../types';
+import { Orientation, Origin } from '../../types';
 
 function convertOrientationToOrigin(orientation: Orientation): Origin {
   return orientation === 'horizontal' ? 'left' : 'bottom';

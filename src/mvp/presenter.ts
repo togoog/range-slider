@@ -20,7 +20,10 @@ import {
 import View from './view';
 import { closestToStep } from '../helpers';
 import logError from '../services/logger';
-import { convertDataToState, convertOrientationToOrigin } from '../converters';
+import {
+  convertDataToState,
+  convertOrientationToOrigin,
+} from '../services/converters';
 
 class Presenter implements RangeSliderPresenter {
   constructor(private model: RangeSliderModel, private view: RangeSliderView) {

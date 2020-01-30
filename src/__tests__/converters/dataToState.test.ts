@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { convertDataToState } from '../../converters';
+import { convertDataToState } from '../../services/converters';
 import { makeData } from '../arbitraries';
 import { getRelativePosition } from '../../helpers';
 

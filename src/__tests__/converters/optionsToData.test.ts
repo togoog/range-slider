@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { convertOptionsToData } from '../../converters';
+import { convertOptionsToData } from '../../services/converters';
 import { makeOptions } from '../arbitraries';
 import { toArray, closestToStep } from '../../helpers';
 import * as defaults from '../../defaults';

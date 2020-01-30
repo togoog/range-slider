@@ -2,7 +2,7 @@ import * as fc from 'fast-check';
 import { prop } from 'ramda';
 import { makeState } from '../arbitraries';
 import { View } from '../../mvp';
-import { convertOrientationToOrigin } from '../../converters';
+import { convertOrientationToOrigin } from '../../services/converters';
 
 const intervalCSSClass = 'range-slider__interval';
 

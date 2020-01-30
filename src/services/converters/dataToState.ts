@@ -9,8 +9,8 @@ import {
   Tooltip,
   TooltipId,
   Interval,
-} from '../types';
-import { createId, getRelativePosition } from '../helpers';
+} from '../../types';
+import { createId, getRelativePosition } from '../../helpers';
 
 /**
  * Create Handles state from model Data

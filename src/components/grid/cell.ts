@@ -2,7 +2,7 @@ import { TemplateResult, html } from 'lit-html';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map';
 import { ClassInfo, classMap } from 'lit-html/directives/class-map';
 import { GridCell } from '../../types';
-import { convertOrientationToOrigin } from '../../converters';
+import { convertOrientationToOrigin } from '../../services/converters';
 
 function cellView({
   label,

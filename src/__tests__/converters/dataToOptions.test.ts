@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { convertDataToOptions } from '../../converters';
+import { convertDataToOptions } from '../../services/converters';
 import { makeData } from '../arbitraries';
 
 test('convertDataToOptions', () => {

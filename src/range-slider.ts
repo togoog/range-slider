@@ -14,7 +14,10 @@ import { tooltipFormatter, gridFormatter } from './defaults';
 import { Model, View, Presenter } from './mvp';
 import { selectElements } from './helpers';
 import logError from './services/logger';
-import { convertOptionsToData, convertDataToOptions } from './converters';
+import {
+  convertOptionsToData,
+  convertDataToOptions,
+} from './services/converters';
 import { checkRangeSliderOptions } from './validators';
 
 //
