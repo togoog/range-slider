@@ -6,11 +6,21 @@ import { getRandomId } from '../../helpers';
 function controlTooltipFormatter({ options, onUpdate }: Config) {
   const { tooltipFormat } = options;
   const id = getRandomId('rs-tooltip-format');
+  const syntaxDesc = html`
+    <a
+      class="config-panel__control-desc"
+      href="https://github.com/alexei/sprintf.js"
+      target="_blank"
+    >
+      syntax
+    </a>
+  `;
 
   return html`
     <div class="config-panel__control">
       <label for=${id} class="config-panel__label">
-        Tooltip Format
+        Tooltip Format <br />
+        (${syntaxDesc})
       </label>
       <input
         type="text"
