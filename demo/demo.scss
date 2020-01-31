@@ -69,17 +69,22 @@
   flex-direction: column;
   padding: 0 50px;
 
-  &__result {
+  &__output {
+    width: 100%;
     border: 1px solid lightgray;
     padding: 0.5rem;
-    flex: 0 0 auto;
-    align-self: flex-end;
     margin-bottom: 2rem;
+
+    input {
+      width: 100%;
+      font-size: 18px;
+      font-weight: bold;
+      word-spacing: 2px;
+    }
   }
 
-  &__result-input {
-    margin-left: 0.5rem;
-    min-width: 150px;
+  &__range-slider {
+    height: 100%;
   }
 }
 
@@ -97,9 +102,5 @@
 
   &__config-panel {
     width: 400px;
-  }
-
-  &__range-slider {
-    height: 100%;
   }
 }

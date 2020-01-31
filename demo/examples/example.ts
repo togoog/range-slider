@@ -53,13 +53,10 @@ class Example {
       html`
         <div class="config-panel example__config-panel">${configPanel}</div>
         <div class="result-panel example__result-panel">
-          <div class="example__result-panel-output">
-            <label>
-              Result:
-              <input type="text" value=${getResultFromOptions(options)} />
-            </label>
+          <div class="result-panel__output">
+            <input type="text" value=${getResultFromOptions(options)} />
           </div>
-          <div class="example__range-slider">
+          <div class="result-panel__range-slider">
             <range-slider
               value=${JSON.stringify(options.value)}
               min=${options.min}
