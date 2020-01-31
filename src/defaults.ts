@@ -9,7 +9,11 @@ export const cssClass = 'range-slider';
 //
 
 export const tooltipValue = true;
-export const tooltipFormatter = (value: number) => value.toLocaleString();
+export const tooltipFormatter = function tooltipFormatter(
+  value: number,
+): string {
+  return value.toLocaleString();
+};
 
 //
 // ─── INTERVAL ───────────────────────────────────────────────────────────────────
@@ -27,4 +31,6 @@ export const gridIsVisible = false;
 // e.g.: [3, 4, 5] -> 3 big cells, 4 medium cells, 5 small cells
 export const gridNumCells = [3, 2, 10];
 
-export const gridFormatter = (value: number) => value.toLocaleString();
+export const gridFormatter = function gridFormatter(value: number): string {
+  return value.toLocaleString();
+};

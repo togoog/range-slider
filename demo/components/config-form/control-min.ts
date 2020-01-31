@@ -16,7 +16,7 @@ function controlMin(
   const { min } = options;
   const id = getRandomId('rs-min');
   const updateMin = (e: KeyboardEvent) =>
-    onUpdate(e, options => {
+    onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
       return assoc('min', valueParser(newValue), options);
     });

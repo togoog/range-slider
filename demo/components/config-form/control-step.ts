@@ -16,7 +16,7 @@ function controlStep(
   const { step } = options;
   const id = getRandomId('rs-step');
   const updateStep = (e: KeyboardEvent) =>
-    onUpdate(e, options => {
+    onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
       return assoc('step', valueParser(newValue), options);
     });

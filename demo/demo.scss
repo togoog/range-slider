@@ -1,1 +1,105 @@
-@import './examples/style.scss';
+.config-panel {
+  border: 1px solid gray;
+  padding: 0.5rem 0;
+
+  &__header {
+    text-align: center;
+  }
+
+  &__control {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+
+    &_hidden {
+      display: none;
+    }
+  }
+
+  &__label {
+    width: 7rem;
+    flex-shrink: 0;
+  }
+
+  &__input {
+    min-width: 5rem;
+    max-width: 10rem;
+    width: 100%;
+  }
+
+  &__select {
+    width: 100%;
+  }
+
+  &__textarea {
+    width: 100%;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__group-item {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0.5rem;
+
+    &-label {
+      display: flex;
+      align-items: center;
+      margin-right: 0.5rem;
+    }
+
+    &-checkbox {
+      margin-right: 1rem;
+    }
+
+    &-btn {
+      margin-left: 0.3rem;
+    }
+  }
+}
+
+.result-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 50px;
+
+  &__result {
+    border: 1px solid lightgray;
+    padding: 0.5rem;
+    flex: 0 0 auto;
+    align-self: flex-end;
+    margin-bottom: 2rem;
+  }
+
+  &__result-input {
+    margin-left: 0.5rem;
+    min-width: 150px;
+  }
+}
+
+.example {
+  padding: 2rem 1rem;
+  min-width: 800px;
+
+  &__title {
+    text-align: center;
+  }
+
+  &__showcase {
+    display: flex;
+  }
+
+  &__config-panel {
+    width: 400px;
+  }
+
+  &__range-slider {
+    height: 100%;
+  }
+}

@@ -16,7 +16,7 @@ function controlOrientation({ options, onUpdate }: Config) {
         class="config-panel__select"
         id=${id}
         @change=${(e: Event) =>
-          onUpdate(e, options => {
+          onUpdate(options => {
             const newValue = (e.target as HTMLInputElement).value;
             return assoc('orientation', newValue, options);
           })}

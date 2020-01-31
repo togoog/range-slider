@@ -56,7 +56,7 @@ const defaultOptions: Options = {
   cssClass: defaults.cssClass,
   tooltips: defaults.tooltipValue,
   tooltipFormatter: defaults.tooltipFormatter,
-  intervals: defaults.intervalValue,
+  intervals: [defaults.intervalValue, defaults.intervalValue],
   grid: {
     isVisible: defaults.gridIsVisible,
     numCells: defaults.gridNumCells,

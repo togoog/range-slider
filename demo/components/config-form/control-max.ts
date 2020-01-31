@@ -16,7 +16,7 @@ function controlMax(
   const { max } = options;
   const id = getRandomId('rs-max');
   const updateMax = (e: KeyboardEvent) =>
-    onUpdate(e, options => {
+    onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
       return assoc('max', valueParser(newValue), options);
     });

@@ -20,7 +20,7 @@ function controlValue(
   const values = toArray(value);
   const id = getRandomId('rs-value');
   const updateValue = (idx: number) => (e: KeyboardEvent) =>
-    onUpdate(e, options => {
+    onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
 
       return {
@@ -56,7 +56,7 @@ function controlValue(
                 class="config-panel__group-item-btn"
                 ?disabled=${toArray(value).length <= 1}
                 @click=${(e: MouseEvent) =>
-                  onUpdate(e, (options: Options) => {
+                  onUpdate((options: Options) => {
                     if (toArray(options.value).length <= 1) {
                       return options;
                     }
@@ -78,7 +78,7 @@ function controlValue(
               <button
                 class="config-panel__group-item-btn"
                 @click=${(e: MouseEvent) => {
-                  onUpdate(e, options => {
+                  onUpdate(options => {
                     const values = toArray(options.value);
                     const currentValue = values[idx];
                     const nextValue = values[idx + 1] || options.max;

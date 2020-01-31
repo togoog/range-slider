@@ -11,7 +11,7 @@ function controlGrid({ options, onUpdate }: Config) {
   let isVisible = defaults.gridIsVisible;
   let numCells = defaults.gridNumCells;
   const updateGrid = (idx: number) => (e: KeyboardEvent) =>
-    onUpdate(e, options => {
+    onUpdate(options => {
       const { numCells } = options.grid as GridOptions;
       const newValue = (e.target as HTMLInputElement).value;
       return assocPath(
@@ -48,7 +48,7 @@ function controlGrid({ options, onUpdate }: Config) {
         value=${isVisible}
         ?checked=${isVisible}
         @change=${(e: KeyboardEvent) =>
-          onUpdate(e, options => {
+          onUpdate(options => {
             const isVisible = (e.target as HTMLInputElement).checked;
             return assocPath(['grid', 'isVisible'], isVisible, options);
           })}

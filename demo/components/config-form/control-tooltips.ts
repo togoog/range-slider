@@ -28,7 +28,7 @@ function controlTooltips({ options, onUpdate }: Config) {
                 value=${isChecked}
                 ?checked=${isChecked}
                 @change=${(e: Event) =>
-                  onUpdate(e, options => {
+                  onUpdate(options => {
                     const newValue = (e.target as HTMLInputElement).checked;
                     const newTooltips = update(
                       idx,

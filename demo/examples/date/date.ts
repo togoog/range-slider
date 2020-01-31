@@ -1,11 +1,7 @@
 import { partialRight } from 'ramda';
 import { Options } from '../../../src/types';
 import { RangeSlider } from '../../../src/range-slider';
-import {
-  valueFormatter,
-  getOptionsFromConfigForm,
-  getResultFromOptions,
-} from '../../helpers';
+import { getOptionsFromConfigForm, getResultFromOptions } from '../../helpers';
 import { renderConfigForm } from '../../components/config-form/config-form';
 import {
   controlValue,

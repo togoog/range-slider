@@ -3,7 +3,7 @@ import { Options, Formatter } from '../src/types';
 
 export type OptionsProposal = (options: Options) => Options;
 
-export type OnConfigFormUpdate = (e: Event, proposal?: OptionsProposal) => void;
+export type OnConfigFormUpdate = (proposal: OptionsProposal) => void;
 
 export type Config = {
   options: Options;

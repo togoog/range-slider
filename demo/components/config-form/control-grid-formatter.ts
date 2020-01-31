@@ -17,7 +17,7 @@ function controlGridFormatter({ options, onUpdate }: Config) {
         class="config-panel__textarea"
         rows="6"
         @change=${(e: Event) =>
-          onUpdate(e, options => {
+          onUpdate(options => {
             const newFnBody = (e.target as HTMLTextAreaElement).value;
             // eslint-disable-next-line no-new-func
             const newFn = new Function('value', newFnBody);
