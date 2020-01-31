@@ -5,10 +5,10 @@ import controlMax from './config-form/control-max';
 import controlStep from './config-form/control-step';
 import controlOrientation from './config-form/control-orientation';
 import controlTooltips from './config-form/control-tooltips';
-import controlTooltipFormatter from './config-form/control-tooltip-formatter';
+import controlTooltipFormat from './config-form/control-tooltip-format';
 import controlIntervals from './config-form/control-intervals';
 import controlGrid from './config-form/control-grid';
-import controlGridFormatter from './config-form/control-grid-formatter';
+import controlGridFormat from './config-form/control-grid-format';
 
 export {
   configForm,
@@ -18,8 +18,8 @@ export {
   controlStep,
   controlOrientation,
   controlTooltips,
-  controlTooltipFormatter,
+  controlTooltipFormat,
   controlIntervals,
   controlGrid,
-  controlGridFormatter,
+  controlGridFormat,
 };

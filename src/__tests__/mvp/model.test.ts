@@ -187,10 +187,11 @@ test('Model.pick', () => {
     'tooltipDict',
     'tooltipIds',
     'tooltipCollisions',
-    'tooltipFormatter',
+    'tooltipFormat',
     'intervalDict',
     'intervalIds',
     'grid',
+    'gridFormat',
   ];
 
   fc.assert(

@@ -31,13 +31,14 @@ function makeOptions() {
         step,
         cssClass: 'range-slider',
         tooltips: value.map(isEven),
-        tooltipFormatter: (value: number) => value.toLocaleString(),
+        tooltipFormat: '%d',
         intervals: [...value, value[0]].map(isEven),
         orientation,
         grid: {
           isVisible: value.reduce((acc, cur) => acc + cur, 0) > 0,
           numCells,
         },
+        gridFormat: '%d',
       } as Options;
     });
 }
@@ -98,7 +99,7 @@ function makeData() {
         // Tooltips
         tooltipIds: pluck('id', tooltipsList),
         tooltipDict: indexBy(prop('id'), tooltipsList),
-        tooltipFormatter: (value: number) => value.toLocaleString(),
+        tooltipFormat: '%d',
         // TODO: find a way to simulate tooltipCollisions
         tooltipCollisions: [],
 
@@ -111,7 +112,7 @@ function makeData() {
           isVisible: value.reduce((acc, cur) => acc + cur, 0) > 0,
           numCells,
         },
-        gridFormatter: (value: number) => value.toLocaleString(),
+        gridFormat: '%d',
       } as Data;
     });
 }

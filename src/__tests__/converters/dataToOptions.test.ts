@@ -18,11 +18,12 @@ test('convertDataToOptions', () => {
       expect(options.tooltips).toEqual(
         data.tooltipIds.map(id => data.tooltipDict[id].isVisible),
       );
-      expect(options.tooltipFormatter).toEqual(data.tooltipFormatter);
+      expect(options.tooltipFormat).toEqual(data.tooltipFormat);
       expect(options.intervals).toEqual(
         data.intervalIds.map(id => data.intervalDict[id].isVisible),
       );
       expect(options.grid).toEqual(data.grid);
+      expect(options.gridFormat).toEqual(data.gridFormat);
     }),
   );
 });

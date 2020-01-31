@@ -16,8 +16,6 @@ export type Orientation = 'horizontal' | 'vertical';
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
 
-export type Formatter = (value: number) => string;
-
 // TODO: add props
 // mode =
 //  'count'         - divide track into parts according to numCells (default)
@@ -46,10 +44,10 @@ export type Options = {
   orientation: Orientation;
   cssClass: string;
   tooltips: boolean | boolean[];
-  tooltipFormatter: Formatter;
+  tooltipFormat: string;
   intervals: boolean | boolean[];
   grid: boolean | GridOptions;
-  gridFormatter: Formatter;
+  gridFormat: string;
 };
 
 // for internal use
@@ -61,10 +59,10 @@ export type OptimizedOptions = {
   orientation: Orientation;
   cssClass: string;
   tooltips: boolean[];
-  tooltipFormatter: Formatter;
+  tooltipFormat: string;
   intervals: boolean[];
   grid: GridOptions;
-  gridFormatter: Formatter;
+  gridFormat: string;
 };
 
 export type OptionsKey = keyof Options;
@@ -130,7 +128,7 @@ export type Data = {
   /** TOOLTIPS */
   tooltipDict: { [tooltipId: string]: TooltipData };
   tooltipIds: TooltipId[];
-  tooltipFormatter: Formatter;
+  tooltipFormat: string;
   // groups of overlapping tooltips
   tooltipCollisions: TooltipId[][];
 
@@ -140,7 +138,7 @@ export type Data = {
 
   /** GRID */
   grid: GridOptions;
-  gridFormatter: Formatter;
+  gridFormat: string;
 };
 
 export type DataKey = keyof Data;

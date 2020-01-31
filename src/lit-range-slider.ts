@@ -18,13 +18,13 @@ class LitRangeSlider extends LitElement {
 
   tooltips: Options['tooltips'];
 
-  tooltipFormatter: Options['tooltipFormatter'];
+  tooltipFormat: Options['tooltipFormat'];
 
   intervals: Options['intervals'];
 
   grid: Options['grid'];
 
-  gridFormatter: Options['gridFormatter'];
+  gridFormat: Options['gridFormat'];
 
   // RangeSlider instance
   rs: RangeSlider | null;
@@ -47,10 +47,10 @@ class LitRangeSlider extends LitElement {
       orientation: { type: String },
       cssClass: { type: String },
       tooltips: { type: Array },
-      tooltipFormatter: { type: String },
+      tooltipFormat: { type: String },
       intervals: { type: Array },
       grid: { type: Object },
-      gridFormatter: { type: String },
+      gridFormat: { type: String },
     };
   }
 
@@ -64,10 +64,10 @@ class LitRangeSlider extends LitElement {
     this.orientation = defaultOptions.orientation;
     this.cssClass = defaultOptions.cssClass;
     this.tooltips = defaultOptions.tooltips;
-    this.tooltipFormatter = defaultOptions.tooltipFormatter;
+    this.tooltipFormat = defaultOptions.tooltipFormat;
     this.intervals = defaultOptions.intervals;
     this.grid = defaultOptions.grid;
-    this.gridFormatter = defaultOptions.gridFormatter;
+    this.gridFormat = defaultOptions.gridFormat;
 
     // set default Range Slider instance
     this.rs = null;
@@ -82,10 +82,10 @@ class LitRangeSlider extends LitElement {
       orientation: this.orientation,
       cssClass: this.cssClass,
       tooltips: this.tooltips,
-      tooltipFormatter: this.tooltipFormatter,
+      tooltipFormat: this.tooltipFormat,
       intervals: this.intervals,
       grid: this.grid,
-      gridFormatter: this.gridFormatter,
+      gridFormat: this.gridFormat,
     };
   }
 

@@ -55,13 +55,13 @@ const defaultOptions: Options = {
   orientation: 'horizontal',
   cssClass: defaults.cssClass,
   tooltips: defaults.tooltipValue,
-  tooltipFormatter: defaults.tooltipFormatter,
+  tooltipFormat: defaults.tooltipFormat,
   intervals: [defaults.intervalValue, defaults.intervalValue],
   grid: {
     isVisible: defaults.gridIsVisible,
     numCells: defaults.gridNumCells,
   },
-  gridFormatter: defaults.gridFormatter,
+  gridFormat: defaults.gridFormat,
 };
 
 class RangeSlider extends EventEmitter implements Plugin {

@@ -1,11 +1,12 @@
 import { html } from 'lit-html';
 import { assoc, update } from 'ramda';
 import { Config } from '../../types';
-import { toArray } from '../../../src/helpers';
 import { getRandomId } from '../../helpers';
+import { toArray } from '../../../src/helpers';
+import formatValue from '../../../src/services/formatter';
 
 function controlTooltips({ options, onUpdate }: Config) {
-  const { tooltips, value, tooltipFormatter } = options;
+  const { tooltips, value, tooltipFormat } = options;
   const id = getRandomId('rs-tooltip');
   const values = toArray(value);
 
@@ -40,7 +41,7 @@ function controlTooltips({ options, onUpdate }: Config) {
               />
               <span class="config-panel__group-item-desc">
                 for value:
-                <code>${tooltipFormatter(values[idx])}</code>
+                <code>${formatValue(tooltipFormat, values[idx])}</code>
               </span>
             </div>
           `,

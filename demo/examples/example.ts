@@ -9,10 +9,10 @@ import {
   controlStep,
   controlOrientation,
   controlTooltips,
-  controlTooltipFormatter,
+  controlTooltipFormat,
   controlIntervals,
   controlGrid,
-  controlGridFormatter,
+  controlGridFormat,
 } from '../components';
 import '../../src/lit-range-slider';
 
@@ -32,10 +32,10 @@ class Example {
       controlStep,
       controlOrientation,
       controlTooltips,
-      controlTooltipFormatter,
+      controlTooltipFormat,
       controlIntervals,
       controlGrid,
-      controlGridFormatter,
+      controlGridFormat,
     ];
   }
 
@@ -67,8 +67,10 @@ class Example {
               step=${options.step}
               orientation=${options.orientation}
               tooltips=${JSON.stringify(options.tooltips)}
+              tooltipFormat=${options.tooltipFormat}
               intervals=${JSON.stringify(options.intervals)}
               grid=${JSON.stringify(options.grid)}
+              gridFormat=${options.gridFormat}
               @update=${e => onRangeSliderUpdate(e.detail.options)}
             ></range-slider>
           </div>

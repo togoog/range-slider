@@ -14,11 +14,11 @@ function convertDataToOptions({
   handleDict,
   tooltipIds,
   tooltipDict,
-  tooltipFormatter,
+  tooltipFormat,
   intervalIds,
   intervalDict,
   grid,
-  gridFormatter,
+  gridFormat,
 }: Data): Options {
   return {
     value: handleIds.map(id => handleDict[id].value),
@@ -28,10 +28,10 @@ function convertDataToOptions({
     orientation,
     cssClass,
     tooltips: tooltipIds.map(id => tooltipDict[id].isVisible),
-    tooltipFormatter,
+    tooltipFormat,
     intervals: intervalIds.map(id => intervalDict[id].isVisible),
     grid,
-    gridFormatter,
+    gridFormat,
   };
 }
 

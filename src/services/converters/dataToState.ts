@@ -10,6 +10,7 @@ import {
   TooltipId,
   Interval,
 } from '../../types';
+import formatValue from '../formatter';
 import { createId, getRelativePosition } from '../../helpers';
 
 /**
@@ -56,7 +57,7 @@ function getMergedTooltipsContent(
       const { handleId } = data.tooltipDict[id];
       const { value, rhsIntervalId } = data.handleDict[handleId];
       const isVisibleInterval = data.intervalDict[rhsIntervalId].isVisible;
-      const formattedValue = data.tooltipFormatter(value);
+      const formattedValue = formatValue(data.tooltipFormat, value);
 
       return [
         formattedValue,
@@ -118,7 +119,7 @@ function createTooltipsState(data: Data): Tooltip[] {
     tooltipIds,
     tooltipDict,
     tooltipCollisions,
-    tooltipFormatter,
+    tooltipFormat,
   } = data;
   const role = 'tooltip';
   const tooltipCSSClass = `${cssClass}__${role}`;
@@ -130,7 +131,7 @@ function createTooltipsState(data: Data): Tooltip[] {
 
       return {
         id,
-        content: tooltipFormatter(value),
+        content: formatValue(tooltipFormat, value),
         orientation,
         cssClass: tooltipCSSClass,
         position: getRelativePosition(min, max, value),
@@ -210,7 +211,7 @@ function createGridCellsState({
   orientation,
   cssClass,
   grid,
-  gridFormatter,
+  gridFormat: gridFormatter,
 }: Data): GridCell[] {
   if (min === max) {
     // no point in creating grid
@@ -236,7 +237,7 @@ function createGridCellsState({
 
         if (cells[position] === undefined) {
           cells[position] = {
-            label: gridFormatter(value),
+            label: formatValue(gridFormatter, value),
             isVisibleLabel: i === 0,
             level: i + 1,
             orientation,

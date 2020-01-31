@@ -1,11 +1,12 @@
 import { html } from 'lit-html';
 import { update, assoc } from 'ramda';
 import { Config } from '../../types';
-import { toArray } from '../../../src/helpers';
 import { getRandomId } from '../../helpers';
+import { toArray } from '../../../src/helpers';
+import formatValue from '../../../src/services/formatter';
 
 function controlIntervals({ options, onUpdate }: Config) {
-  const { value, min, max, intervals, tooltipFormatter } = options;
+  const { value, min, max, intervals, tooltipFormat } = options;
   const id = getRandomId('intervals');
   const values = toArray(value);
 
@@ -44,9 +45,9 @@ function controlIntervals({ options, onUpdate }: Config) {
               />
               <span class="config-panel__group-item-desc">
                 between
-                <code>${tooltipFormatter(leftValue)}</code>
+                <code>${formatValue(tooltipFormat, leftValue)}</code>
                 and
-                <code>${tooltipFormatter(rightValue)}</code>
+                <code>${formatValue(tooltipFormat, rightValue)}</code>
               </span>
             </div>
           `;

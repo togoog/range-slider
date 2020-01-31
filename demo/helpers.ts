@@ -1,6 +1,7 @@
 import { aperture } from 'ramda';
-import { Options, Formatter } from '../src/types';
+import { Options } from '../src/types';
 import { prepareOptionsForInternalUse } from '../src/services/converters/optionsToData';
+import formatValue from '../src/services/formatter';
 
 function getRandomId(prefix: string) {
   return `${prefix}-${Math.random()
@@ -8,12 +9,8 @@ function getRandomId(prefix: string) {
     .substring(2, 7)}`;
 }
 
-function getFunctionAsText(fn: Function): string {
-  return fn.toString().trim();
-}
-
 function valueFormatter(value: number): string {
-  return value.toFixed(1);
+  return formatValue('%d', value);
 }
 
 function getOptionsFromConfigForm(form: HTMLFormElement): Options {
@@ -24,15 +21,20 @@ function getOptionsFromConfigForm(form: HTMLFormElement): Options {
   return JSON.parse(serializedInput.value);
 }
 
-function getResultFromOptions(
-  options: Options,
-  format: Formatter = valueFormatter,
-): string {
-  const { value, intervals, min, max } = prepareOptionsForInternalUse(options);
+function getResultFromOptions(options: Options): string {
+  const {
+    value,
+    intervals,
+    min,
+    max,
+    tooltipFormat,
+  } = prepareOptionsForInternalUse(options);
 
   const isConnected = (idx: number) => intervals[idx];
   const isNotConnected = (idx: number) => !isConnected(idx);
-  const allValues = [min, ...value, max].map(format);
+  const allValues = [min, ...value, max].map(v =>
+    formatValue(tooltipFormat, v),
+  );
   const valuePairs = aperture(2, allValues);
 
   const result = valuePairs
@@ -54,7 +56,6 @@ function getResultFromOptions(
 
 export {
   getRandomId,
-  getFunctionAsText,
   valueFormatter,
   getOptionsFromConfigForm,
   getResultFromOptions,

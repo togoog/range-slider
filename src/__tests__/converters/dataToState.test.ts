@@ -2,6 +2,7 @@ import * as fc from 'fast-check';
 import { convertDataToState } from '../../services/converters';
 import { makeData } from '../arbitraries';
 import { getRelativePosition } from '../../helpers';
+import formatValue from '../../services/formatter';
 
 test('convertDataToState', () => {
   fc.assert(
@@ -57,7 +58,8 @@ test('convertDataToState', () => {
           ),
         );
         expect(tooltip.content).toEqual(
-          data.tooltipFormatter(
+          formatValue(
+            data.tooltipFormat,
             data.handleDict[data.tooltipDict[tooltip.id].handleId].value,
           ),
         );

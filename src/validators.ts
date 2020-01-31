@@ -42,7 +42,6 @@ const ErrorNotValidMax = `${errorPrefix}/ErrorNotValidMax`;
 const ErrorNotValidStep = `${errorPrefix}/ErrorNotValidStep`;
 const ErrorNotValidOrientation = `${errorPrefix}/ErrorNotValidOrientation`;
 const ErrorNotValidTooltips = `${errorPrefix}/ErrorNotValidTooltips`;
-const ErrorNotValidTooltipsFormatter = `${errorPrefix}/ErrorNotValidTooltipsFormatter`;
 const ErrorNotValidIntervals = `${errorPrefix}/ErrorNotValidIntervals`;
 const ErrorNotValidGrid = `${errorPrefix}/ErrorNotValidGrid`;
 const ErrorNotValidCSSClass = `${errorPrefix}/ErrorNotValidCSSClass`;
@@ -87,13 +86,6 @@ function errNotValidTooltips(): RangeSliderError {
   return {
     id: ErrorNotValidTooltips,
     desc: `(tooltips should be boolean or array of booleans)`,
-  };
-}
-
-function errNotValidTooltipsFormatter(): RangeSliderError {
-  return {
-    id: ErrorNotValidTooltipsFormatter,
-    desc: `(tooltipsFormatter should be a function that returns string`,
   };
 }
 
@@ -163,12 +155,6 @@ function checkTooltips(v: unknown): Maybe<RangeSliderError> {
     : Just(errNotValidTooltips());
 }
 
-function checkTooltipsFormatter(v: unknown): Maybe<RangeSliderError> {
-  return isFunction(v) && isString(v(1))
-    ? Nothing
-    : Just(errNotValidTooltipsFormatter());
-}
-
 function checkIntervals(v: unknown): Maybe<RangeSliderError> {
   return isBoolean(v) || isArrayOfBooleans(v)
     ? Nothing
@@ -213,7 +199,6 @@ function checkRangeSliderOptions(
   validationResults.push(checkStep(options.step));
   validationResults.push(checkOrientation(options.orientation));
   validationResults.push(checkTooltips(options.tooltips));
-  validationResults.push(checkTooltipsFormatter(options.tooltipFormatter));
   validationResults.push(checkIntervals(options.intervals));
   validationResults.push(checkGrid(options.grid));
   validationResults.push(checkCSSClass(options.cssClass));
@@ -231,7 +216,6 @@ export {
   errNotValidStep,
   errNotValidOrientation,
   errNotValidTooltips,
-  errNotValidTooltipsFormatter,
   errNotValidIntervals,
   errNotValidGrid,
   errNotValidCSSClass,
@@ -243,7 +227,6 @@ export {
   checkStep,
   checkOrientation,
   checkTooltips,
-  checkTooltipsFormatter,
   checkIntervals,
   checkGrid,
   checkCSSClass,

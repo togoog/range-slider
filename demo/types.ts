@@ -1,5 +1,5 @@
 import { TemplateResult } from 'lit-html';
-import { Options, Formatter } from '../src/types';
+import { Options } from '../src/types';
 
 export type OptionsProposal = (options: Options) => Options;
 
@@ -12,7 +12,7 @@ export type Config = {
 
 export type ElementAttributes = {
   type: string;
-  valueFormatter: Formatter;
+  valueFormatter: (value: number) => string;
   valueParser: (value: string) => number;
 };
 

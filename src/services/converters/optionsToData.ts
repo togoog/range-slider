@@ -23,10 +23,10 @@ function prepareOptionsForInternalUse({
   orientation,
   cssClass,
   tooltips,
-  tooltipFormatter,
+  tooltipFormat,
   intervals,
   grid,
-  gridFormatter,
+  gridFormat,
 }: Options): OptimizedOptions {
   const valuesLength = toArray(value).length;
 
@@ -43,7 +43,7 @@ function prepareOptionsForInternalUse({
       defaults.tooltipValue,
       toArray(tooltips),
     ),
-    tooltipFormatter,
+    tooltipFormat,
     // intervals length should be greater then values length by 1
     intervals: fillArrayWith(
       valuesLength + 1,
@@ -53,7 +53,7 @@ function prepareOptionsForInternalUse({
     grid: isBoolean(grid)
       ? { isVisible: grid, numCells: defaults.gridNumCells }
       : grid,
-    gridFormatter,
+    gridFormat,
   };
 }
 
@@ -70,10 +70,10 @@ function convertOptionsToData(options: Options): Data {
     orientation,
     cssClass,
     tooltips,
-    tooltipFormatter,
+    tooltipFormat,
     intervals,
     grid,
-    gridFormatter,
+    gridFormat,
   } = prepareOptionsForInternalUse(options);
 
   const handlesList = value.map(
@@ -119,7 +119,7 @@ function convertOptionsToData(options: Options): Data {
     /** TOOLTIPS */
     tooltipDict: indexBy(prop('id'), tooltipsList),
     tooltipIds: pluck('id', tooltipsList),
-    tooltipFormatter,
+    tooltipFormat,
     // collisions between tooltips can only be known after render
     tooltipCollisions: [],
 
@@ -129,7 +129,7 @@ function convertOptionsToData(options: Options): Data {
 
     /** GRID */
     grid,
-    gridFormatter,
+    gridFormat,
   };
 }
 
