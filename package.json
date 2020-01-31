@@ -17,8 +17,10 @@
   "author": "Roman Korenev",
   "license": "ISC",
   "browserslist": [
-    "last 2 versions",
-    "> 1%"
+    ">2%",
+    "Edge > 14",
+    "Firefox > 63",
+    "Chrome > 67"
   ],
   "devDependencies": {
     "@testing-library/dom": "^6.11.0",
@@ -40,16 +42,18 @@
     "eslint-plugin-react": "^7.17.0",
     "fast-check": "^1.21.0",
     "jest": "^24.9.0",
+    "node-sass": "^4.13.1",
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-inline-lit-element": "0.0.2",
     "prettier": "^1.19.1",
     "pug": "^2.0.4",
     "rimraf": "^3.0.0",
-    "sass": "^1.24.2",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.4"
   },
   "dependencies": {
     "events": "^3.0.0",
+    "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
     "mutation-observer": "^1.0.3",
     "purify-ts": "^0.13.2",

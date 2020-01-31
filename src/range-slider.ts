@@ -158,4 +158,4 @@ function createRangeSlider(
   return [];
 }
 
-export { RangeSlider, createRangeSlider };
+export { RangeSlider, createRangeSlider, defaultOptions };
