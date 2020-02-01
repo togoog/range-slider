@@ -10,9 +10,10 @@ html
       link(rel="stylesheet", href="demo.scss")
       link(rel="stylesheet", href="../src/styles/style.scss")
 
-      script(src="./examples/base/base.ts", defer)
+      script(src="./demo.ts", defer)
 
   block content
     include examples/example.pug
 
-    +example('base-example', 'Base example')
+    +example('base-example', 'Working with numbers')
+    +example('date-example', 'Working with dates')

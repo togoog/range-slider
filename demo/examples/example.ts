@@ -14,12 +14,13 @@ import {
   controlGrid,
   controlGridFormat,
 } from '../components';
+import { defaultOptions } from '../../src/range-slider';
 import '../../src/lit-range-slider';
 
 class Example {
   protected rootEl: HTMLElement;
 
-  constructor(id: string, protected options: Options) {
+  constructor(id: string, protected options: Options = defaultOptions) {
     this.rootEl = document.getElementById(id);
   }
 
