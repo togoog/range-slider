@@ -17,7 +17,6 @@ function controlValue(
   { type, valueFormatter, valueParser }: ElementAttributes = defaultAttributes,
 ) {
   const { value } = options;
-  const values = toArray(value);
   const id = getRandomId('rs-value');
   const updateValue = (idx: number) => (e: KeyboardEvent) =>
     onUpdate(options => {
@@ -25,7 +24,7 @@ function controlValue(
 
       return {
         ...options,
-        value: update(idx, valueParser(newValue), values),
+        value: update(idx, valueParser(newValue), toArray(options.value)),
       };
     });
   const updateValueOnEnter = (idx: number) => (e: KeyboardEvent) =>
@@ -38,7 +37,7 @@ function controlValue(
       </label>
       <input type="hidden" name="value" value=${JSON.stringify(value)} />
       <div class="config-panel__group">
-        ${values.map(
+        ${toArray(options.value).map(
           (v, idx) => html`
             <div class="config-panel__group-item">
               <label class="config-panel__group-item-label">

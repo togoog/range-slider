@@ -31,16 +31,7 @@ class LitRangeSlider extends LitElement {
 
   static get properties() {
     return {
-      value: {
-        type: Array,
-        hasChanged(newVal: number[], oldVal: number[]) {
-          if (newVal.length === undefined) return false;
-          return (
-            newVal.length === oldVal.length &&
-            newVal.every((v: number, i: number) => v === oldVal[i])
-          );
-        },
-      },
+      value: { type: Array },
       min: { type: Number },
       max: { type: Number },
       step: { type: Number },

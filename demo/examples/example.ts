@@ -22,6 +22,8 @@ class Example {
 
   constructor(id: string, protected options: Options = defaultOptions) {
     this.rootEl = document.getElementById(id);
+    this.onFormUpdate = this.onFormUpdate.bind(this);
+    this.onRangeSliderUpdate = this.onRangeSliderUpdate.bind(this);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -41,10 +43,7 @@ class Example {
   }
 
   render() {
-    const { options } = this;
-    const onFormUpdate = this.onFormUpdate.bind(this);
-    const onRangeSliderUpdate = this.onRangeSliderUpdate.bind(this);
-
+    const { options, onFormUpdate, onRangeSliderUpdate } = this;
     const configPanel = configForm(
       { options, onUpdate: onFormUpdate },
       this.getConfigPanelElements(),
