@@ -240,3 +240,13 @@ export type RangeSliderPresenter = {
   // start the application
   startApp(): void;
 };
+
+//
+// ─── JQUERY PLUGIN TYPE ─────────────────────────────────────────────────────────
+//
+
+declare global {
+  interface JQuery {
+    rangeSlider(options?: Options): JQuery;
+  }
+}

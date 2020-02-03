@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import '../src/jq-range-slider';
+
 import Example from './examples/example';
 import ExampleDate from './examples/example-date';
 import ExampleFraction from './examples/example-fraction';
@@ -38,3 +41,9 @@ const negativeNumbers = new Example('negative-numbers-example', {
     numCells: [5, 4, 3],
   },
 });
+
+//
+// ─── INIT WITH JQUERY ───────────────────────────────────────────────────────────
+//
+
+$('.jq-example').rangeSlider();
