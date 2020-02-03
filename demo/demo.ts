@@ -23,3 +23,18 @@ const fractionsExample = new ExampleFraction('fraction-example', {
   tooltipFormat: '{{number(%.1f)}}',
   gridFormat: '{{number(%.1f)}}',
 });
+
+//
+// ─── WORKING WITH NEGATIVE NUMBERS ──────────────────────────────────────────────
+//
+
+const negativeNumbers = new Example('negative-numbers-example', {
+  min: -1000,
+  max: 1000,
+  value: 100,
+  step: 10,
+  grid: {
+    isVisible: true,
+    numCells: [5, 4, 3],
+  },
+});
