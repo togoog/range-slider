@@ -15,11 +15,13 @@ function controlStep(
 ) {
   const { step } = options;
   const id = getRandomId('rs-step');
-  const updateStep = (e: KeyboardEvent) =>
+  const updateStep = (e: KeyboardEvent) => {
+    e.preventDefault();
     onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
       return assoc('step', valueParser(newValue), options);
     });
+  };
   const updateStepOnEnter = (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateStep(e) : null;
 

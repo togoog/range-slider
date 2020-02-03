@@ -15,11 +15,13 @@ function controlMin(
 ) {
   const { min } = options;
   const id = getRandomId('rs-min');
-  const updateMin = (e: KeyboardEvent) =>
+  const updateMin = (e: KeyboardEvent) => {
+    e.preventDefault();
     onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
       return assoc('min', valueParser(newValue), options);
     });
+  };
   const updateMinOnEnter = (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateMin(e) : null;
 

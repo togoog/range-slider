@@ -62,11 +62,25 @@ Range-slider in action: [https://romengrus.github.io/range-slider/](https://rome
 
 7. **tooltips** Describe [Tooltips](#tooltip) visibility. _(default: true)_
 
-8. **tooltipFormatter** Function for formatting tooltip value. _(devault: (value: number) => value.toLocaleString())_
+8. **tooltipFormat** Tooltip value format. _(devault: {{number}})_ [syntax](#value-format-syntax)
 
 9. **intervals** Describe [Intervals](#interval) visibility. _(default: [true, false])_
 
 10. **grid** Describe [Grid](#grid) visibility/options. _(default: false)_
+
+11. **gridFormat** Grid labels format. _(devault: {{number}})_ [syntax](#value-format-syntax)
+
+# Value format syntax
+
+1. numeric - {{number([sprintf format](https://github.com/alexei/sprintf.js#readme))}}
+
+- value = 50, format = "{{number}}", result = "50"
+- value = 50.3, format = "{{number(%.2f)}}", result = "50.30"
+
+2. date - {{date([moment.js format](https://momentjs.com/docs/#/displaying/))}}
+
+- value = 1580740934, format = "{{date}}", result = "03-02-2020"
+- value = 1580740934, format = "{{date(dd-MMM-YYYY)}}", result = "Mo-Feb-2020"
 
 # Components
 

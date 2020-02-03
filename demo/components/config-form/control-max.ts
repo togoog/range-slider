@@ -15,11 +15,13 @@ function controlMax(
 ) {
   const { max } = options;
   const id = getRandomId('rs-max');
-  const updateMax = (e: KeyboardEvent) =>
+  const updateMax = (e: KeyboardEvent) => {
+    e.preventDefault();
     onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
       return assoc('max', valueParser(newValue), options);
     });
+  };
   const updateMaxOnEnter = (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateMax(e) : null;
 

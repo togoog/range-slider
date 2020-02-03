@@ -1,4 +1,5 @@
 import { partialRight } from 'ramda';
+import moment from 'moment';
 import Example from './example';
 import {
   controlValue,
@@ -14,82 +15,72 @@ import {
 } from '../components';
 import { Options } from '../../src/types';
 
-function timestampToDate(timestamp: number, lang = 'ru-RU') {
-  const date = new Date(timestamp);
-
-  return date.toLocaleDateString(lang, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function timestampToISOString(timestamp) {
+  return moment
+    .unix(timestamp)
+    .toISOString()
+    .substr(0, 10);
 }
 
-function timestampToISOString(timestamp) {
-  return new Date(timestamp).toISOString().substr(0, 10);
+function isoStringToTimestamp(isoString: string) {
+  return moment(isoString).unix();
 }
 
 function dateToTimestamp(date: Date) {
-  return date.valueOf();
+  return moment(date).unix();
 }
 
-const defaultYear = new Date().getFullYear();
-const defaultStep = 1 * 24 * 60 * 60 * 1000; // 1 day
+const currentYear = new Date().getFullYear();
+const oneDay = moment.duration(1, 'day').asSeconds();
 
 const defaultOptions: Options = {
-  value: dateToTimestamp(new Date(defaultYear, 2, 3)),
-  min: dateToTimestamp(new Date(defaultYear, 0, 1)),
-  max: dateToTimestamp(new Date(defaultYear, 11, 31)),
-  step: defaultStep,
+  value: dateToTimestamp(new Date(currentYear, 2, 3)),
+  min: dateToTimestamp(new Date(currentYear, 0, 1)),
+  max: dateToTimestamp(new Date(currentYear, 11, 31)),
+  step: oneDay,
   orientation: 'horizontal',
   cssClass: 'range-slider',
   tooltips: true,
-  tooltipFormat: '%s',
+  tooltipFormat: '{{date}}',
   intervals: false,
   grid: { isVisible: true, numCells: [4, 2, 5] },
-  gridFormat: '%s',
+  gridFormat: '{{date}}',
 };
 
 class ExampleDate extends Example {
-  constructor(
-    id: string,
-    private year: number = defaultYear,
-    private step: number = defaultStep,
-    protected options: Options = defaultOptions,
-  ) {
+  constructor(id: string, protected options: Options = defaultOptions) {
     super(id, options);
   }
 
   // eslint-disable-next-line class-methods-use-this
   getConfigPanelElements() {
-    const { step } = this;
-
     return [
       partialRight(controlValue, [
         {
           type: 'date',
           valueFormatter: timestampToISOString,
-          valueParser: Date.parse,
+          valueParser: isoStringToTimestamp,
         },
       ]),
       partialRight(controlMin, [
         {
           type: 'date',
           valueFormatter: timestampToISOString,
-          valueParser: Date.parse,
+          valueParser: isoStringToTimestamp,
         },
       ]),
       partialRight(controlMax, [
         {
           type: 'date',
           valueFormatter: timestampToISOString,
-          valueParser: Date.parse,
+          valueParser: isoStringToTimestamp,
         },
       ]),
       partialRight(controlStep, [
         {
           type: 'number',
-          valueFormatter: (timestamp: number) => timestamp / step,
-          valueParser: (steps: number) => steps * step,
+          valueFormatter: (timestamp: number) => timestamp / oneDay,
+          valueParser: (steps: number) => steps * oneDay,
         },
       ]),
       controlOrientation,

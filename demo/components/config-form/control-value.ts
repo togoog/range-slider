@@ -18,7 +18,8 @@ function controlValue(
 ) {
   const { value } = options;
   const id = getRandomId('rs-value');
-  const updateValue = (idx: number) => (e: KeyboardEvent) =>
+  const updateValue = (idx: number) => (e: KeyboardEvent) => {
+    e.preventDefault();
     onUpdate(options => {
       const newValue = (e.target as HTMLInputElement).value;
 
@@ -27,6 +28,7 @@ function controlValue(
         value: update(idx, valueParser(newValue), toArray(options.value)),
       };
     });
+  };
   const updateValueOnEnter = (idx: number) => (e: KeyboardEvent) =>
     e.keyCode === 13 ? updateValue(idx)(e) : null;
 
@@ -54,7 +56,7 @@ function controlValue(
               <button
                 class="config-panel__group-item-btn"
                 ?disabled=${toArray(value).length <= 1}
-                @click=${(e: MouseEvent) =>
+                @click=${() =>
                   onUpdate((options: Options) => {
                     if (toArray(options.value).length <= 1) {
                       return options;
@@ -76,7 +78,7 @@ function controlValue(
               </button>
               <button
                 class="config-panel__group-item-btn"
-                @click=${(e: MouseEvent) => {
+                @click=${() => {
                   onUpdate(options => {
                     const values = toArray(options.value);
                     const currentValue = values[idx];

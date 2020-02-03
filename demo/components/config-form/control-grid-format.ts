@@ -9,12 +9,21 @@ function controlGridFormat({ options, onUpdate }: Config) {
   const syntaxDesc = html`
     <a
       class="config-panel__control-desc"
-      href="https://github.com/alexei/sprintf.js"
+      href="https://github.com/romengrus/range-slider"
       target="_blank"
     >
       syntax
     </a>
   `;
+  const updateFormat = (e: KeyboardEvent) => {
+    e.preventDefault();
+    onUpdate(options => {
+      const newFormat = (e.target as HTMLTextAreaElement).value;
+      return assoc('gridFormat', newFormat, options);
+    });
+  };
+  const updateFormatOnEnter = (e: KeyboardEvent) =>
+    e.keyCode === 13 ? updateFormat(e) : null;
 
   return html`
     <div class="config-panel__control">
@@ -27,11 +36,8 @@ function controlGridFormat({ options, onUpdate }: Config) {
         id=${id}
         class="config-panel__textarea"
         value=${gridFormat}
-        @change=${(e: Event) =>
-          onUpdate(options => {
-            const newFormat = (e.target as HTMLTextAreaElement).value;
-            return assoc('gridFormat', newFormat, options);
-          })}
+        @keydown=${updateFormatOnEnter}
+        @change=${updateFormat}
       />
     </div>
   `;

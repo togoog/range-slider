@@ -27,7 +27,7 @@ class Example {
 
   protected rs: RangeSlider;
 
-  constructor(id: string, private options: Options = defaultOptions) {
+  constructor(id: string, protected options: Options = defaultOptions) {
     // get container elements
     this.rootEl = document.getElementById(id);
     this.configEl = this.rootEl.querySelector('.config-panel');

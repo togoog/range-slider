@@ -10,7 +10,7 @@ function getRandomId(prefix: string) {
 }
 
 function valueFormatter(value: number): string {
-  return formatValue('%d', value);
+  return formatValue('{{number}}', value);
 }
 
 function getOptionsFromConfigForm(form: HTMLFormElement): Options {
