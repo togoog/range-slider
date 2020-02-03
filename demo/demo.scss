@@ -78,13 +78,9 @@
     border: 1px solid lightgray;
     padding: 0.5rem;
     margin-bottom: 2rem;
-
-    input {
-      width: 100%;
-      font-size: 18px;
-      font-weight: bold;
-      word-spacing: 2px;
-    }
+    font-size: 18px;
+    font-weight: bold;
+    word-spacing: 2px;
   }
 
   &__range-slider {

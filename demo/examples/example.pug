@@ -2,3 +2,8 @@ mixin example(id, title)
   section.example
     h2.example__title= title
     div(class= "example__showcase", id= id)
+      .config-panel.example__config-panel
+      .result-panel.example__result-panel
+        .result-panel__output
+        .result-panel__range-slider
+          input(type= 'range')
