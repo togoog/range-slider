@@ -13,8 +13,12 @@ Main purpose of this project is to learn the basics of:
 
 # Description
 
-Range slider is a ui component for selecting values (with any type) from predefined range.
+Range slider is a ui component for selecting numeric values from predefined range.
 Value(s) can be selected by dragging handle(s).
+
+# UML Diagram
+
+![uml diagram](uml-diagram.png)
 
 # Demo
 
@@ -25,7 +29,7 @@ Range-slider in action: [https://romengrus.github.io/range-slider/](https://rome
 1. Clone this repo
 
 ```bash
-  git clone git@github.com:romengrus/range-slider.git --depth=1
+  git clone git@github.com:romengrus/range-slider.git
 ```
 
 2. Install dependencies
@@ -41,6 +45,12 @@ Range-slider in action: [https://romengrus.github.io/range-slider/](https://rome
 ```
 
 4. Open `localhost:1234` in browser
+
+5. Run tests
+
+```bash
+  npm test
+```
 
 # Options
 
