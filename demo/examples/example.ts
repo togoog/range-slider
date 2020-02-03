@@ -1,3 +1,4 @@
+import { mergeAll } from 'ramda';
 import { html, render } from 'lit-html';
 import { Options } from '../../src/types';
 import { getResultFromOptions } from '../helpers';
@@ -27,7 +28,11 @@ class Example {
 
   protected rs: RangeSlider;
 
-  constructor(id: string, protected options: Options = defaultOptions) {
+  protected options: Options;
+
+  constructor(id: string, options: Partial<Options> = defaultOptions) {
+    this.options = mergeAll([defaultOptions, options]) as Options;
+
     // get container elements
     this.rootEl = document.getElementById(id);
     this.configEl = this.rootEl.querySelector('.config-panel');

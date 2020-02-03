@@ -48,7 +48,7 @@ const defaultOptions: Options = {
 };
 
 class ExampleDate extends Example {
-  constructor(id: string, protected options: Options = defaultOptions) {
+  constructor(id: string, options: Partial<Options> = defaultOptions) {
     super(id, options);
   }
 
