@@ -1,11 +1,5 @@
 import { all, allPass, anyPass, where } from 'ramda';
-import {
-  isObject,
-  isNotObject,
-  isArray,
-  isFunction,
-  isString,
-} from 'ramda-adjunct';
+import { isObject, isNotObject, isArray, isString } from 'ramda-adjunct';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
 import { Options, RangeSliderError } from './types';
@@ -57,7 +51,7 @@ function errNotValidValue(): RangeSliderError {
 function errNotValidMin(): RangeSliderError {
   return {
     id: ErrorNotValidMin,
-    desc: `min should be a number)`,
+    desc: `(min should be a number)`,
   };
 }
 

@@ -1,7 +1,11 @@
 export type Plugin = {
+  // get option value by key
   get<K extends OptionsKey>(key: K): Options[K];
+  // get all options
   getAll(): Options;
+  // pick a set of options by array of keys
   pick<K extends OptionsKey>(keys: K[]): Partial<Options>;
+  // set one or many options
   set(newOptions: Partial<Options>): Plugin;
 };
 
@@ -15,18 +19,6 @@ export type Orientation = 'horizontal' | 'vertical';
 //
 // ─── OPTIONS ────────────────────────────────────────────────────────────────────
 //
-
-// TODO: add props
-// mode =
-//  'count'         - divide track into parts according to numCells (default)
-//  | 'positions'   - position tick marks at relative positions from values prop
-//  | 'values'      - position tick marks at absolute positions from values prop
-//
-// alignToStep = boolean  - align all tick marks (pips) to nearest step position
-//
-// values = number[]      - relative percent values if mode = 'positions'
-//                        - absolute values if mode = 'values'
-// NOTE: prop names should be more organic
 
 export type GridOptions = {
   isVisible: boolean;
@@ -44,11 +36,15 @@ export type Options = {
   orientation: Orientation;
   cssClass: string;
   tooltips: boolean | boolean[];
+  // format syntax is described in src/services/formatter.ts
   tooltipFormat: string;
   intervals: boolean | boolean[];
   grid: boolean | GridOptions;
+  // format syntax is described in src/services/formatter.ts
   gridFormat: string;
 };
+
+export type OptionsKey = keyof Options;
 
 // for internal use
 export type OptimizedOptions = {
@@ -65,18 +61,22 @@ export type OptimizedOptions = {
   gridFormat: string;
 };
 
-export type OptionsKey = keyof Options;
-
 //
 // ─── MODEL ──────────────────────────────────────────────────────────────────────
 //
 
 export type RangeSliderModel = {
+  // get data value by key
   get<K extends DataKey>(key: K): Data[K];
+  // get full data object
   getAll(): Data;
+  // pick a set of keys from data
   pick<K extends DataKey>(keys: K[]): Partial<Data>;
+  // set one or many values
   set(newData: Partial<Data>): RangeSliderModel;
+  // bind handler to event
   on(eventName: string, listener: Function): void;
+  // try to change data by evaluating proposal on data
   propose(change: Partial<Proposal>): void;
 };
 
@@ -123,6 +123,7 @@ export type Data = {
   handleDict: { [handleId: string]: HandleData };
   handleIds: HandleId[];
   activeHandleIds: HandleId[];
+  // keep track of handles stack order to make active handle always on top
   handlesStackOrder: HandleId[];
 
   /** TOOLTIPS */
@@ -143,6 +144,8 @@ export type Data = {
 
 export type DataKey = keyof Data;
 
+// object with proposed changes to Data
+// each key corresponds to Data transformation function
 export type Proposal = {
   [key in DataKey]: (data: Data) => Data[key];
 };
@@ -172,6 +175,7 @@ export type Tooltip = {
   content: string;
   cssClass: string;
   isVisible: boolean;
+  // does this tooltip overlap with other tooltip(s)?
   hasCollisions: boolean;
   role: 'tooltip' | 'tooltip-merged';
 };
@@ -229,6 +233,7 @@ export type State = {
 
 export type RangeSliderView = {
   render(state: State): void;
+  // bind handler to event
   on(eventName: string, listener: Function): void;
 };
 

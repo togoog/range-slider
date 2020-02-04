@@ -37,6 +37,7 @@ function prepareOptionsForInternalUse({
     step,
     orientation,
     cssClass,
+
     // tooltips length should equal values length
     tooltips: fillArrayWith(
       valuesLength,
@@ -44,12 +45,14 @@ function prepareOptionsForInternalUse({
       toArray(tooltips),
     ),
     tooltipFormat,
+
     // intervals length should be greater then values length by 1
     intervals: fillArrayWith(
       valuesLength + 1,
       defaults.intervalValue,
       toArray(intervals),
     ),
+
     grid: isBoolean(grid)
       ? { isVisible: grid, numCells: defaults.gridNumCells }
       : grid,

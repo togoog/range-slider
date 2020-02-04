@@ -163,7 +163,7 @@ class Model extends EventEmitter implements RangeSliderModel {
       return this;
     }
 
-    // Can't overcome typescript error if I specify type as Partial<Proposal>
+    // Can't overcome typescript warning if I specify type as Partial<Proposal>
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const proposal: any = {};
     const data = { ...this.data, ...newData };

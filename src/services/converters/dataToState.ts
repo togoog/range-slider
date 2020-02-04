@@ -12,6 +12,10 @@ import {
 } from '../../types';
 import formatValue from '../formatter';
 import { createId, getRelativePosition } from '../../helpers';
+import {
+  tooltipNoIntervalConnector,
+  tooltipSameIntervalConnector,
+} from '../../defaults';
 
 /**
  * Create Handles state from model Data
@@ -61,9 +65,9 @@ function getMergedTooltipsContent(
 
       return [
         formattedValue,
-        // if 2 adjacent values belong to visible interval -> connect them with dash (-)
-        // otherwise connect them with semicolon (;)
-        isVisibleInterval ? '-' : ';',
+        isVisibleInterval
+          ? tooltipSameIntervalConnector
+          : tooltipNoIntervalConnector,
       ];
     })
     .reduce((acc, cur, idx, arr): [string, string][] => {
@@ -85,7 +89,9 @@ function getMergedTooltipsContent(
 
   const result = valueConnectorChain
     .map(([value, connector]) =>
-      connector === ';' ? `${value}${connector}` : `${value} ${connector}`,
+      connector === tooltipNoIntervalConnector
+        ? `${value}${connector}`
+        : `${value} ${connector}`,
     )
     .concat(lastValue)
     .join(' ');

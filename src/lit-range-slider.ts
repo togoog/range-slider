@@ -3,6 +3,9 @@ import { Options } from './types';
 import { RangeSlider, defaultOptions } from './range-slider';
 import './styles/style.scss';
 
+/**
+ * Range Slider as Lit Element
+ */
 class LitRangeSlider extends LitElement {
   value: Options['value'];
 

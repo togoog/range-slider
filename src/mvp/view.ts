@@ -23,7 +23,7 @@ class View extends EventEmitter implements RangeSliderView {
 
   static EVENT_TOOLTIP_COLLISIONS = 'RangeSlider/View/tooltipCollisions';
 
-  // element for wrapping old and rootElement
+  // element for wrapping old input and rootElement
   private wrapperElement!: HTMLElement;
 
   // element for rendering range slider

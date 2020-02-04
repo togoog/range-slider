@@ -132,7 +132,7 @@ class Presenter implements RangeSliderPresenter {
       [ErrorIntervalsCount]: logError,
       [ErrorValuesNotInRange]: logError,
       // ValuesOrder error can be a result of dragging a handle
-      // no need to destruct user with error messages in this case
+      // no need to distract user with error messages in this case
       [ErrorValuesOrder]: () => 'nothing',
     };
 

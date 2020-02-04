@@ -24,6 +24,14 @@ const replacementDict = {
   date: formatDate,
 };
 
+/**
+ * Format number according to provided template
+ * tokens:
+ *    {{number}} || {{number(format)}} - use formatNumber function for replacement
+ *    {{date}} || {{date(format)}} - use formatDate function for replacement
+ * @param template string with tokens to be applied to value
+ * @param value number to format
+ */
 function formatValue(template: string, value: number): string {
   const pattern = /{{\s*(number|date)\s*(?:\(([^)]+)\))?\s*}}/g;
   return template.replace(pattern, function substituteValue(

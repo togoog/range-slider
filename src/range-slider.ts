@@ -79,16 +79,15 @@ class RangeSlider extends EventEmitter implements Plugin {
     super();
 
     const mergedOptions = mergeAll([defaultOptions, options]) as Options;
-    const rs = this;
 
     checkRangeSliderOptions(mergedOptions)
       .mapLeft(forEach(logError))
       .map(options => {
         const data = convertOptionsToData(options);
-        rs.model = new Model(data);
-        rs.view = new View(el, options.cssClass);
-        rs.presenter = new Presenter(rs.model, rs.view);
-        rs.processModelEvents();
+        this.model = new Model(data);
+        this.view = new View(el, options.cssClass);
+        this.presenter = new Presenter(this.model, this.view);
+        this.processModelEvents();
       });
   }
 
