@@ -1,7 +1,8 @@
-import { all, allPass, anyPass, where } from 'ramda';
-import { isObject, isNotObject, isArray, isString } from 'ramda-adjunct';
 import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
 import { Either, Left, Right } from 'purify-ts/Either';
+import { all, allPass, anyPass, where } from 'ramda';
+import { isObject, isNotObject, isArray, isString } from 'ramda-adjunct';
+
 import { Options, RangeSliderError } from './types';
 
 //

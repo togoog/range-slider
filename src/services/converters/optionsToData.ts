@@ -1,5 +1,6 @@
 import { indexBy, prop, pluck } from 'ramda';
 import { isBoolean } from 'ramda-adjunct';
+
 import {
   Data,
   Options,

@@ -1,5 +1,6 @@
-import { TemplateResult, html } from 'lit-html';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
+import { TemplateResult, html } from 'lit-html';
+
 import { Grid } from '../../types';
 import cellView from './cell';
 

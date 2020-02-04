@@ -1,8 +1,9 @@
 import * as fc from 'fast-check';
+
 import { convertOptionsToData } from '../../services/converters';
-import { makeOptions } from '../arbitraries';
 import { toArray, closestToStep } from '../../helpers';
 import * as defaults from '../../defaults';
+import { makeOptions } from '../arbitraries';
 
 test('convertOptionsToData', () => {
   fc.assert(

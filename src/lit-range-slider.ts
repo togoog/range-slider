@@ -1,7 +1,8 @@
 import { LitElement, html } from 'lit-element';
+
+import './styles/style.scss';
 import { Options } from './types';
 import { RangeSlider, defaultOptions } from './range-slider';
-import './styles/style.scss';
 
 /**
  * Range Slider as Lit Element

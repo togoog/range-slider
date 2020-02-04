@@ -1,8 +1,9 @@
 import * as fc from 'fast-check';
 import { prop, indexBy, pluck } from 'ramda';
 import { isEven } from 'ramda-adjunct';
-import { Options, Data, HandleData, TooltipData, IntervalData } from '../types';
+
 import { convertDataToState } from '../services/converters';
+import { Options, Data, HandleData, TooltipData, IntervalData } from '../types';
 import { createId, closestToStep } from '../helpers';
 
 function sortedArrayArb(minLength = 1, maxLength = 10) {

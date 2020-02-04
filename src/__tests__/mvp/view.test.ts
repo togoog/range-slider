@@ -1,7 +1,8 @@
 import * as fc from 'fast-check';
 import { prop } from 'ramda';
-import { makeState } from '../arbitraries';
+
 import View from '../../mvp/view';
+import { makeState } from '../arbitraries';
 
 const cssClass = `range-slider`;
 const trackCSSClass = `${cssClass}__track`;

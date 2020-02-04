@@ -1,6 +1,8 @@
 import { mergeAll } from 'ramda';
 import { html, render } from 'lit-html';
+
 import { Options } from '../../src/types';
+import { defaultOptions, RangeSlider } from '../../src/range-slider';
 import { getResultFromOptions } from '../helpers';
 import {
   configForm,
@@ -15,7 +17,6 @@ import {
   controlGrid,
   controlGridFormat,
 } from '../components';
-import { defaultOptions, RangeSlider } from '../../src/range-slider';
 
 class Example {
   protected rootEl: HTMLElement;

@@ -1,8 +1,9 @@
+import { classMap, ClassInfo } from 'lit-html/directives/class-map';
+import { render, html } from 'lit-html';
 import { aperture, prop } from 'ramda';
 import { isNotEmpty } from 'ramda-adjunct';
 import { EventEmitter } from 'events';
-import { render, html } from 'lit-html';
-import { classMap, ClassInfo } from 'lit-html/directives/class-map';
+
 import { RangeSliderView, State, TooltipId, HandleId } from '../types';
 import { selectElements, haveCollisions, createId } from '../helpers';
 import {

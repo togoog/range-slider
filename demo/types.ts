@@ -1,4 +1,5 @@
 import { TemplateResult } from 'lit-html';
+
 import { Options } from '../src/types';
 
 export type OptionsProposal = (options: Options) => Options;

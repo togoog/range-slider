@@ -1,4 +1,5 @@
 import { fireEvent } from '@testing-library/dom';
+
 import { State } from '../../types';
 import { View } from '../../mvp';
 

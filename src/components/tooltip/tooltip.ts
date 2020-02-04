@@ -1,8 +1,9 @@
-import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
-import { Tooltip } from '../../types';
+import { html, TemplateResult } from 'lit-html';
+
 import { convertOrientationToOrigin } from '../../services/converters';
+import { Tooltip } from '../../types';
 
 function tooltipView({
   id,

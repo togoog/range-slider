@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import '../src/jq-range-slider';
 
+import '../src/jq-range-slider';
 import Example from './examples/example';
 import ExampleDate from './examples/example-date';
 import ExampleFraction from './examples/example-fraction';

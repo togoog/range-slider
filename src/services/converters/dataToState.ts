@@ -1,4 +1,5 @@
 import { includes, prop, props, indexBy } from 'ramda';
+
 import {
   Data,
   State,
@@ -10,12 +11,12 @@ import {
   TooltipId,
   Interval,
 } from '../../types';
-import formatValue from '../formatter';
 import { createId, getRelativePosition } from '../../helpers';
 import {
   tooltipNoIntervalConnector,
   tooltipSameIntervalConnector,
 } from '../../defaults';
+import formatValue from '../formatter';
 
 /**
  * Create Handles state from model Data

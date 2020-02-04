@@ -1,4 +1,10 @@
 import { pipe, indexBy, prop, without } from 'ramda';
+
+import logError from '../services/logger';
+import {
+  convertDataToState,
+  convertOrientationToOrigin,
+} from '../services/converters';
 import {
   RangeSliderError,
   RangeSliderModel,
@@ -8,6 +14,7 @@ import {
   HandleData,
   Data,
 } from '../types';
+import { closestToStep } from '../helpers';
 import {
   Model,
   ErrorMinMax,
@@ -18,12 +25,6 @@ import {
   ErrorIntervalsCount,
 } from './model';
 import View from './view';
-import { closestToStep } from '../helpers';
-import logError from '../services/logger';
-import {
-  convertDataToState,
-  convertOrientationToOrigin,
-} from '../services/converters';
 
 class Presenter implements RangeSliderPresenter {
   constructor(private model: RangeSliderModel, private view: RangeSliderView) {

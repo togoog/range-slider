@@ -1,8 +1,9 @@
-import { html, TemplateResult } from 'lit-html';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map';
 import { classMap, ClassInfo } from 'lit-html/directives/class-map';
-import { Handle, HandleId } from '../../types';
+import { html, TemplateResult } from 'lit-html';
+
 import { convertOrientationToOrigin } from '../../services/converters';
+import { Handle, HandleId } from '../../types';
 
 type Actions = {
   onMouseDown: (id: HandleId, e: MouseEvent) => void;

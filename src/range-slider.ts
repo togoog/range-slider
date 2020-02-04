@@ -1,5 +1,11 @@
 import { mergeAll, pick, forEach } from 'ramda';
 import { EventEmitter } from 'events';
+
+import logError from './services/logger';
+import {
+  convertOptionsToData,
+  convertDataToOptions,
+} from './services/converters';
 import {
   Plugin,
   RangeSliderError,
@@ -13,11 +19,6 @@ import {
 import * as defaults from './defaults';
 import { Model, View, Presenter } from './mvp';
 import { selectElements } from './helpers';
-import logError from './services/logger';
-import {
-  convertOptionsToData,
-  convertDataToOptions,
-} from './services/converters';
 import { checkRangeSliderOptions } from './validators';
 
 //

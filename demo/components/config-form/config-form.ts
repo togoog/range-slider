@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+
 import { Config, ConfigFormElement } from '../../types';
 
 function configForm(config: Config, elements?: ConfigFormElement[]) {

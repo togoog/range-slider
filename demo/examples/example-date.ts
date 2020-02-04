@@ -1,6 +1,7 @@
 import { partialRight } from 'ramda';
 import moment from 'moment';
-import Example from './example';
+
+import { Options } from '../../src/types';
 import {
   controlValue,
   controlMin,
@@ -13,7 +14,7 @@ import {
   controlGrid,
   controlGridFormat,
 } from '../components';
-import { Options } from '../../src/types';
+import Example from './example';
 
 function timestampToISOString(timestamp) {
   return moment

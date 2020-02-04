@@ -1,8 +1,10 @@
+import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
+import { Either, Left, Right } from 'purify-ts/Either';
 import { isEmpty, mergeAll, applySpec, all, forEach, keys, pick } from 'ramda';
 import { inRange } from 'ramda-adjunct';
 import { EventEmitter } from 'events';
-import { Maybe, Just, Nothing } from 'purify-ts/Maybe';
-import { Either, Left, Right } from 'purify-ts/Either';
+
+import logError from '../services/logger';
 import {
   RangeSliderError,
   RangeSliderModel,
@@ -10,7 +12,6 @@ import {
   DataKey,
   Proposal,
 } from '../types';
-import logError from '../services/logger';
 import { isSortedArray } from '../helpers';
 
 //

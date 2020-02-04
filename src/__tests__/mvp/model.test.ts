@@ -1,7 +1,7 @@
 import * as fc from 'fast-check';
 import { keys, assocPath, pick } from 'ramda';
+
 import { Data, RangeSliderError } from '../../types';
-import { makeData } from '../arbitraries';
 import {
   Model,
   // errors
@@ -11,6 +11,7 @@ import {
   errTooltipsCount,
   errIntervalsCount,
 } from '../../mvp/model';
+import { makeData } from '../arbitraries';
 
 describe('Model.validate', () => {
   test(`if min > max, then validation result should contain ${errMinMax.name}`, () => {

@@ -1,9 +1,10 @@
 import { html } from 'lit-html';
 import { assoc, update } from 'ramda';
+
+import formatValue from '../../../src/services/formatter';
+import { toArray } from '../../../src/helpers';
 import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
-import { toArray } from '../../../src/helpers';
-import formatValue from '../../../src/services/formatter';
 
 function controlTooltips({ options, onUpdate }: Config) {
   const { tooltips, value, tooltipFormat } = options;

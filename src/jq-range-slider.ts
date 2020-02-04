@@ -1,6 +1,7 @@
 import * as $ from 'jquery';
-import { createRangeSlider, defaultOptions } from './range-slider';
+
 import { Options } from './types';
+import { createRangeSlider, defaultOptions } from './range-slider';
 
 /**
  * Range Slider as JQuery plugin

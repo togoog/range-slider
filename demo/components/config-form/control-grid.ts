@@ -1,9 +1,10 @@
+import { ClassInfo, classMap } from 'lit-html/directives/class-map';
 import { html } from 'lit-html';
 import { assocPath, update } from 'ramda';
-import { ClassInfo, classMap } from 'lit-html/directives/class-map';
+
 import { GridOptions } from '../../../src/types';
-import { Config } from '../../types';
 import * as defaults from '../../../src/defaults';
+import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
 
 function controlGrid({ options, onUpdate }: Config) {

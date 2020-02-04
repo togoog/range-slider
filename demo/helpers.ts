@@ -1,7 +1,8 @@
 import { aperture } from 'ramda';
-import { Options } from '../src/types';
+
 import { prepareOptionsForInternalUse } from '../src/services/converters/optionsToData';
 import formatValue from '../src/services/formatter';
+import { Options } from '../src/types';
 
 function getRandomId(prefix: string) {
   return `${prefix}-${Math.random()

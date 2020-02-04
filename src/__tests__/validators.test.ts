@@ -1,6 +1,7 @@
-import * as fc from 'fast-check';
 import { Just, Nothing } from 'purify-ts/Maybe';
 import { Left, Right } from 'purify-ts/Either';
+import * as fc from 'fast-check';
+
 import {
   // errors
   errNotValidValue,

@@ -1,9 +1,10 @@
 import { html } from 'lit-html';
 import { insert, update } from 'ramda';
+
 import { Options } from '../../../src/types';
-import { Config, ElementAttributes } from '../../types';
 import { toArray } from '../../../src/helpers';
 import * as defaults from '../../../src/defaults';
+import { Config, ElementAttributes } from '../../types';
 import { getRandomId, valueFormatter } from '../../helpers';
 
 const defaultAttributes = {

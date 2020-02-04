@@ -1,5 +1,6 @@
 import { partialRight } from 'ramda';
 import { sprintf } from 'sprintf-js';
+
 import {
   controlValue,
   controlMin,

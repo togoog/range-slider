@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import { assoc } from 'ramda';
+
 import { Config, ElementAttributes } from '../../types';
 import { getRandomId, valueFormatter } from '../../helpers';
 

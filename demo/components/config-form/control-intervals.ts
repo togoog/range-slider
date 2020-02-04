@@ -1,9 +1,10 @@
 import { html } from 'lit-html';
 import { update, assoc } from 'ramda';
+
+import formatValue from '../../../src/services/formatter';
+import { toArray } from '../../../src/helpers';
 import { Config } from '../../types';
 import { getRandomId } from '../../helpers';
-import { toArray } from '../../../src/helpers';
-import formatValue from '../../../src/services/formatter';
 
 function controlIntervals({ options, onUpdate }: Config) {
   const { value, min, max, intervals, tooltipFormat } = options;

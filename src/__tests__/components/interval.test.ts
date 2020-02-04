@@ -1,8 +1,9 @@
 import * as fc from 'fast-check';
 import { prop } from 'ramda';
-import { makeState } from '../arbitraries';
-import { View } from '../../mvp';
+
 import { convertOrientationToOrigin } from '../../services/converters';
+import { View } from '../../mvp';
+import { makeState } from '../arbitraries';
 
 const intervalCSSClass = 'range-slider__interval';
 
